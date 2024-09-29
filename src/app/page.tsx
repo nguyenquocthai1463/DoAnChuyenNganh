@@ -1,101 +1,190 @@
-import Image from "next/image";
+"use client";
+import { useState } from "react";
 
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="https://nextjs.org/icons/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+  const [selectedAlgorithm, setSelectedAlgorithm] = useState<string>("fcfs");
+  const [arrivalTime, setArrivalTime] = useState<string>("");
+  const [burstTime, setBurstTime] = useState<string>("");
+  const [priority, setPriority] = useState<string>("");
+  const [timeQuantum, setTimeQuantum] = useState<string>("");
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+  const handleSubmit = () => {
+    // Xử lý dữ liệu khi bấm nút Submit
+    if (selectedAlgorithm === "fcfs") {
+      // Xử lý cho thuật toán FCFS
+    }
+    if (selectedAlgorithm === "sjf") {
+      // Xử lý cho thuật toán SJF
+    }
+    if (selectedAlgorithm === "srtf") {
+      // Xử lý cho thuật toán SRTF
+    }
+    if (selectedAlgorithm === "rr") {
+      // Xử lý cho thuật toán RR
+    }
+    if (selectedAlgorithm === "npp") {
+      // Xử lý cho thuật toán NPP
+    }
+    if (selectedAlgorithm === "pp") {
+      // Xử lý cho thuật toán PP
+    }
+  }
+    return (
+      <main className="flex p-8 gap-8 row-start-1 max-h-32 sm:items-start">
+        <div className="flex-auto flex flex-col p-4">
+          <h1 className="text-xl text-white text-center pb-8 sm:text-4xl font-bold">
+            CPU SCHEDULING VISUALIZER
+          </h1>
+          <div className="max-h-full p-5 block rounded-3xl bg-white max-w-full container">
+            <h1 className="text-xl sm:text-xl text-black font-bold">OUTPUT</h1>
+            <h2 className="text-black font-bold">Table will be shown here ...</h2>
+          </div>
+        </div>
+        <div className="flex-auto p-6 rounded-3xl h-full block bg-white max-w-sm container px-6">
+          <h3>Algorithm</h3>
+          <select
+            onChange={(e) => setSelectedAlgorithm(e.target.value)}
+            className="block w-full p-4 my-4 border border-gray-300 rounded-3xl"
           >
-            <Image
-              className="dark:invert"
-              src="https://nextjs.org/icons/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+            <option value="fcfs">First Come First Serve, FCFS</option>
+            <option value="sjf">Shortest Job First, SJF (Non Preemptive)</option>
+            <option value="srtf">Shortest Remaining Time First, SRTF</option>
+            <option value="rr">Round Robin, RR</option>
+            <option value="npp">Priority, NPP (Non Preemptive)</option>
+            <option value="pp">Priority, PP (Preemptive)</option>
+          </select>
+          {selectedAlgorithm && (
+            <div>
+              {selectedAlgorithm === "fcfs" && <div><h3>Arrival Time</h3>
+                <input
+                  type="text"
+                  className="block w-full p-4 my-4 border border-gray-300 rounded-3xl"
+                  placeholder="eg: 1 4 5 6"
+                  value={arrivalTime}
+                  onChange={(e) => setArrivalTime(e.target.value)}
+                />
+                <h3>Burst Time</h3>
+                <input
+                  type="text"
+                  className="block w-full p-4 my-4 border border-gray-300 rounded-3xl"
+                  placeholder="eg: 1 4 5 6"
+                  value={burstTime}
+                  onChange={(e) => setBurstTime(e.target.value)}
+                /></div>}
+              {selectedAlgorithm === "sjf" && <div><h3>Arrival Time</h3>
+                <input
+                  type="text"
+                  className="block w-full p-4 my-4 border border-gray-300 rounded-3xl"
+                  placeholder="eg: 1 4 5 6"
+                  value={arrivalTime}
+                  onChange={(e) => setArrivalTime(e.target.value)}
+                />
+                <h3>Burst Time</h3>
+                <input
+                  type="text"
+                  className="block w-full p-4 my-4 border border-gray-300 rounded-3xl"
+                  placeholder="eg: 1 4 5 6"
+                  value={burstTime}
+                  onChange={(e) => setBurstTime(e.target.value)}
+                /></div>}
+              {selectedAlgorithm === "srtf" && <div><h3>Arrival Time</h3>
+                <input
+                  type="text"
+                  className="block w-full p-4 my-4 border border-gray-300 rounded-3xl"
+                  placeholder="eg: 1 4 5 6"
+                  value={arrivalTime}
+                  onChange={(e) => setArrivalTime(e.target.value)}
+                />
+                <h3>Burst Time</h3>
+                <input
+                  type="text"
+                  className="block w-full p-4 my-4 border border-gray-300 rounded-3xl"
+                  placeholder="eg: 1 4 5 6"
+                  value={burstTime}
+                  onChange={(e) => setBurstTime(e.target.value)}
+                /></div>}
+              {selectedAlgorithm === "rr" && <div><h3>Arrival Time</h3>
+                <input
+                  type="text"
+                  className="block w-full p-4 my-4 border border-gray-300 rounded-3xl"
+                  placeholder="eg: 1 4 5 6"
+                  value={arrivalTime}
+                  onChange={(e) => setArrivalTime(e.target.value)}
+                />
+                <h3>Burst Time</h3>
+                <input
+                  type="text"
+                  className="block w-full p-4 my-4 border border-gray-300 rounded-3xl"
+                  placeholder="eg: 1 4 5 6"
+                  value={burstTime}
+                  onChange={(e) => setBurstTime(e.target.value)}
+                />
+                <h3>Time Quantum</h3>
+                <input
+                  type="text"
+                  className="block w-full p-4 my-4 border border-gray-300 rounded-3xl"
+                  placeholder="eg: 3"
+                  value={timeQuantum}
+                  onChange={(e) => setTimeQuantum(e.target.value)}
+                />
+              </div>}
+              {selectedAlgorithm === "npp" && <div><h3>Arrival Time</h3>
+                <input
+                  type="text"
+                  className="block w-full p-4 my-4 border border-gray-300 rounded-3xl"
+                  placeholder="eg: 1 4 5 6"
+                  value={arrivalTime}
+                  onChange={(e) => setArrivalTime(e.target.value)}
+                />
+                <h3>Burst Time</h3>
+                <input
+                  type="text"
+                  className="block w-full p-4 my-4 border border-gray-300 rounded-3xl"
+                  placeholder="eg: 1 4 5 6"
+                  value={burstTime}
+                  onChange={(e) => setBurstTime(e.target.value)}
+                />
+                <h3>Priority</h3>
+                <input
+                  type="text"
+                  className="block w-full p-4 my-4 border border-gray-300 rounded-3xl"
+                  placeholder="Lower #= Higher"
+                  value={priority}
+                  onChange={(e) => setPriority(e.target.value)}
+                />
+              </div>}
+              {selectedAlgorithm === "pp" && <div><h3>Arrival Time</h3>
+                <input
+                  type="text"
+                  className="block w-full p-4 my-4 border border-gray-300 rounded-3xl"
+                  placeholder="eg: 1 4 5 6"
+                  value={arrivalTime}
+                  onChange={(e) => setArrivalTime(e.target.value)}
+                />
+                <h3>Burst Time</h3>
+                <input
+                  type="text"
+                  className="block w-full p-4 my-4 border border-gray-300 rounded-3xl"
+                  placeholder="eg: 1 4 5 6"
+                  value={burstTime}
+                  onChange={(e) => setBurstTime(e.target.value)}
+                />
+                <h3>Priority</h3>
+                <input
+                  type="text"
+                  className="block w-full p-4 my-4 border border-gray-300 rounded-3xl"
+                  placeholder="Lower #= Higher"
+                  value={priority}
+                  onChange={(e) => setPriority(e.target.value)}
+                /></div>}
+            </div>
+          )}
+          <button 
+            onClick={handleSubmit}
+            className="block w-full p-3 mt-6 mb-2 bg-red-800 text-white rounded-xl">
+            Submit
+          </button>
         </div>
       </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
-  );
-}
+    );
+  }
