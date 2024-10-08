@@ -397,20 +397,20 @@ export default function Home() {
     count = demthoigianden(arrivalTime);
     // eslint-disable-next-line prefer-const
     sl_tt = count;
-      for (let i = 0; i < sl_tt; i++) {
-        aRR.push({
-          tg_cho: 0,
-          tg_denRL: getCharactersWithoutSpaces(arrivalTime)[i],
-          tg_xuly: getCharactersWithoutSpaces(burstTime)[i],
-          tg_hoantat: 0,
-          tg_cho_tb: 0,
-          tg_hoantat_tb: 0,
-          quantum: Number(timeQuantum),
-        })
-        tamTT[i] = aRR[i].tg_xuly;
-        tt[i] = i + 1;
-        tamDen[i] = aRR[i].tg_denRL;
-      }
+    for (let i = 0; i < sl_tt; i++) {
+      aRR.push({
+        tg_cho: 0,
+        tg_denRL: getCharactersWithoutSpaces(arrivalTime)[i],
+        tg_xuly: getCharactersWithoutSpaces(burstTime)[i],
+        tg_hoantat: 0,
+        tg_cho_tb: 0,
+        tg_hoantat_tb: 0,
+        quantum: Number(timeQuantum),
+      })
+      tamTT[i] = aRR[i].tg_xuly;
+      tt[i] = i + 1;
+      tamDen[i] = aRR[i].tg_denRL;
+    }
 
     function xoa(vt: number) {
       for (let i = vt; i < sl - 1; i++) {
@@ -432,51 +432,51 @@ export default function Home() {
       vtcu[vt] = gtvtcu;
       sl++;
     }
-      tg_ht_tb = 0;
-      tg_cho_tb = 0;
-      tg_cho[0] = 0;
-      let tong_tg_chay = 0;
+    tg_ht_tb = 0;
+    tg_cho_tb = 0;
+    tg_cho[0] = 0;
+    let tong_tg_chay = 0;
 
-      for (let i = 0; i < sl_tt; i++) {
-        for (let j = i + 1; j < sl_tt; j++) {
-          if (tg_den[i] > tg_den[j]) {
-            [tg_den[i], tg_den[j]] = [tg_den[j], tg_den[i]];
-            [tgxl[i], tgxl[j]] = [tgxl[j], tgxl[i]];
-            [tt[i], tt[j]] = [tt[j], tt[i]];
-            tien_trinh_nghi[i] = 0;
-          }
-        }
-        vtcu[i] = i;
-        tamTT[i] = tgxl[i];
-        tamDen[i] = tg_den[i];
-      }
-
-      sl = sl_tt;
-      while (sl > 0) {
-        aRR[vtcu[0]].tg_cho += tong_tg_chay - tamDen[0] - tien_trinh_nghi[vtcu[0]];
-        tamDen[0] = 0;
-
-        if (tamTT[0] > quantum) {
-          tong_tg_chay += quantum;
-          tien_trinh_nghi[vtcu[0]] = tong_tg_chay;
-          tamTT[0] -= quantum;
-          let j = 1;
-          while (tamDen[j] < tong_tg_chay && j < sl) j++;
-          if (tamDen[j] != tong_tg_chay) j = sl;
-          chen(j, tamTT[0], tamDen[0], vtcu[0]);
-          xoa(0);
-        } else {
-          tong_tg_chay += tamTT[0];
-          tg_cho_tb += tg_cho[vtcu[0]];
-          tg_hoantat[vtcu[0]] = tong_tg_chay - tg_den[vtcu[0]];
-          tg_ht_tb += tg_hoantat[vtcu[0]];
-          xoa(0);
+    for (let i = 0; i < sl_tt; i++) {
+      for (let j = i + 1; j < sl_tt; j++) {
+        if (tg_den[i] > tg_den[j]) {
+          [tg_den[i], tg_den[j]] = [tg_den[j], tg_den[i]];
+          [tgxl[i], tgxl[j]] = [tgxl[j], tgxl[i]];
+          [tt[i], tt[j]] = [tt[j], tt[i]];
+          tien_trinh_nghi[i] = 0;
         }
       }
-
-      tg_cho_tb /= sl_tt;
-      tg_ht_tb /= sl_tt;
+      vtcu[i] = i;
+      tamTT[i] = tgxl[i];
+      tamDen[i] = tg_den[i];
     }
+
+    sl = sl_tt;
+    while (sl > 0) {
+      aRR[vtcu[0]].tg_cho += tong_tg_chay - tamDen[0] - tien_trinh_nghi[vtcu[0]];
+      tamDen[0] = 0;
+      quantum = 0; // thêm quantum để test
+      if (tamTT[0] > quantum) {
+        tong_tg_chay += quantum;
+        tien_trinh_nghi[vtcu[0]] = tong_tg_chay;
+        tamTT[0] -= quantum;
+        let j = 1;
+        while (tamDen[j] < tong_tg_chay && j < sl) j++;
+        if (tamDen[j] != tong_tg_chay) j = sl;
+        chen(j, tamTT[0], tamDen[0], vtcu[0]);
+        xoa(0);
+      } else {
+        tong_tg_chay += tamTT[0];
+        tg_cho_tb += tg_cho[vtcu[0]];
+        tg_hoantat[vtcu[0]] = tong_tg_chay - tg_den[vtcu[0]];
+        tg_ht_tb += tg_hoantat[vtcu[0]];
+        xoa(0);
+      }
+    }
+
+    tg_cho_tb /= sl_tt;
+    tg_ht_tb /= sl_tt;
+  }
 
   const resetForm = () => {
     setArrivalTime("");
