@@ -680,7 +680,7 @@ export default function Home() {
     <main className="flex p-8 gap-8 row-start-1 max-h-32 sm:items-start">
       <div className="flex-auto flex flex-col p-4">
         <h1 className="text-xl text-white text-center pb-8 sm:text-4xl font-bold">
-          CPU SCHEDULING VISUALIZER
+          Tìm hiểu công nghệ Jamstack và xây dựng ứng dụng Web minh họa các giải thuật định thời CPU
         </h1>
         <div className="max-h-full p-5 block rounded-3xl bg-white max-w-full container">
           {result}

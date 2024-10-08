@@ -1,11 +1,8 @@
 // types/process.d.ts
 export interface ProcessRequest {
-    process: {
-        id: number;
-        arrivalTime: number;
-        burstTime: number;
-        priority?: number;
-    };
+    arrArrivalTime: number[];
+    arrBurstTime: number[];
+    arrPriority?: number[];
     quantum?: number;
 }
 

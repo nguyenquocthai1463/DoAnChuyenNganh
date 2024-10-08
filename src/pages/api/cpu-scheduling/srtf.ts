@@ -4,20 +4,19 @@ import { StatusCode } from "@/types/status-code";
 import { ResponseData } from "@/types/api-response";
 import { validateArrivalTimeAndBurstTime } from "@/types/data-validation";
 
-const validateRequestData = (arrArrivalTime: any, arrBurstTime: any, quantum: any, res: NextApiResponse<ResponseData>) => {
+const validateRequestData = (arrArrivalTime: any, arrBurstTime: any, res: NextApiResponse<ResponseData>) => {
     if (!Array.isArray(arrArrivalTime) || arrArrivalTime.length === 0 ||
-        !Array.isArray(arrBurstTime) || arrBurstTime.length === 0 ||
-        !quantum || (quantum && quantum <= 0) || typeof quantum !== 'number')
+        !Array.isArray(arrBurstTime) || arrBurstTime.length === 0)
         return res.status(StatusCode.BAD_REQUEST).json({
             statusCode: StatusCode.BAD_REQUEST,
-            message: "Invalid request. Please provide an array of process requests and a quantum positive number.",
+            message: "Invalid request. Please provide an array of process requests.",
             data: undefined,
         });
 
     validateArrivalTimeAndBurstTime(arrArrivalTime, arrBurstTime, undefined, res);
 }
 
-const roundRobinAlgo = (req: ProcessRequest): ResponseData => {
+const shortestRemainingTimeFirstAlgo = (req: ProcessRequest): ResponseData => {
     return {
         statusCode: StatusCode.OK,
         message: undefined,
@@ -46,16 +45,16 @@ export default function handler(req: NextApiRequest, res: NextApiResponse<Respon
             data: undefined,
         });
 
-    const { arrArrivalTime, arrBurstTime, quantum } = req.body;
-    validateRequestData(arrArrivalTime, arrBurstTime, quantum, res);
+    const { arrArrivalTime, arrBurstTime } = req.body;
+    validateRequestData(arrArrivalTime, arrBurstTime, res);
 
     const request: ProcessRequest = {
         arrArrivalTime: arrArrivalTime,
         arrBurstTime: arrBurstTime,
         arrPriority: undefined,
-        quantum: quantum
+        quantum: undefined
     };
 
-    const response: ResponseData = roundRobinAlgo(request);
+    const response: ResponseData = shortestRemainingTimeFirstAlgo(request);
     return res.status(StatusCode.OK).json(response);
 }
