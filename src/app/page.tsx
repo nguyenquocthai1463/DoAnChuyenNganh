@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import {
   Table,
@@ -9,6 +9,7 @@ import {
   TableRow,
   TableCell
 } from "@nextui-org/table";
+import { ResponseData } from "@/types/api-response";
 interface TienTrinhPP {
   ma_tt: number;
   tg_cho: number;
@@ -78,6 +79,7 @@ const aFCFS: TienTrinhFCFS[] = []; //khai báo mảng a chứa các tiến trìn
 const aSJF: TienTrinhSJF[] = []; //khai báo mảng a chứa các tiến trình
 const aSRTF: TienTrinhSRTF[] = []; //khai báo mảng a chứa các tiến trình
 const aRR: TienTrinhRR[] = []; //khai báo mảng a chứa các tiến trình
+let responseData: ResponseData;
 
 export default function Home() {
   const [selectedAlgorithm, setSelectedAlgorithm] = useState<string>("fcfs");
@@ -102,6 +104,19 @@ export default function Home() {
   function hoandoi(b: number, c: number): [number, number] {
     return [c, b];
   }//hàm hoán đổi vị trí của 2 số
+
+  // Hàm call API cho các thuật toán CPU
+  const callingAPIWithCPUSchedulingAlgo = async (req: any, algo: string): Promise<ResponseData> => {
+    const response = await fetch(`/api/cpu-scheduling/${algo}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(req),
+    });
+
+    return response.json();
+  }
 
   function pp() {
     let sotientrinh: number;
@@ -378,104 +393,22 @@ export default function Home() {
     aSRTF[0].tg_hoantat_tb = tght / soTT;
   }//Hàm xử lý bài toán SRTF
 
-  function rr() {
-    let tg_cho: number[] = [];
-    let tg_hoantat: number[] = [];
-    let tg_cho_tb: number = 0;
-    let tg_ht_tb: number = 0;
-    let tamTT: number[] = [];
-    let tamDen: number[] = [];
-    let tgxl: number[] = [];
-    let tg_den: number[] = [];
-    let tgchomoidoan: number[] = [];
-    let tien_trinh_nghi: number[] = [];
-    let tt: number[] = [];
-    let vtcu: number[] = [];
-    let sl_tt: number;
-    let quantum: number;
-    let sl: number;
-    count = demthoigianden(arrivalTime);
-    // eslint-disable-next-line prefer-const
-    sl_tt = count;
-    for (let i = 0; i < sl_tt; i++) {
-      aRR.push({
-        tg_cho: 0,
-        tg_denRL: getCharactersWithoutSpaces(arrivalTime)[i],
-        tg_xuly: getCharactersWithoutSpaces(burstTime)[i],
-        tg_hoantat: 0,
-        tg_cho_tb: 0,
-        tg_hoantat_tb: 0,
-        quantum: Number(timeQuantum),
-      })
-      tamTT[i] = aRR[i].tg_xuly;
-      tt[i] = i + 1;
-      tamDen[i] = aRR[i].tg_denRL;
-    }
+  const rr = async () => {
+    const request = {
+      arrPro: getCharactersWithoutSpaces(arrivalTime).map((_item, index) => index + 1),
+      arrArrivalTime: getCharactersWithoutSpaces(arrivalTime),
+      arrBurstTime: getCharactersWithoutSpaces(burstTime),
+      quantum: Number(timeQuantum)
+    };
 
-    function xoa(vt: number) {
-      for (let i = vt; i < sl - 1; i++) {
-        tamTT[i] = tamTT[i + 1];
-        tamDen[i] = tamDen[i + 1];
-        vtcu[i] = vtcu[i + 1];
-      }
-      sl--;
+    try {
+      const data = await callingAPIWithCPUSchedulingAlgo(request, 'rr');
+      responseData = data;
+      // console.log(data);
+      // console.log('response data', responseData);
+    } catch (error) {
+      console.error('Error:', error);
     }
-
-    function chen(vt: number, gt: number, gtden: number, gtvtcu: number) {
-      for (let i = sl; i > vt; i--) {
-        tamTT[i] = tamTT[i - 1];
-        tamDen[i] = tamDen[i - 1];
-        vtcu[i] = vtcu[i - 1];
-      }
-      tamTT[vt] = gt;
-      tamDen[vt] = gtden;
-      vtcu[vt] = gtvtcu;
-      sl++;
-    }
-    tg_ht_tb = 0;
-    tg_cho_tb = 0;
-    tg_cho[0] = 0;
-    let tong_tg_chay = 0;
-
-    for (let i = 0; i < sl_tt; i++) {
-      for (let j = i + 1; j < sl_tt; j++) {
-        if (tg_den[i] > tg_den[j]) {
-          [tg_den[i], tg_den[j]] = [tg_den[j], tg_den[i]];
-          [tgxl[i], tgxl[j]] = [tgxl[j], tgxl[i]];
-          [tt[i], tt[j]] = [tt[j], tt[i]];
-          tien_trinh_nghi[i] = 0;
-        }
-      }
-      vtcu[i] = i;
-      tamTT[i] = tgxl[i];
-      tamDen[i] = tg_den[i];
-    }
-
-    sl = sl_tt;
-    while (sl > 0) {
-      aRR[vtcu[0]].tg_cho += tong_tg_chay - tamDen[0] - tien_trinh_nghi[vtcu[0]];
-      tamDen[0] = 0;
-      quantum = 0; // thêm quantum để test
-      if (tamTT[0] > quantum) {
-        tong_tg_chay += quantum;
-        tien_trinh_nghi[vtcu[0]] = tong_tg_chay;
-        tamTT[0] -= quantum;
-        let j = 1;
-        while (tamDen[j] < tong_tg_chay && j < sl) j++;
-        if (tamDen[j] != tong_tg_chay) j = sl;
-        chen(j, tamTT[0], tamDen[0], vtcu[0]);
-        xoa(0);
-      } else {
-        tong_tg_chay += tamTT[0];
-        tg_cho_tb += tg_cho[vtcu[0]];
-        tg_hoantat[vtcu[0]] = tong_tg_chay - tg_den[vtcu[0]];
-        tg_ht_tb += tg_hoantat[vtcu[0]];
-        xoa(0);
-      }
-    }
-
-    tg_cho_tb /= sl_tt;
-    tg_ht_tb /= sl_tt;
   }
 
   const resetForm = () => {
@@ -493,7 +426,7 @@ export default function Home() {
     aSJF.splice(0, aSJF.length);
   }
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     resetTable();
     let output: JSX.Element | null = null;
     if (selectedAlgorithm === "fcfs") {
@@ -604,9 +537,35 @@ export default function Home() {
       resetForm();
     }
     if (selectedAlgorithm === "rr") {
+      await rr();
       output = (
         <div>
-          {/* Hiện table của bài toán */}
+          {
+            <div>
+              <Table aria-label="Example static collection table">
+                <TableHeader>
+                  <TableColumn>Job</TableColumn>
+                  <TableColumn>Arrival Time</TableColumn>
+                  <TableColumn>Burst Time</TableColumn>
+                  <TableColumn>Finish Time</TableColumn>
+                  <TableColumn>Waiting Time</TableColumn>
+                </TableHeader>
+                <TableBody>
+                  {(responseData?.data?.processes || []).map(process => (
+                    <TableRow key={process.id}>
+                      <TableCell className="text-center">{process.id}</TableCell>
+                      <TableCell className="text-center">{process.arrivalTime}</TableCell>
+                      <TableCell className="text-center">{process.burstTime}</TableCell>
+                      <TableCell className="text-center">{process.finishTime}</TableCell>
+                      <TableCell className="text-center">{process.waitingTime}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+              <p>Thời gian chờ trung bình: {responseData?.data?.averageWaitingTime}</p>
+              <p>Thời gian hoàn tất trung bình: {responseData?.data?.averageFinishTime}</p>
+            </div>
+          }
         </div>
       );
     }

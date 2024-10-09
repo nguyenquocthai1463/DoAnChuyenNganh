@@ -1,5 +1,6 @@
 // types/process.d.ts
 export interface ProcessRequest {
+    arrPro: number[];
     arrArrivalTime: number[];
     arrBurstTime: number[];
     arrPriority?: number[];

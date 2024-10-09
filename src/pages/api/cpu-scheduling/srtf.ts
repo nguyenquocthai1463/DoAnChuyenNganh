@@ -45,10 +45,11 @@ export default function handler(req: NextApiRequest, res: NextApiResponse<Respon
             data: undefined,
         });
 
-    const { arrArrivalTime, arrBurstTime } = req.body;
+    const { arrPro, arrArrivalTime, arrBurstTime } = req.body;
     validateRequestData(arrArrivalTime, arrBurstTime, res);
 
     const request: ProcessRequest = {
+        arrPro: arrPro,
         arrArrivalTime: arrArrivalTime,
         arrBurstTime: arrBurstTime,
         arrPriority: undefined,
