@@ -1,6 +1,9 @@
 "use client";
 import { useState } from "react";
-
+// import { Tabs, Tab, Card, CardBody } from "@nextui-org/react";
+// import { Tabs, TabList, Tab, TabPanel } from 'react-tabs';
+import type { MenuProps } from 'antd';
+import { Menu } from 'antd';
 import {
   Table,
   TableHeader,
@@ -9,6 +12,7 @@ import {
   TableRow,
   TableCell
 } from "@nextui-org/table";
+
 interface TienTrinhPP {
   ma_tt: number;
   tg_cho: number;
@@ -33,7 +37,7 @@ class TienTrinhNPP {
     this.tg_hoantat = 0;
     this.do_uu_tien = do_uu_tien;
   }
-}
+}//Khởi tạo class cho tiến trình Priority Non Preemptive
 
 interface TienTrinhFCFS {
   tg_cho: number;
@@ -80,7 +84,7 @@ const aSRTF: TienTrinhSRTF[] = []; //khai báo mảng a chứa các tiến trìn
 const aRR: TienTrinhRR[] = []; //khai báo mảng a chứa các tiến trình
 
 export default function Home() {
-  const [selectedAlgorithm, setSelectedAlgorithm] = useState<string>("fcfs");
+  const [selectedKey, setSelectedKey] = useState<string | null>(null);
   const [arrivalTime, setArrivalTime] = useState<string>("");
   const [burstTime, setBurstTime] = useState<string>("");
   const [priority, setPriority] = useState<string>("");
@@ -379,38 +383,30 @@ export default function Home() {
   }//Hàm xử lý bài toán SRTF
 
   function rr() {
-    let tg_cho: number[] = [];
-    let tg_hoantat: number[] = [];
-    let tg_cho_tb: number = 0;
-    let tg_ht_tb: number = 0;
-    let tamTT: number[] = [];
-    let tamDen: number[] = [];
-    let tgxl: number[] = [];
-    let tg_den: number[] = [];
-    let tgchomoidoan: number[] = [];
-    let tien_trinh_nghi: number[] = [];
-    let tt: number[] = [];
-    let vtcu: number[] = [];
+    const tamTT: number[] = [];
+    const tamDen: number[] = [];
+    const tien_trinh_nghi: number[] = [];
+    const tt: number[] = [];
+    const vtcu: number[] = [];
     let sl_tt: number;
-    let quantum: number;
     let sl: number;
     count = demthoigianden(arrivalTime);
     // eslint-disable-next-line prefer-const
     sl_tt = count;
-      for (let i = 0; i < sl_tt; i++) {
-        aRR.push({
-          tg_cho: 0,
-          tg_denRL: getCharactersWithoutSpaces(arrivalTime)[i],
-          tg_xuly: getCharactersWithoutSpaces(burstTime)[i],
-          tg_hoantat: 0,
-          tg_cho_tb: 0,
-          tg_hoantat_tb: 0,
-          quantum: Number(timeQuantum),
-        })
-        tamTT[i] = aRR[i].tg_xuly;
-        tt[i] = i + 1;
-        tamDen[i] = aRR[i].tg_denRL;
-      }
+    for (let i = 0; i < sl_tt; i++) {
+      aRR.push({
+        tg_cho: 0,
+        tg_denRL: getCharactersWithoutSpaces(arrivalTime)[i],
+        tg_xuly: getCharactersWithoutSpaces(burstTime)[i],
+        tg_hoantat: 0,
+        tg_cho_tb: 0,
+        tg_hoantat_tb: 0,
+        quantum: getCharactersWithoutSpaces(timeQuantum)[i],
+      })
+      tamTT[i] = aRR[i].tg_xuly;
+      tt[i] = i + 1;
+      tamDen[i] = aRR[i].tg_denRL;
+    }
 
     function xoa(vt: number) {
       for (let i = vt; i < sl - 1; i++) {
@@ -432,58 +428,64 @@ export default function Home() {
       vtcu[vt] = gtvtcu;
       sl++;
     }
-      tg_ht_tb = 0;
-      tg_cho_tb = 0;
-      tg_cho[0] = 0;
-      let tong_tg_chay = 0;
+    aRR[0].tg_hoantat_tb = 0;
+    aRR[0].tg_cho_tb = 0;
+    aRR[0].tg_cho = 0;
+    let tong_tg_chay = 0;
 
-      for (let i = 0; i < sl_tt; i++) {
-        for (let j = i + 1; j < sl_tt; j++) {
-          if (tg_den[i] > tg_den[j]) {
-            [tg_den[i], tg_den[j]] = [tg_den[j], tg_den[i]];
-            [tgxl[i], tgxl[j]] = [tgxl[j], tgxl[i]];
-            [tt[i], tt[j]] = [tt[j], tt[i]];
-            tien_trinh_nghi[i] = 0;
-          }
-        }
-        vtcu[i] = i;
-        tamTT[i] = tgxl[i];
-        tamDen[i] = tg_den[i];
-      }
-
-      sl = sl_tt;
-      while (sl > 0) {
-        aRR[vtcu[0]].tg_cho += tong_tg_chay - tamDen[0] - tien_trinh_nghi[vtcu[0]];
-        tamDen[0] = 0;
-
-        if (tamTT[0] > quantum) {
-          tong_tg_chay += quantum;
-          tien_trinh_nghi[vtcu[0]] = tong_tg_chay;
-          tamTT[0] -= quantum;
-          let j = 1;
-          while (tamDen[j] < tong_tg_chay && j < sl) j++;
-          if (tamDen[j] != tong_tg_chay) j = sl;
-          chen(j, tamTT[0], tamDen[0], vtcu[0]);
-          xoa(0);
-        } else {
-          tong_tg_chay += tamTT[0];
-          tg_cho_tb += tg_cho[vtcu[0]];
-          tg_hoantat[vtcu[0]] = tong_tg_chay - tg_den[vtcu[0]];
-          tg_ht_tb += tg_hoantat[vtcu[0]];
-          xoa(0);
+    for (let i = 0; i < sl_tt; i++) {
+      for (let j = i + 1; j < sl_tt; j++) {
+        if (aRR[i].tg_denRL > aRR[j].tg_denRL) {
+          let t = aRR[i].tg_denRL;
+          aRR[i].tg_denRL = aRR[j].tg_denRL;
+          aRR[j].tg_denRL = t;
+          t = aRR[i].tg_xuly;
+          aRR[i].tg_xuly = aRR[j].tg_xuly;
+          aRR[j].tg_xuly = t;
+          t = tt[i];
+          tt[i] = tt[j];
+          tt[j] = t;
+          tien_trinh_nghi[i] = 0;
         }
       }
-
-      tg_cho_tb /= sl_tt;
-      tg_ht_tb /= sl_tt;
+      vtcu[i] = i;
+      tamTT[i] = aRR[i].tg_xuly;
+      tamDen[i] = aRR[i].tg_denRL;
     }
+
+    sl = sl_tt;
+    while (sl > 0) {
+      aRR[vtcu[0]].tg_cho += tong_tg_chay - tamDen[0] - tien_trinh_nghi[vtcu[0]];
+      tamDen[0] = 0;
+
+      if (tamTT[0] > aRR[0].quantum) {
+        tong_tg_chay += aRR[0].quantum;
+        tien_trinh_nghi[vtcu[0]] = tong_tg_chay;
+        tamTT[0] -= aRR[0].quantum;
+        let j = 1;
+        while (tamDen[j] < tong_tg_chay && j < sl) j++;
+        if (tamDen[j] != tong_tg_chay) j = sl;
+        chen(j, tamTT[0], tamDen[0], vtcu[0]);
+        xoa(0);
+      } else {
+        tong_tg_chay += tamTT[0];
+        aRR[0].tg_cho_tb += aRR[vtcu[0]].tg_cho_tb;
+        aRR[vtcu[0]].tg_hoantat = tong_tg_chay - aRR[vtcu[0]].tg_denRL;
+        aRR[0].tg_hoantat_tb += aRR[vtcu[0]].tg_hoantat;
+        xoa(0);
+      }
+    }
+
+    aRR[0].tg_hoantat_tb /= sl_tt;
+    aRR[0].tg_cho_tb /= sl_tt;
+  }
 
   const resetForm = () => {
     setArrivalTime("");
     setBurstTime("");
     setPriority("");
     setTimeQuantum("");
-  };
+  };//hàm reset form
 
   const resetTable = () => {
     // eslint-disable-next-line @typescript-eslint/no-unused-expressions
@@ -491,12 +493,12 @@ export default function Home() {
     aNPP.splice(0, aNPP.length);
     aFCFS.splice(0, aFCFS.length);
     aSJF.splice(0, aSJF.length);
-  }
+  }//hàm reset bảng
 
   const handleSubmit = () => {
     resetTable();
     let output: JSX.Element | null = null;
-    if (selectedAlgorithm === "fcfs") {
+    if (selectedKey === "fcfs") {
       fcfs()
       output = (
         <div>
@@ -531,8 +533,8 @@ export default function Home() {
       );
       setResult(output);
       resetForm();
-    }
-    if (selectedAlgorithm === "sjf") {
+    }//Xử lý bài toán FCFS
+    if (selectedKey === "sjf") {
       sjf()
       output = (
         <div>
@@ -566,8 +568,8 @@ export default function Home() {
       );
       setResult(output);
       resetForm();
-    }
-    if (selectedAlgorithm === "srtf") {
+    }//Xử lý bài toán SJF
+    if (selectedKey === "srtf") {
       srtf()
       output = (
         <div>
@@ -602,15 +604,42 @@ export default function Home() {
       );
       setResult(output);
       resetForm();
-    }
-    if (selectedAlgorithm === "rr") {
+    }//Xử lý bài toán SRTF
+    if (selectedKey === "rr") {
+      rr()
       output = (
         <div>
-          {/* Hiện table của bài toán */}
+          {
+            <div>
+              <Table aria-label="Example static collection table">
+                <TableHeader>
+                  <TableColumn>Job</TableColumn>
+                  <TableColumn>Arrival Time</TableColumn>
+                  <TableColumn>Burst Time</TableColumn>
+                  <TableColumn>Finish Time</TableColumn>
+                  <TableColumn>Turn Around Time</TableColumn>
+                  <TableColumn>Waiting Time</TableColumn>
+                </TableHeader>
+                <TableBody>
+                  {aRR.map((process, index) => (
+                    <TableRow key={index}>
+                      <TableCell className="text-center">{index + 1}</TableCell>
+                      <TableCell className="text-center">{process.tg_denRL}</TableCell>
+                      <TableCell className="text-center">{process.tg_xuly}</TableCell>
+                      <TableCell className="text-center">{process.tg_hoantat}</TableCell>
+                      <TableCell className="text-center">{process.tg_hoantat - process.tg_denRL}</TableCell>
+                      <TableCell className="text-center">{process.tg_cho}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>}
+          <p>Thời gian chờ trung bình: {aRR[0].tg_cho_tb}</p>
+          <p>Thời gian hoàn tất trung bình: {aRR[0].tg_hoantat_tb}</p>
         </div>
       );
-    }
-    if (selectedAlgorithm === "npp") {
+    }//Xử lý bài toán RR
+    if (selectedKey === "npp") {
       npp()
       output = (
         <div>
@@ -639,18 +668,16 @@ export default function Home() {
       );
       setResult(output);
       resetForm();
-    }
-    if (selectedAlgorithm === "pp") {
+    }//Xử lý bài toán Priority Non Preemptive
+    if (selectedKey === "pp") {
       pp()
       output = (
         <div>
-
           <Table aria-label="Example static collection table">
             <TableHeader>
               <TableColumn>Job</TableColumn>
               <TableColumn>Arrival Time</TableColumn>
               <TableColumn>Burst Time</TableColumn>
-              <TableColumn>Finish Time</TableColumn>
               <TableColumn>Turn Around Time</TableColumn>
               <TableColumn>Waiting Time</TableColumn>
             </TableHeader>
@@ -661,176 +688,322 @@ export default function Home() {
                   <TableCell className="text-center">{item.tg_denRL}</TableCell>
                   <TableCell className="text-center">{item.tg_xuly}</TableCell>
                   <TableCell className="text-center">{item.tg_hoantat}</TableCell>
-                  <TableCell className="text-center">{item.tg_hoantat - item.tg_denRL}</TableCell>
                   <TableCell className="text-center">{item.tg_cho}</TableCell>
                 </TableRow>
               ))}
             </TableBody>
           </Table>
-          <p>Thời gian chờ trung bình của các tiến trình: {aPP[0].tg_cho_tb}</p>
+          <p className="m-2">Thời gian chờ trung bình của các tiến trình: {aPP[0].tg_cho_tb}</p>
           <p>Thời gian hoàn tất trung bình của các tiến trình: {aPP[0].tg_hoantat_tb}</p>
         </div>
       );
-    }
+    }//Xử lý bài toán Priority Preemptive
     setResult(output);
     resetForm();
+  };//hàm xử lý form
+
+  type MenuItem = Required<MenuProps>['items'][number];
+
+  const items: MenuItem[] = [
+    {
+      key: 'preemptive',
+      label: 'Preemptive',
+      type: 'group',
+      style: { fontSize: '1rem' },
+      children: [
+        {
+          key: 'fcfs',
+          label: 'First Come First Serve',
+        },
+        {
+          key: 'sjf',
+          label: 'Shortest Job First',
+        },
+        {
+          key: 'priority',
+          label: 'Priority',
+        },
+      ],
+    },
+    {
+      key: 'non-preemptive',
+      label: 'Non Preemptive',
+      type: 'group',
+      style: { fontSize: '1rem' },
+      children: [
+        {
+          key: 'npp',
+          label: 'Priority Non Preemptive',
+        },
+        {
+          key: 'rr',
+          label: 'Round Robin',
+        },
+        {
+          key: 'srtf',
+          label: 'Shortest Remaining Time First',
+        },
+      ],
+    },
+  ];
+
+  const onClick: MenuProps['onClick'] = (e) => {
+    setSelectedKey(e.key);
+  };
+
+  const renderForm = () => {
+    switch (selectedKey) {
+      //fcfs
+      case 'fcfs':
+        return <div className="static flex ml-6 my-3">
+          <div className="mx-3">
+            <h1 >Arrival Time</h1>
+            <input
+              type="text"
+              className="block p-3 pl-5 my-2 border border-gray-300 rounded-3xl"
+              placeholder="eg: 1 4 5 6"
+              value={arrivalTime}
+              onChange={(e) => setArrivalTime(e.target.value)}
+            />
+          </div>
+          <div className="mx-3">
+            <h1>Burst Time</h1>
+            <input
+              type="text"
+              className="block p-3 pl-5 my-2 border border-gray-300 rounded-3xl"
+              placeholder="eg: 1 4 5 6"
+              value={burstTime}
+              onChange={(e) => setBurstTime(e.target.value)}
+            />
+          </div>
+          <button
+            onClick={handleSubmit}
+            className="absolute bottom-2 right-3 mr-3 block my-5 p-3 bg-red-800 text-white rounded-xl">
+            Submit
+          </button>
+        </div>;
+      //sjf
+      case 'sjf':
+        return <div className="static flex ml-6 my-3">
+          <div className="mx-3">
+            <h1>Arrival Time</h1>
+            <input
+              type="text"
+              className="block p-3 pl-5 my-2 border border-gray-300 rounded-3xl"
+              placeholder="eg: 1 4 5 6"
+              value={arrivalTime}
+              onChange={(e) => setArrivalTime(e.target.value)}
+            />
+          </div>
+          <div className="mx-3">
+            <h1>Burst Time</h1>
+            <input
+              type="text"
+              className="block p-3 pl-5 my-2 border border-gray-300 rounded-3xl"
+              placeholder="eg: 1 4 5 6"
+              value={burstTime}
+              onChange={(e) => setBurstTime(e.target.value)}
+            />
+          </div>
+          <button
+            onClick={handleSubmit}
+            className="absolute bottom-2 right-3 mr-3 block my-5 p-3 bg-red-800 text-white rounded-xl">
+            Submit
+          </button>
+        </div>;
+      //priority
+      case 'priority':
+        return <div className="static flex ml-6 my-3">
+          <div className="mx-3">
+            <h1>Arrival Time</h1>
+            <input
+              type="text"
+              className="block p-3 pl-5 my-2 border border-gray-300 rounded-3xl"
+              placeholder="eg: 1 4 5 6"
+              value={arrivalTime}
+              onChange={(e) => setArrivalTime(e.target.value)}
+            />
+          </div>
+          <div className="mx-3">
+            <h1>Burst Time</h1>
+            <input
+              type="text"
+              className="block p-3 pl-5 my-2 border border-gray-300 rounded-3xl"
+              placeholder="eg: 1 4 5 6"
+              value={burstTime}
+              onChange={(e) => setBurstTime(e.target.value)}
+            />
+          </div>
+          <div className="mx-3">
+            <h1>Priorities</h1>
+            <input
+              type="text"
+              className="block p-3 pl-5 my-2 border border-gray-300 rounded-3xl"
+              placeholder="Lower #= Higher"
+              value={burstTime}
+              onChange={(e) => setBurstTime(e.target.value)}
+            />
+          </div>
+          <button
+            onClick={handleSubmit}
+            className="absolute bottom-2 right-3 mr-3 block my-5 p-3 bg-red-800 text-white rounded-xl">
+            Submit
+          </button>
+        </div>;
+      //non-preemptive-priority
+      case 'npp':
+        return <div className="flex static ml-6 my-3">
+          <div className="mx-3">
+            <h1>Arrival Time</h1>
+            <input
+              type="text"
+              className="block p-3 pl-5 my-2 border border-gray-300 rounded-3xl"
+              placeholder="eg: 1 4 5 6"
+              value={arrivalTime}
+              onChange={(e) => setArrivalTime(e.target.value)}
+            />
+          </div>
+          <div className="mx-3">
+            <h1>Burst Time</h1>
+            <input
+              type="text"
+              className="block p-3 pl-5 my-2 border border-gray-300 rounded-3xl"
+              placeholder="eg: 1 4 5 6"
+              value={burstTime}
+              onChange={(e) => setBurstTime(e.target.value)}
+            />
+          </div>
+          <div className="mx-3">
+            <h1>Priorities</h1>
+            <input
+              type="text"
+              className="block p-3 pl-5 my-2 border border-gray-300 rounded-3xl"
+              placeholder="Lower #= Higher"
+              value={burstTime}
+              onChange={(e) => setBurstTime(e.target.value)}
+            />
+          </div>
+          <button
+            onClick={handleSubmit}
+            className="absolute bottom-2 right-3 mr-3 block my-5 p-3 bg-red-800 text-white rounded-xl">
+            Submit
+          </button>
+        </div>;
+      //round-robin
+      case 'rr':
+        return <div className="static flex ml-6 my-3">
+          <div className="mx-3">
+            <h1>Arrival Time</h1>
+            <input
+              type="text"
+              className="block p-3 pl-5 my-2 border border-gray-300 rounded-3xl"
+              placeholder="eg: 1 4 5 6"
+              value={arrivalTime}
+              onChange={(e) => setArrivalTime(e.target.value)}
+            />
+          </div>
+          <div className="mx-3">
+            <h1>Burst Time</h1>
+            <input
+              type="text"
+              className="block p-3 pl-5 my-2 border border-gray-300 rounded-3xl"
+              placeholder="eg: 1 4 5 6"
+              value={burstTime}
+              onChange={(e) => setBurstTime(e.target.value)}
+            />
+          </div>
+          <div className="mx-3">
+            <h1>Time Quantum</h1>
+            <input
+              type="text"
+              className="block p-3 pl-5 my-2 border border-gray-300 rounded-3xl"
+              placeholder="eg: 3"
+              value={timeQuantum}
+              onChange={(e) => setTimeQuantum(e.target.value)}
+            />
+          </div>
+          <button
+            onClick={handleSubmit}
+            className="absolute bottom-2 right-3 mr-3 block my-5 p-3 bg-red-800 text-white rounded-xl">
+            Submit
+          </button>
+        </div>;
+      //srtf
+      case 'srtf':
+        return <div className="flex static ml-6 my-3">
+          <div className="mx-3">
+            <h1>Arrival Time</h1>
+            <input
+              type="text"
+              className="block p-3 pl-5 my-2 border border-gray-300 rounded-3xl"
+              placeholder="eg: 1 4 5 6"
+              value={arrivalTime}
+              onChange={(e) => setArrivalTime(e.target.value)}
+            />
+          </div>
+          <div className="mx-3">
+            <h1>Burst Time</h1>
+            <input
+              type="text"
+              className="block p-3 pl-5 my-2 border border-gray-300 rounded-3xl"
+              placeholder="eg: 1 4 5 6"
+              value={burstTime}
+              onChange={(e) => setBurstTime(e.target.value)}
+            />
+          </div>
+          <button
+            onClick={handleSubmit}
+            className="absolute bottom-2 right-3 mr-3 block my-5 p-3 bg-red-800 text-white rounded-xl">
+            Submit
+          </button>
+        </div>;
+      default:
+        return null;
+    }
   };
 
   return (
-    <main className="flex p-8 gap-8 row-start-1 max-h-32 sm:items-start">
-      <div className="flex-auto flex flex-col p-4">
-        <h1 className="text-xl text-white text-center pb-8 sm:text-4xl font-bold">
-          CPU SCHEDULING VISUALIZER
-        </h1>
-        <div className="max-h-full p-5 block rounded-3xl bg-white max-w-full container">
-          {result}
-        </div>
+    <div style={{ position: 'relative', height: '100vh' }}>
+      <Menu
+        onClick={onClick}
+        style={{
+          width: 260,
+          height: '100vh',
+          overflowY: 'auto',
+          overflowX: 'hidden',
+          backgroundColor: '#cfe1b9',
+        }}
+        mode="inline"
+        items={items}
+      />
+      <div style={{
+        position: 'absolute',
+        top: 0,
+        right: 300,
+      }}>
+        <h1 className="text-3xl font-bold mt-5">CPU Scheduling & Jamstack</h1>
       </div>
-      <div className="flex-auto p-6 rounded-3xl h-full block bg-white max-w-sm container px-6">
-        <h3>Algorithm</h3>
-        <select
-          onChange={(e) => setSelectedAlgorithm(e.target.value)}
-          className="block w-full p-4 my-4 border border-gray-300 rounded-3xl"
-        >
-          <option value="fcfs">First Come First Serve, FCFS</option>
-          <option value="sjf">Shortest Job First, SJF (Non Preemptive)</option>
-          <option value="srtf">Shortest Remaining Time First, SRTF</option>
-          <option value="rr">Round Robin, RR</option>
-          <option value="npp">Priority, NPP (Non Preemptive)</option>
-          <option value="pp">Priority, PP (Preemptive)</option>
-        </select>
-        {selectedAlgorithm && (
-          <div>
-            {selectedAlgorithm === "fcfs" && <div><h3>Arrival Time</h3>
-              <input
-                type="text"
-                className="block w-full p-4 my-4 border border-gray-300 rounded-3xl"
-                placeholder="eg: 1 4 5 6"
-                value={arrivalTime}
-                onChange={(e) => setArrivalTime(e.target.value)}
-              />
-              <h3>Burst Time</h3>
-              <input
-                type="text"
-                className="block w-full p-4 my-4 border border-gray-300 rounded-3xl"
-                placeholder="eg: 1 4 5 6"
-                value={burstTime}
-                onChange={(e) => setBurstTime(e.target.value)}
-              /></div>}
-            {selectedAlgorithm === "sjf" && <div><h3>Arrival Time</h3>
-              <input
-                type="text"
-                className="block w-full p-4 my-4 border border-gray-300 rounded-3xl"
-                placeholder="eg: 1 4 5 6"
-                value={arrivalTime}
-                onChange={(e) => setArrivalTime(e.target.value)}
-              />
-              <h3>Burst Time</h3>
-              <input
-                type="text"
-                className="block w-full p-4 my-4 border border-gray-300 rounded-3xl"
-                placeholder="eg: 1 4 5 6"
-                value={burstTime}
-                onChange={(e) => setBurstTime(e.target.value)}
-              /></div>}
-            {selectedAlgorithm === "srtf" && <div><h3>Arrival Time</h3>
-              <input
-                type="text"
-                className="block w-full p-4 my-4 border border-gray-300 rounded-3xl"
-                placeholder="eg: 1 4 5 6"
-                value={arrivalTime}
-                onChange={(e) => setArrivalTime(e.target.value)}
-              />
-              <h3>Burst Time</h3>
-              <input
-                type="text"
-                className="block w-full p-4 my-4 border border-gray-300 rounded-3xl"
-                placeholder="eg: 1 4 5 6"
-                value={burstTime}
-                onChange={(e) => setBurstTime(e.target.value)}
-              /></div>}
-            {selectedAlgorithm === "rr" && <div><h3>Arrival Time</h3>
-              <input
-                type="text"
-                className="block w-full p-4 my-4 border border-gray-300 rounded-3xl"
-                placeholder="eg: 1 4 5 6"
-                value={arrivalTime}
-                onChange={(e) => setArrivalTime(e.target.value)}
-              />
-              <h3>Burst Time</h3>
-              <input
-                type="text"
-                className="block w-full p-4 my-4 border border-gray-300 rounded-3xl"
-                placeholder="eg: 1 4 5 6"
-                value={burstTime}
-                onChange={(e) => setBurstTime(e.target.value)}
-              />
-              <h3>Time Quantum</h3>
-              <input
-                type="text"
-                className="block w-full p-4 my-4 border border-gray-300 rounded-3xl"
-                placeholder="eg: 3"
-                value={timeQuantum}
-                onChange={(e) => setTimeQuantum(e.target.value)}
-              />
-            </div>}
-            {selectedAlgorithm === "npp" && <div><h3>Arrival Time</h3>
-              <input
-                type="text"
-                className="block w-full p-4 my-4 border border-gray-300 rounded-3xl"
-                placeholder="eg: 1 4 5 6"
-                value={arrivalTime}
-                onChange={(e) => setArrivalTime(e.target.value)}
-              />
-              <h3>Burst Time</h3>
-              <input
-                type="text"
-                className="block w-full p-4 my-4 border border-gray-300 rounded-3xl"
-                placeholder="eg: 1 4 5 6"
-                value={burstTime}
-                onChange={(e) => setBurstTime(e.target.value)}
-              />
-              <h3>Priority</h3>
-              <input
-                type="text"
-                className="block w-full p-4 my-4 border border-gray-300 rounded-3xl"
-                placeholder="Lower #= Higher"
-                value={priority}
-                onChange={(e) => setPriority(e.target.value)}
-              />
-            </div>}
-            {selectedAlgorithm === "pp" && <div><h3>Arrival Time</h3>
-              <input
-                type="text"
-                className="block w-full p-4 my-4 border border-gray-300 rounded-3xl"
-                placeholder="eg: 1 4 5 6"
-                value={arrivalTime}
-                onChange={(e) => setArrivalTime(e.target.value)}
-              />
-              <h3>Burst Time</h3>
-              <input
-                type="text"
-                className="block w-full p-4 my-4 border border-gray-300 rounded-3xl"
-                placeholder="eg: 1 4 5 6"
-                value={burstTime}
-                onChange={(e) => setBurstTime(e.target.value)}
-              />
-              <h3>Priority</h3>
-              <input
-                type="text"
-                className="block w-full p-4 my-4 border border-gray-300 rounded-3xl"
-                placeholder="Lower #= Higher"
-                value={priority}
-                onChange={(e) => setPriority(e.target.value)}
-              /></div>}
-          </div>
-        )}
-        <button
-          onClick={handleSubmit}
-          className="block w-full p-3 mt-6 mb-2 bg-red-800 text-white rounded-xl">
-          Submit
-        </button>
+      <div style={{
+        position: 'absolute',
+        top: 80,
+        right: 0,
+        width: 1012,
+        height: 413,
+      }}>
+        <div className="ml-5">{result}</div>
       </div>
-    </main>
+        
+      <div
+        className="flex"
+        style={{
+          position: 'absolute',
+          bottom: 0,
+          right: 0,
+          width: '100%',
+          backgroundColor: '#cfe1b9',
+        }}>
+        {renderForm()}
+      </div>
+    </div>
   );
 }

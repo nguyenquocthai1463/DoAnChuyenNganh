@@ -9,10 +9,15 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@ant-design/icons": "^5.5.1",
+    "@nextui-org/react": "^2.4.8",
     "@nextui-org/table": "^2.0.40",
+    "antd": "^5.21.2",
+    "classnames": "^2.5.1",
     "next": "14.2.13",
     "react": "^18",
     "react-dom": "^18",
+    "react-tabs": "^6.0.2",
     "scheduling": "file:"
   },
   "devDependencies": {

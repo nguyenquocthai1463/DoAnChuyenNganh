@@ -3,14 +3,14 @@
 @tailwind utilities;
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: white;
+  --foreground: black;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #061528;
-    --foreground: #061528;
+    --background: white;
+    --foreground: black;
   }
 }
 
@@ -20,8 +20,83 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
+h1{
+  font-family: 'Roboto', sans-serif;
+  padding-left: 10px;
+}
+
 @layer utilities {
   .text-balance {
     text-wrap: balance;
   }
 }
+
+@layer utilities {
+  .bg-01 {
+    background-color: #e9d5db;
+  }
+}
+@layer utilities {
+  .bg-02 {
+    background-color: #cfe1b9;
+  }
+}
+@layer utilities {
+  .bg-03 {
+    background-color: #b5c99a;
+  }
+}
+@layer utilities {
+  .bg-04 {
+    background-color: #97a97c;
+  }
+}
+@layer utilities {
+  .bg-05 {
+    background-color: #87986a;
+  }
+}
+@layer utilities {
+  .bg-06 {
+    background-color: #718355;
+  }
+}
+
+@layer utilities {
+  .text-01 {
+    color: #e9d5db;
+  }
+}
+@layer utilities {
+  .text-02 {
+    color: #cfe1b9;
+  }
+}
+@layer utilities {
+  .text-03 {
+    color: #b5c99a;
+  }
+}
+@layer utilities {
+  .text-04 {
+    color: #97a97c;
+  }
+}
+@layer utilities {
+  .text-05 {
+    color: #87986a;
+  }
+}
+@layer utilities {
+  .text-06 {
+    color: #718355;
+  }
+}
+
+@layer utilities {
+  .text-06 {
+    color: #c9c9c9;
+  }
+}
+
+
