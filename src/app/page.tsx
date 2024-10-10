@@ -1,9 +1,14 @@
 "use client";
+<<<<<<< HEAD
 import { useState } from "react";
 // import { Tabs, Tab, Card, CardBody } from "@nextui-org/react";
 // import { Tabs, TabList, Tab, TabPanel } from 'react-tabs';
 import type { MenuProps } from 'antd';
 import { Menu } from 'antd';
+=======
+import { useEffect, useState } from "react";
+
+>>>>>>> b4bdb4282c3177a7dfbc0005bfad776614db1b19
 import {
   Table,
   TableHeader,
@@ -12,7 +17,11 @@ import {
   TableRow,
   TableCell
 } from "@nextui-org/table";
+<<<<<<< HEAD
 
+=======
+import { ResponseData } from "@/types/api-response";
+>>>>>>> b4bdb4282c3177a7dfbc0005bfad776614db1b19
 interface TienTrinhPP {
   ma_tt: number;
   tg_cho: number;
@@ -82,6 +91,7 @@ const aFCFS: TienTrinhFCFS[] = []; //khai báo mảng a chứa các tiến trìn
 const aSJF: TienTrinhSJF[] = []; //khai báo mảng a chứa các tiến trình
 const aSRTF: TienTrinhSRTF[] = []; //khai báo mảng a chứa các tiến trình
 const aRR: TienTrinhRR[] = []; //khai báo mảng a chứa các tiến trình
+let responseData: ResponseData;
 
 export default function Home() {
   const [selectedKey, setSelectedKey] = useState<string | null>(null);
@@ -106,6 +116,19 @@ export default function Home() {
   function hoandoi(b: number, c: number): [number, number] {
     return [c, b];
   }//hàm hoán đổi vị trí của 2 số
+
+  // Hàm call API cho các thuật toán CPU
+  const callingAPIWithCPUSchedulingAlgo = async (req: any, algo: string): Promise<ResponseData> => {
+    const response = await fetch(`/api/cpu-scheduling/${algo}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(req),
+    });
+
+    return response.json();
+  }
 
   function pp() {
     let sotientrinh: number;
@@ -382,6 +405,7 @@ export default function Home() {
     aSRTF[0].tg_hoantat_tb = tght / soTT;
   }//Hàm xử lý bài toán SRTF
 
+<<<<<<< HEAD
   function rr() {
     const tamTT: number[] = [];
     const tamDen: number[] = [];
@@ -451,7 +475,25 @@ export default function Home() {
       vtcu[i] = i;
       tamTT[i] = aRR[i].tg_xuly;
       tamDen[i] = aRR[i].tg_denRL;
+=======
+  const rr = async () => {
+    const request = {
+      arrPro: getCharactersWithoutSpaces(arrivalTime).map((_item, index) => index + 1),
+      arrArrivalTime: getCharactersWithoutSpaces(arrivalTime),
+      arrBurstTime: getCharactersWithoutSpaces(burstTime),
+      quantum: Number(timeQuantum)
+    };
+
+    try {
+      const data = await callingAPIWithCPUSchedulingAlgo(request, 'rr');
+      responseData = data;
+      // console.log(data);
+      // console.log('response data', responseData);
+    } catch (error) {
+      console.error('Error:', error);
+>>>>>>> b4bdb4282c3177a7dfbc0005bfad776614db1b19
     }
+  }
 
     sl = sl_tt;
     while (sl > 0) {
@@ -495,7 +537,7 @@ export default function Home() {
     aSJF.splice(0, aSJF.length);
   }//hàm reset bảng
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     resetTable();
     let output: JSX.Element | null = null;
     if (selectedKey === "fcfs") {
@@ -604,9 +646,15 @@ export default function Home() {
       );
       setResult(output);
       resetForm();
+<<<<<<< HEAD
     }//Xử lý bài toán SRTF
     if (selectedKey === "rr") {
       rr()
+=======
+    }
+    if (selectedAlgorithm === "rr") {
+      await rr();
+>>>>>>> b4bdb4282c3177a7dfbc0005bfad776614db1b19
       output = (
         <div>
           {
@@ -617,6 +665,7 @@ export default function Home() {
                   <TableColumn>Arrival Time</TableColumn>
                   <TableColumn>Burst Time</TableColumn>
                   <TableColumn>Finish Time</TableColumn>
+<<<<<<< HEAD
                   <TableColumn>Turn Around Time</TableColumn>
                   <TableColumn>Waiting Time</TableColumn>
                 </TableHeader>
@@ -629,13 +678,32 @@ export default function Home() {
                       <TableCell className="text-center">{process.tg_hoantat}</TableCell>
                       <TableCell className="text-center">{process.tg_hoantat - process.tg_denRL}</TableCell>
                       <TableCell className="text-center">{process.tg_cho}</TableCell>
+=======
+                  <TableColumn>Waiting Time</TableColumn>
+                </TableHeader>
+                <TableBody>
+                  {(responseData?.data?.processes || []).map(process => (
+                    <TableRow key={process.id}>
+                      <TableCell className="text-center">{process.id}</TableCell>
+                      <TableCell className="text-center">{process.arrivalTime}</TableCell>
+                      <TableCell className="text-center">{process.burstTime}</TableCell>
+                      <TableCell className="text-center">{process.finishTime}</TableCell>
+                      <TableCell className="text-center">{process.waitingTime}</TableCell>
+>>>>>>> b4bdb4282c3177a7dfbc0005bfad776614db1b19
                     </TableRow>
                   ))}
                 </TableBody>
               </Table>
+<<<<<<< HEAD
             </div>}
           <p>Thời gian chờ trung bình: {aRR[0].tg_cho_tb}</p>
           <p>Thời gian hoàn tất trung bình: {aRR[0].tg_hoantat_tb}</p>
+=======
+              <p>Thời gian chờ trung bình: {responseData?.data?.averageWaitingTime}</p>
+              <p>Thời gian hoàn tất trung bình: {responseData?.data?.averageFinishTime}</p>
+            </div>
+          }
+>>>>>>> b4bdb4282c3177a7dfbc0005bfad776614db1b19
         </div>
       );
     }//Xử lý bài toán RR
@@ -963,6 +1031,7 @@ export default function Home() {
   };
 
   return (
+<<<<<<< HEAD
     <div style={{ position: 'relative', height: '100vh' }}>
       <Menu
         onClick={onClick}
@@ -982,6 +1051,16 @@ export default function Home() {
         right: 300,
       }}>
         <h1 className="text-3xl font-bold mt-5">CPU Scheduling & Jamstack</h1>
+=======
+    <main className="flex p-8 gap-8 row-start-1 max-h-32 sm:items-start">
+      <div className="flex-auto flex flex-col p-4">
+        <h1 className="text-xl text-white text-center pb-8 sm:text-4xl font-bold">
+          Tìm hiểu công nghệ Jamstack và xây dựng ứng dụng Web minh họa các giải thuật định thời CPU
+        </h1>
+        <div className="max-h-full p-5 block rounded-3xl bg-white max-w-full container">
+          {result}
+        </div>
+>>>>>>> b4bdb4282c3177a7dfbc0005bfad776614db1b19
       </div>
       <div style={{
         position: 'absolute',
