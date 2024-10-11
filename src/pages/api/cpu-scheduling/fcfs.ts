@@ -15,8 +15,32 @@ const validateRequestData = (arrArrivalTime: any, arrBurstTime: any, res: NextAp
 
     validateArrivalTimeAndBurstTime(arrArrivalTime, arrBurstTime, undefined, res);
 }
-
 const firstComeFirstServeAlgo = (req: ProcessRequest): ResponseData => {
+    let sl_tt: number;
+    const tg_cho = new Array<number>(100);
+    let tg_xuly = new Array<number>(100);
+    const tg_hoantat = new Array<number>(100);
+    let tg_cho_tb = 0;
+    let tg_hoantat_tb = 0;
+    sl_tt = req.arrBurstTime.length;
+    tg_xuly = req.arrBurstTime
+
+
+    tg_cho[0] = 0;
+    for (let i = 1; i < sl_tt; i++) {
+        tg_cho[i] = 0;
+        for (let j = 0; j < i; j++) {
+            tg_cho[i] += tg_xuly[j]
+        }
+    }
+
+    for (let i = 0; i < sl_tt; i++) {
+        tg_hoantat[i] = tg_xuly[i] + tg_cho[i];
+        tg_cho_tb += tg_cho[i];
+        tg_hoantat_tb += tg_hoantat[i];
+    }
+    tg_cho_tb /= sl_tt;
+    tg_hoantat_tb /= sl_tt;
     return {
         statusCode: StatusCode.OK,
         message: undefined,
@@ -25,13 +49,13 @@ const firstComeFirstServeAlgo = (req: ProcessRequest): ResponseData => {
                 return {
                     id: index + 1,
                     arrivalTime: item,
-                    burstTime: req.arrBurstTime[index],
-                    finishTime: 0,
-                    waitingTime: 0
+                    burstTime: tg_xuly[index],
+                    finishTime: tg_hoantat[index],
+                    waitingTime: tg_cho[index],
                 };
             }),
-            averageFinishTime: 0,
-            averageWaitingTime: 0
+            averageFinishTime: tg_hoantat_tb,
+            averageWaitingTime: tg_cho_tb,
         },
     };
 }

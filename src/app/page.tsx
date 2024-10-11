@@ -1,14 +1,7 @@
 "use client";
-<<<<<<< HEAD
 import { useState } from "react";
-// import { Tabs, Tab, Card, CardBody } from "@nextui-org/react";
-// import { Tabs, TabList, Tab, TabPanel } from 'react-tabs';
 import type { MenuProps } from 'antd';
 import { Menu } from 'antd';
-=======
-import { useEffect, useState } from "react";
-
->>>>>>> b4bdb4282c3177a7dfbc0005bfad776614db1b19
 import {
   Table,
   TableHeader,
@@ -17,21 +10,7 @@ import {
   TableRow,
   TableCell
 } from "@nextui-org/table";
-<<<<<<< HEAD
-
-=======
 import { ResponseData } from "@/types/api-response";
->>>>>>> b4bdb4282c3177a7dfbc0005bfad776614db1b19
-interface TienTrinhPP {
-  ma_tt: number;
-  tg_cho: number;
-  tg_denRL: number;
-  tg_xuly: number;
-  tg_hoantat: number;
-  do_uu_tien: number;
-  tg_cho_tb: number;
-  tg_hoantat_tb: number;
-}//khởi tạo interface cho tiến trình Priority Preemptive
 
 class TienTrinhNPP {
   tg_cho: number;
@@ -56,16 +35,6 @@ interface TienTrinhFCFS {
   tg_cho_tb: number;
   tg_hoantat_tb: number;
 }//khởi tạo interface cho tiến trình FCFS
-
-interface TienTrinhSJF {
-  tg_cho: number;
-  tg_denRL: number;
-  tg_xuly: number;
-  tg_hoantat: number;
-  tg_cho_tb: number;
-  tg_hoantat_tb: number;
-}//khởi tạo interface cho tiến trình SJF
-
 interface TienTrinhSRTF {
   tg_cho: number;
   tg_denRL: number;
@@ -75,22 +44,9 @@ interface TienTrinhSRTF {
   tg_hoantat_tb: number;
 }//khởi tạo interface cho tiến trình SRTF
 
-interface TienTrinhRR {
-  tg_cho: number;
-  tg_denRL: number;
-  tg_xuly: number;
-  tg_hoantat: number;
-  tg_cho_tb: number;
-  tg_hoantat_tb: number;
-  quantum: number;
-}//khởi tạo interface cho tiến trình RR
-
-const aPP: TienTrinhPP[] = []; //khai báo mảng a chứa các tiến trình
 const aNPP: TienTrinhNPP[] = []; //khai báo mảng a chứa các tiến trình
 const aFCFS: TienTrinhFCFS[] = []; //khai báo mảng a chứa các tiến trình
-const aSJF: TienTrinhSJF[] = []; //khai báo mảng a chứa các tiến trình
 const aSRTF: TienTrinhSRTF[] = []; //khai báo mảng a chứa các tiến trình
-const aRR: TienTrinhRR[] = []; //khai báo mảng a chứa các tiến trình
 let responseData: ResponseData;
 
 export default function Home() {
@@ -113,11 +69,8 @@ export default function Home() {
     return numbers ? numbers.map(Number) : [];
   }//hàm lấy các số từ input
 
-  function hoandoi(b: number, c: number): [number, number] {
-    return [c, b];
-  }//hàm hoán đổi vị trí của 2 số
-
   // Hàm call API cho các thuật toán CPU
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const callingAPIWithCPUSchedulingAlgo = async (req: any, algo: string): Promise<ResponseData> => {
     const response = await fetch(`/api/cpu-scheduling/${algo}`, {
       method: 'POST',
@@ -129,97 +82,6 @@ export default function Home() {
 
     return response.json();
   }
-
-  function pp() {
-    let sotientrinh: number;
-    count = demthoigianden(arrivalTime);
-    let kiemtra_tg_denRL = 0;
-    let tg_tra_CPU = 0;
-    let TongTG_cho = 0;
-    let TongTG_hoantat = 0;
-    // eslint-disable-next-line prefer-const
-    sotientrinh = count;
-    const tg_denRL = getCharactersWithoutSpaces(arrivalTime)
-    const tg_xuly = getCharactersWithoutSpaces(burstTime)
-    const do_uu_tien = getCharactersWithoutSpaces(priority)
-
-    for (let i = 0; i < sotientrinh; i++) {
-      aPP.push({
-        ma_tt: i + 1,
-        tg_cho: 0,
-        tg_denRL: tg_denRL[i],
-        tg_xuly: tg_xuly[i],
-        tg_hoantat: 0,
-        do_uu_tien: do_uu_tien[i],
-        tg_cho_tb: 0,
-        tg_hoantat_tb: 0,
-      });
-
-      if (i === 0) kiemtra_tg_denRL = aPP[i].tg_denRL;
-      if (kiemtra_tg_denRL !== aPP[i].tg_denRL) kiemtra_tg_denRL = 1;
-    }
-
-    if (kiemtra_tg_denRL !== 0) {
-      for (let i = 0; i < sotientrinh; i++) {
-        for (let j = 0; j < sotientrinh - i - 1; j++) {
-          if (aPP[j].tg_denRL > aPP[j + 1].tg_denRL) {
-            [aPP[j].ma_tt, aPP[j + 1].ma_tt] = hoandoi(aPP[j].ma_tt, aPP[j + 1].ma_tt);
-            [aPP[j].tg_denRL, aPP[j + 1].tg_denRL] = hoandoi(aPP[j].tg_denRL, aPP[j + 1].tg_denRL);
-            [aPP[j].tg_xuly, aPP[j + 1].tg_xuly] = hoandoi(aPP[j].tg_xuly, aPP[j + 1].tg_xuly);
-            [aPP[j].do_uu_tien, aPP[j + 1].do_uu_tien] = hoandoi(aPP[j].do_uu_tien, aPP[j + 1].do_uu_tien);
-          }
-        }
-      }
-    }
-    if (kiemtra_tg_denRL !== 0) {
-      aPP[0].tg_cho = aPP[0].tg_denRL;
-      aPP[0].tg_hoantat = aPP[0].tg_xuly - aPP[0].tg_denRL;
-      tg_tra_CPU = aPP[0].tg_hoantat;
-      TongTG_cho += aPP[0].tg_cho;
-      TongTG_hoantat += aPP[0].tg_hoantat;
-
-      for (let i = 1; i < sotientrinh; i++) {
-        let min = aPP[i].do_uu_tien;
-        for (let j = i + 1; j < sotientrinh; j++) {
-          if (min > aPP[j].do_uu_tien && aPP[j].tg_denRL <= tg_tra_CPU) {
-            min = aPP[j].do_uu_tien;
-            [aPP[i].ma_tt, aPP[j].ma_tt] = hoandoi(aPP[i].ma_tt, aPP[j].ma_tt);
-            [aPP[i].tg_denRL, aPP[j].tg_denRL] = hoandoi(aPP[i].tg_denRL, aPP[j].tg_denRL);
-            [aPP[i].tg_xuly, aPP[j].tg_xuly] = hoandoi(aPP[i].tg_xuly, aPP[j].tg_xuly);
-            [aPP[i].do_uu_tien, aPP[j].do_uu_tien] = hoandoi(aPP[i].do_uu_tien, aPP[j].do_uu_tien);
-          }
-        }
-        aPP[i].tg_cho = tg_tra_CPU - aPP[i].tg_denRL;
-        TongTG_cho += aPP[i].tg_cho;
-        tg_tra_CPU += aPP[i].tg_xuly;
-        aPP[i].tg_hoantat = tg_tra_CPU - aPP[i].tg_denRL;
-        TongTG_hoantat += aPP[i].tg_hoantat;
-      }
-    } else {
-      for (let i = 0; i < sotientrinh; i++) {
-        let min = aPP[i].do_uu_tien;
-        for (let j = i + 1; j < sotientrinh; j++) {
-          if (min > aPP[j].do_uu_tien && aPP[j].tg_denRL <= tg_tra_CPU) {
-            min = aPP[j].do_uu_tien;
-            [aPP[i].ma_tt, aPP[j].ma_tt] = hoandoi(aPP[i].ma_tt, aPP[j].ma_tt);
-            [aPP[i].tg_denRL, aPP[j].tg_denRL] = hoandoi(aPP[i].tg_denRL, aPP[j].tg_denRL);
-            [aPP[i].tg_xuly, aPP[j].tg_xuly] = hoandoi(aPP[i].tg_xuly, aPP[j].tg_xuly);
-            [aPP[i].do_uu_tien, aPP[j].do_uu_tien] = hoandoi(aPP[i].do_uu_tien, aPP[j].do_uu_tien);
-          }
-        }
-        aPP[i].tg_cho = tg_tra_CPU - aPP[i].tg_denRL;
-        tg_tra_CPU += aPP[i].tg_xuly;
-        aPP[i].tg_hoantat = tg_tra_CPU - aPP[i].tg_denRL;
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        TongTG_cho += aPP[i].tg_cho;
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        TongTG_hoantat += aPP[i].tg_hoantat;
-
-        aPP[0].tg_cho_tb = TongTG_cho / sotientrinh;
-        aPP[0].tg_hoantat_tb = TongTG_hoantat / sotientrinh;
-      }
-    }
-  }//Hàm xử lý bài toán Priority Preemptive
 
   function npp() {
     const tam: number[] = []; //khai báo mảng tạm chứa các tiến trình
@@ -271,95 +133,6 @@ export default function Home() {
     }
   }//Hàm xử lý bài toán Priority Non Preemptive
 
-  function fcfs() {
-    count = demthoigianden(arrivalTime);
-    const TG_XuLy = getCharactersWithoutSpaces(burstTime)
-    let So_TienTrinh: number;
-    // eslint-disable-next-line prefer-const
-    So_TienTrinh = count;
-    for (let i = 0; i < So_TienTrinh; i++) {
-      aFCFS.push({
-        tg_cho: 0,
-        tg_denRL: getCharactersWithoutSpaces(arrivalTime)[i],
-        tg_hoantat: 0,
-        tg_xuly: TG_XuLy[i],
-        tg_cho_tb: 0,
-        tg_hoantat_tb: 0,
-      })
-    }
-    aFCFS[0].tg_cho = 0;
-    for (let i = 1; i < So_TienTrinh; i++) {
-      aFCFS[i].tg_cho = 0;
-      for (let j = 0; j < i; j++) {
-        aFCFS[i].tg_cho += aFCFS[j].tg_xuly
-      }
-    }
-
-    for (let i = 0; i < So_TienTrinh; i++) {
-      aFCFS[i].tg_hoantat = aFCFS[i].tg_xuly + aFCFS[i].tg_cho;
-      aFCFS[0].tg_cho_tb += aFCFS[i].tg_cho;
-      aFCFS[0].tg_hoantat_tb += aFCFS[i].tg_hoantat;
-    }
-    aFCFS[0].tg_cho_tb /= So_TienTrinh;
-    aFCFS[0].tg_hoantat_tb /= So_TienTrinh;
-  }//Hàm xử lý bài toán FCFS
-
-  function sjf() {
-    let tam: number;
-    let tong = 0;
-    let vitri: number;
-    const tgxl = getCharactersWithoutSpaces(burstTime);
-    const tt: number[] = [];
-    let soTT: number;
-    count = demthoigianden(arrivalTime);
-    // eslint-disable-next-line prefer-const
-    soTT = count;
-
-    for (let i = 0; i < soTT; i++) {
-      aSJF.push({
-        tg_cho: 0,
-        tg_denRL: getCharactersWithoutSpaces(arrivalTime)[i],
-        tg_hoantat: 0,
-        tg_xuly: tgxl[i],
-        tg_cho_tb: 0,
-        tg_hoantat_tb: 0,
-      })
-      tt[i] = i + 1;
-    }
-
-    for (let i = 0; i < soTT; i++) {
-      vitri = i;
-      for (let j = i + 1; j < soTT; j++) {
-        if (aSJF[j].tg_xuly < aSJF[vitri].tg_xuly) {
-          vitri = j;
-        }
-      }
-      tam = aSJF[i].tg_xuly;
-      aSJF[i].tg_xuly = aSJF[vitri].tg_xuly;
-      aSJF[vitri].tg_xuly = tam;
-      tam = tt[i];
-      tt[i] = tt[vitri];
-      tt[vitri] = tam;
-    }
-
-    aSJF[0].tg_cho = 0;
-    for (let i = 1; i < soTT; i++) {
-      aSJF[i].tg_cho = 0;
-      for (let j = 0; j < i; j++) {
-        aSJF[i].tg_cho += aSJF[j].tg_xuly;
-      }
-      tong += aSJF[i].tg_cho;
-    }
-    aSJF[0].tg_cho_tb = tong / soTT;
-    tong = 0;
-    console.log("\nTien trinh\tTG Xu ly\tTG cho\t\tTG hoan tat\n");
-    for (let i = 0; i < soTT; i++) {
-      aSJF[i].tg_hoantat = aSJF[i].tg_xuly + aSJF[i].tg_cho;
-      tong += aSJF[i].tg_hoantat;
-    }
-    aSJF[0].tg_hoantat_tb = tong / soTT;
-  }//Hàm xử lý bài toán SJF
-
   function srtf() {
     const tam: number[] = [];
     let nhonhat: number;
@@ -405,77 +178,6 @@ export default function Home() {
     aSRTF[0].tg_hoantat_tb = tght / soTT;
   }//Hàm xử lý bài toán SRTF
 
-<<<<<<< HEAD
-  function rr() {
-    const tamTT: number[] = [];
-    const tamDen: number[] = [];
-    const tien_trinh_nghi: number[] = [];
-    const tt: number[] = [];
-    const vtcu: number[] = [];
-    let sl_tt: number;
-    let sl: number;
-    count = demthoigianden(arrivalTime);
-    // eslint-disable-next-line prefer-const
-    sl_tt = count;
-    for (let i = 0; i < sl_tt; i++) {
-      aRR.push({
-        tg_cho: 0,
-        tg_denRL: getCharactersWithoutSpaces(arrivalTime)[i],
-        tg_xuly: getCharactersWithoutSpaces(burstTime)[i],
-        tg_hoantat: 0,
-        tg_cho_tb: 0,
-        tg_hoantat_tb: 0,
-        quantum: getCharactersWithoutSpaces(timeQuantum)[i],
-      })
-      tamTT[i] = aRR[i].tg_xuly;
-      tt[i] = i + 1;
-      tamDen[i] = aRR[i].tg_denRL;
-    }
-
-    function xoa(vt: number) {
-      for (let i = vt; i < sl - 1; i++) {
-        tamTT[i] = tamTT[i + 1];
-        tamDen[i] = tamDen[i + 1];
-        vtcu[i] = vtcu[i + 1];
-      }
-      sl--;
-    }
-
-    function chen(vt: number, gt: number, gtden: number, gtvtcu: number) {
-      for (let i = sl; i > vt; i--) {
-        tamTT[i] = tamTT[i - 1];
-        tamDen[i] = tamDen[i - 1];
-        vtcu[i] = vtcu[i - 1];
-      }
-      tamTT[vt] = gt;
-      tamDen[vt] = gtden;
-      vtcu[vt] = gtvtcu;
-      sl++;
-    }
-    aRR[0].tg_hoantat_tb = 0;
-    aRR[0].tg_cho_tb = 0;
-    aRR[0].tg_cho = 0;
-    let tong_tg_chay = 0;
-
-    for (let i = 0; i < sl_tt; i++) {
-      for (let j = i + 1; j < sl_tt; j++) {
-        if (aRR[i].tg_denRL > aRR[j].tg_denRL) {
-          let t = aRR[i].tg_denRL;
-          aRR[i].tg_denRL = aRR[j].tg_denRL;
-          aRR[j].tg_denRL = t;
-          t = aRR[i].tg_xuly;
-          aRR[i].tg_xuly = aRR[j].tg_xuly;
-          aRR[j].tg_xuly = t;
-          t = tt[i];
-          tt[i] = tt[j];
-          tt[j] = t;
-          tien_trinh_nghi[i] = 0;
-        }
-      }
-      vtcu[i] = i;
-      tamTT[i] = aRR[i].tg_xuly;
-      tamDen[i] = aRR[i].tg_denRL;
-=======
   const rr = async () => {
     const request = {
       arrPro: getCharactersWithoutSpaces(arrivalTime).map((_item, index) => index + 1),
@@ -491,35 +193,59 @@ export default function Home() {
       // console.log('response data', responseData);
     } catch (error) {
       console.error('Error:', error);
->>>>>>> b4bdb4282c3177a7dfbc0005bfad776614db1b19
     }
   }
 
-    sl = sl_tt;
-    while (sl > 0) {
-      aRR[vtcu[0]].tg_cho += tong_tg_chay - tamDen[0] - tien_trinh_nghi[vtcu[0]];
-      tamDen[0] = 0;
+  const fcfs = async () => {
+    const request = {
+      arrPro: getCharactersWithoutSpaces(arrivalTime).map((_item, index) => index + 1),
+      arrArrivalTime: getCharactersWithoutSpaces(arrivalTime),
+      arrBurstTime: getCharactersWithoutSpaces(burstTime)
+    };
 
-      if (tamTT[0] > aRR[0].quantum) {
-        tong_tg_chay += aRR[0].quantum;
-        tien_trinh_nghi[vtcu[0]] = tong_tg_chay;
-        tamTT[0] -= aRR[0].quantum;
-        let j = 1;
-        while (tamDen[j] < tong_tg_chay && j < sl) j++;
-        if (tamDen[j] != tong_tg_chay) j = sl;
-        chen(j, tamTT[0], tamDen[0], vtcu[0]);
-        xoa(0);
-      } else {
-        tong_tg_chay += tamTT[0];
-        aRR[0].tg_cho_tb += aRR[vtcu[0]].tg_cho_tb;
-        aRR[vtcu[0]].tg_hoantat = tong_tg_chay - aRR[vtcu[0]].tg_denRL;
-        aRR[0].tg_hoantat_tb += aRR[vtcu[0]].tg_hoantat;
-        xoa(0);
-      }
+    try {
+      const data = await callingAPIWithCPUSchedulingAlgo(request, 'fcfs');
+      responseData = data;
+      // console.log(data);
+      // console.log('response data', responseData);
+    } catch (error) {
+      console.error('Error:', error);
     }
+  }
 
-    aRR[0].tg_hoantat_tb /= sl_tt;
-    aRR[0].tg_cho_tb /= sl_tt;
+  const pp = async () => {
+    const request = {
+      arrPro: getCharactersWithoutSpaces(arrivalTime).map((_item, index) => index + 1),
+      arrArrivalTime: getCharactersWithoutSpaces(arrivalTime),
+      arrBurstTime: getCharactersWithoutSpaces(burstTime),
+      arrPriority: getCharactersWithoutSpaces(priority)
+    };
+
+    try {
+      const data = await callingAPIWithCPUSchedulingAlgo(request, 'prio-p');
+      responseData = data;
+      // console.log(data);
+      // console.log('response data', responseData);
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  }
+
+  const sjf = async () => {
+    const request = {
+      arrPro: getCharactersWithoutSpaces(arrivalTime).map((_item, index) => index + 1),
+      arrArrivalTime: getCharactersWithoutSpaces(arrivalTime),
+      arrBurstTime: getCharactersWithoutSpaces(burstTime)
+    };
+
+    try {
+      const data = await callingAPIWithCPUSchedulingAlgo(request, 'sjf');
+      responseData = data;
+      // console.log(data);
+      // console.log('response data', responseData);
+    } catch (error) {
+      console.error('Error:', error);
+    }
   }
 
   const resetForm = () => {
@@ -534,42 +260,39 @@ export default function Home() {
     aNPP.splice(0, aNPP.length);
     aNPP.splice(0, aNPP.length);
     aFCFS.splice(0, aFCFS.length);
-    aSJF.splice(0, aSJF.length);
   }//hàm reset bảng
 
   const handleSubmit = async () => {
     resetTable();
     let output: JSX.Element | null = null;
     if (selectedKey === "fcfs") {
-      fcfs()
+      await fcfs()
       output = (
         <div>
           {
             <div>
               <Table aria-label="Example static collection table">
                 <TableHeader>
-                  <TableColumn>Job</TableColumn>
-                  <TableColumn>Arrival Time</TableColumn>
-                  <TableColumn>Burst Time</TableColumn>
-                  <TableColumn>Finish Time</TableColumn>
-                  <TableColumn>Turn Around Time</TableColumn>
-                  <TableColumn>Waiting Time</TableColumn>
+                  <TableColumn className="px-3 text-center">Job</TableColumn>
+                  <TableColumn className="px-3 text-center">Burst Time</TableColumn>
+                  <TableColumn className="px-3 text-center">Finish Time</TableColumn>
+                  <TableColumn className="px-3 text-center">Waiting Time</TableColumn>
                 </TableHeader>
                 <TableBody>
-                  {aFCFS.map((process, index) => (
-                    <TableRow key={index}>
-                      <TableCell className="text-center">{index + 1}</TableCell>
-                      <TableCell className="text-center">{process.tg_denRL}</TableCell>
-                      <TableCell className="text-center">{process.tg_xuly}</TableCell>
-                      <TableCell className="text-center">{process.tg_hoantat}</TableCell>
-                      <TableCell className="text-center">{process.tg_hoantat - process.tg_denRL}</TableCell>
-                      <TableCell className="text-center">{process.tg_cho}</TableCell>
+                  {(responseData?.data?.processes || []).map(process => (
+                    <TableRow key={process.id}>
+                      <TableCell className="px-3 text-center">{process.id}</TableCell>
+                      <TableCell className="px-3 text-center">{process.burstTime}</TableCell>
+                      <TableCell className="px-3 text-center">{process.finishTime}</TableCell>
+                      <TableCell className="px-3 text-center">{process.waitingTime}</TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
               </Table>
-              <p>Thời gian chờ trung bình: {aFCFS[0].tg_cho_tb}</p>
-              <p>Thời gian hoàn tất trung bình: {aFCFS[0].tg_hoantat_tb}</p>
+              <div className="mt-4">
+                <p>Thời gian chờ trung bình: {responseData?.data?.averageWaitingTime}</p>
+                <p>Thời gian hoàn tất trung bình: {responseData?.data?.averageFinishTime}</p>
+              </div>
             </div>}
         </div>
       );
@@ -577,35 +300,34 @@ export default function Home() {
       resetForm();
     }//Xử lý bài toán FCFS
     if (selectedKey === "sjf") {
-      sjf()
+      await sjf()
       output = (
         <div>
           {<div>
             <Table aria-label="Example static collection table">
               <TableHeader>
                 <TableColumn>Job</TableColumn>
-                <TableColumn>Arrival Time</TableColumn>
                 <TableColumn>Burst Time</TableColumn>
                 <TableColumn>Finish Time</TableColumn>
-                <TableColumn>Turn Around Time</TableColumn>
                 <TableColumn>Waiting Time</TableColumn>
               </TableHeader>
               <TableBody>
-                {aSJF.map((process, index) => (
-                  <TableRow key={index}>
-                    <TableCell className="text-center">{index + 1}</TableCell>
-                    <TableCell className="text-center">{process.tg_denRL}</TableCell>
-                    <TableCell className="text-center">{process.tg_xuly}</TableCell>
-                    <TableCell className="text-center">{process.tg_hoantat}</TableCell>
-                    <TableCell className="text-center">{process.tg_hoantat - process.tg_denRL}</TableCell>
-                    <TableCell className="text-center">{process.tg_cho}</TableCell>
+                {(responseData?.data?.processes || []).map(process => (
+                  <TableRow key={process.id}>
+                    <TableCell className="text-center">{process.id}</TableCell>
+                    <TableCell className="text-center">{process.burstTime}</TableCell>
+                    <TableCell className="text-center">{process.finishTime}</TableCell>
+                    <TableCell className="text-center">{process.waitingTime}</TableCell>
                   </TableRow>
                 ))}
               </TableBody>
             </Table>
           </div>}
-          <p>Thời gian chờ trung bình: {aSJF[0].tg_cho_tb}</p>
-          <p>Thời gian hoàn tất trung bình: {aSJF[0].tg_hoantat_tb}</p>
+          <div className="mt-4">
+            <p>Thời gian chờ trung bình: {responseData?.data?.averageWaitingTime}</p>
+            <p>Thời gian hoàn tất trung bình: {responseData?.data?.averageFinishTime}</p>
+          </div>
+
         </div>
       );
       setResult(output);
@@ -646,64 +368,37 @@ export default function Home() {
       );
       setResult(output);
       resetForm();
-<<<<<<< HEAD
-    }//Xử lý bài toán SRTF
-    if (selectedKey === "rr") {
-      rr()
-=======
     }
-    if (selectedAlgorithm === "rr") {
+    if (selectedKey === "rr") {
       await rr();
->>>>>>> b4bdb4282c3177a7dfbc0005bfad776614db1b19
       output = (
         <div>
           {
             <div>
               <Table aria-label="Example static collection table">
                 <TableHeader>
-                  <TableColumn>Job</TableColumn>
-                  <TableColumn>Arrival Time</TableColumn>
-                  <TableColumn>Burst Time</TableColumn>
-                  <TableColumn>Finish Time</TableColumn>
-<<<<<<< HEAD
-                  <TableColumn>Turn Around Time</TableColumn>
-                  <TableColumn>Waiting Time</TableColumn>
-                </TableHeader>
-                <TableBody>
-                  {aRR.map((process, index) => (
-                    <TableRow key={index}>
-                      <TableCell className="text-center">{index + 1}</TableCell>
-                      <TableCell className="text-center">{process.tg_denRL}</TableCell>
-                      <TableCell className="text-center">{process.tg_xuly}</TableCell>
-                      <TableCell className="text-center">{process.tg_hoantat}</TableCell>
-                      <TableCell className="text-center">{process.tg_hoantat - process.tg_denRL}</TableCell>
-                      <TableCell className="text-center">{process.tg_cho}</TableCell>
-=======
-                  <TableColumn>Waiting Time</TableColumn>
+                  <TableColumn className="px-2 text-center">Job</TableColumn>
+                  <TableColumn className="px-2 text-center">Arrival Time</TableColumn>
+                  <TableColumn className="px-2 text-center">Burst Time</TableColumn>
+                  <TableColumn className="px-2 text-center">Finish Time</TableColumn>
+                  <TableColumn className="px-2 text-center">Waiting Time</TableColumn>
                 </TableHeader>
                 <TableBody>
                   {(responseData?.data?.processes || []).map(process => (
                     <TableRow key={process.id}>
-                      <TableCell className="text-center">{process.id}</TableCell>
-                      <TableCell className="text-center">{process.arrivalTime}</TableCell>
-                      <TableCell className="text-center">{process.burstTime}</TableCell>
-                      <TableCell className="text-center">{process.finishTime}</TableCell>
-                      <TableCell className="text-center">{process.waitingTime}</TableCell>
->>>>>>> b4bdb4282c3177a7dfbc0005bfad776614db1b19
+                      <TableCell className="px-2 text-center">{process.id}</TableCell>
+                      <TableCell className="px-2 text-center">{process.arrivalTime}</TableCell>
+                      <TableCell className="px-2 text-center">{process.burstTime}</TableCell>
+                      <TableCell className="px-2 text-center">{process.finishTime}</TableCell>
+                      <TableCell className="px-2 text-center">{process.waitingTime}</TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
               </Table>
-<<<<<<< HEAD
-            </div>}
-          <p>Thời gian chờ trung bình: {aRR[0].tg_cho_tb}</p>
-          <p>Thời gian hoàn tất trung bình: {aRR[0].tg_hoantat_tb}</p>
-=======
               <p>Thời gian chờ trung bình: {responseData?.data?.averageWaitingTime}</p>
               <p>Thời gian hoàn tất trung bình: {responseData?.data?.averageFinishTime}</p>
             </div>
           }
->>>>>>> b4bdb4282c3177a7dfbc0005bfad776614db1b19
         </div>
       );
     }//Xử lý bài toán RR
@@ -738,31 +433,25 @@ export default function Home() {
       resetForm();
     }//Xử lý bài toán Priority Non Preemptive
     if (selectedKey === "pp") {
-      pp()
+      await pp()
       output = (
         <div>
           <Table aria-label="Example static collection table">
             <TableHeader>
               <TableColumn>Job</TableColumn>
-              <TableColumn>Arrival Time</TableColumn>
-              <TableColumn>Burst Time</TableColumn>
-              <TableColumn>Turn Around Time</TableColumn>
+              <TableColumn>Finish Time</TableColumn>
               <TableColumn>Waiting Time</TableColumn>
             </TableHeader>
             <TableBody>
-              {aPP.map((item) => (
-                <TableRow key={item.ma_tt}>
-                  <TableCell className="text-center">{item.ma_tt}</TableCell>
-                  <TableCell className="text-center">{item.tg_denRL}</TableCell>
-                  <TableCell className="text-center">{item.tg_xuly}</TableCell>
-                  <TableCell className="text-center">{item.tg_hoantat}</TableCell>
-                  <TableCell className="text-center">{item.tg_cho}</TableCell>
+              {(responseData?.data?.processes || []).map(process => (
+                <TableRow key={process.id}>
+                  <TableCell className="text-center">{process.id}</TableCell>
+                  <TableCell className="text-center">{process.finishTime}</TableCell>
+                  <TableCell className="text-center">{process.waitingTime}</TableCell>
                 </TableRow>
               ))}
             </TableBody>
           </Table>
-          <p className="m-2">Thời gian chờ trung bình của các tiến trình: {aPP[0].tg_cho_tb}</p>
-          <p>Thời gian hoàn tất trung bình của các tiến trình: {aPP[0].tg_hoantat_tb}</p>
         </div>
       );
     }//Xử lý bài toán Priority Preemptive
@@ -788,7 +477,7 @@ export default function Home() {
           label: 'Shortest Job First',
         },
         {
-          key: 'priority',
+          key: 'pp',
           label: 'Priority',
         },
       ],
@@ -813,11 +502,11 @@ export default function Home() {
         },
       ],
     },
-  ];
+  ];//layout cac loai thuat toan
 
   const onClick: MenuProps['onClick'] = (e) => {
     setSelectedKey(e.key);
-  };
+  };//hàm xử lý click
 
   const renderForm = () => {
     switch (selectedKey) {
@@ -880,7 +569,7 @@ export default function Home() {
           </button>
         </div>;
       //priority
-      case 'priority':
+      case 'pp':
         return <div className="static flex ml-6 my-3">
           <div className="mx-3">
             <h1>Arrival Time</h1>
@@ -908,8 +597,8 @@ export default function Home() {
               type="text"
               className="block p-3 pl-5 my-2 border border-gray-300 rounded-3xl"
               placeholder="Lower #= Higher"
-              value={burstTime}
-              onChange={(e) => setBurstTime(e.target.value)}
+              value={priority}
+              onChange={(e) => setPriority(e.target.value)}
             />
           </div>
           <button
@@ -1031,7 +720,6 @@ export default function Home() {
   };
 
   return (
-<<<<<<< HEAD
     <div style={{ position: 'relative', height: '100vh' }}>
       <Menu
         onClick={onClick}
@@ -1051,16 +739,6 @@ export default function Home() {
         right: 300,
       }}>
         <h1 className="text-3xl font-bold mt-5">CPU Scheduling & Jamstack</h1>
-=======
-    <main className="flex p-8 gap-8 row-start-1 max-h-32 sm:items-start">
-      <div className="flex-auto flex flex-col p-4">
-        <h1 className="text-xl text-white text-center pb-8 sm:text-4xl font-bold">
-          Tìm hiểu công nghệ Jamstack và xây dựng ứng dụng Web minh họa các giải thuật định thời CPU
-        </h1>
-        <div className="max-h-full p-5 block rounded-3xl bg-white max-w-full container">
-          {result}
-        </div>
->>>>>>> b4bdb4282c3177a7dfbc0005bfad776614db1b19
       </div>
       <div style={{
         position: 'absolute',
@@ -1071,7 +749,7 @@ export default function Home() {
       }}>
         <div className="ml-5">{result}</div>
       </div>
-        
+
       <div
         className="flex"
         style={{
