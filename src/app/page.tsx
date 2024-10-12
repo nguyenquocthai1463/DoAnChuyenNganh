@@ -1,7 +1,6 @@
 "use client";
 import { useState } from "react";
-import type { MenuProps } from 'antd';
-import { Menu } from 'antd';
+import { Menu, type MenuProps } from 'antd';
 import {
   Table,
   TableHeader,
@@ -56,6 +55,7 @@ export default function Home() {
   const [priority, setPriority] = useState<string>("");
   const [timeQuantum, setTimeQuantum] = useState<string>("");
   const [result, setResult] = useState<JSX.Element | null>(null);
+
   //khởi tạo các biến state để lưu giá trị của các input và kết quả
   let count = 0;
   //khởi tạo biến count để lưu số lượng tiến trình
@@ -512,86 +512,90 @@ export default function Home() {
     switch (selectedKey) {
       //fcfs
       case 'fcfs':
-        return <div className="static flex ml-6 my-3">
-          <div className="mx-3">
+        return <div className="bg-02 p-4 grid grid-cols-1 gap-4 md:grid-cols-4">
+          <div className="mx-2 md:w-full">
             <h1 >Arrival Time</h1>
             <input
               type="text"
-              className="block p-3 pl-5 my-2 border border-gray-300 rounded-3xl"
+              className="p-3 pl-5  md:w-full my-2 border border-gray-300 rounded-3xl"
               placeholder="eg: 1 4 5 6"
               value={arrivalTime}
               onChange={(e) => setArrivalTime(e.target.value)}
             />
           </div>
-          <div className="mx-3">
+          <div className="mx-2 md:w-full">
             <h1>Burst Time</h1>
             <input
               type="text"
-              className="block p-3 pl-5 my-2 border border-gray-300 rounded-3xl"
+              className="p-3 pl-5 md:w-full my-2 border border-gray-300 rounded-3xl"
               placeholder="eg: 1 4 5 6"
               value={burstTime}
               onChange={(e) => setBurstTime(e.target.value)}
             />
           </div>
-          <button
-            onClick={handleSubmit}
-            className="absolute bottom-2 right-3 mr-3 block my-5 p-3 bg-red-800 text-white rounded-xl">
-            Submit
-          </button>
+          <div className="md:w-full"></div>
+          <div className="flex flex-wrap justify-end content-center">
+            <button
+              onClick={handleSubmit}
+              className="block bg-red-800 text-white rounded-xl h-12 px-2">
+              Submit
+            </button></div>
         </div>;
       //sjf
       case 'sjf':
-        return <div className="static flex ml-6 my-3">
-          <div className="mx-3">
-            <h1>Arrival Time</h1>
+        return <div className="bg-02 p-4 grid grid-cols-1 gap-4 md:grid-cols-4">
+          <div className="mx-2 md:w-full">
+            <h1 >Arrival Time</h1>
             <input
               type="text"
-              className="block p-3 pl-5 my-2 border border-gray-300 rounded-3xl"
+              className="p-3 pl-5  md:w-full my-2 border border-gray-300 rounded-3xl"
               placeholder="eg: 1 4 5 6"
               value={arrivalTime}
               onChange={(e) => setArrivalTime(e.target.value)}
             />
           </div>
-          <div className="mx-3">
+          <div className="mx-2 md:w-full">
             <h1>Burst Time</h1>
             <input
               type="text"
-              className="block p-3 pl-5 my-2 border border-gray-300 rounded-3xl"
+              className="p-3 pl-5 md:w-full my-2 border border-gray-300 rounded-3xl"
               placeholder="eg: 1 4 5 6"
               value={burstTime}
               onChange={(e) => setBurstTime(e.target.value)}
             />
           </div>
-          <button
-            onClick={handleSubmit}
-            className="absolute bottom-2 right-3 mr-3 block my-5 p-3 bg-red-800 text-white rounded-xl">
-            Submit
-          </button>
+          <div className=" md:w-full"></div>
+          <div className="flex flex-wrap justify-end content-center">
+            <button
+              onClick={handleSubmit}
+              className="block bg-red-800 text-white rounded-xl h-12 px-2">
+              Submit
+            </button></div>
         </div>;
       //priority
       case 'pp':
-        return <div className="static flex ml-6 my-3">
-          <div className="mx-3">
-            <h1>Arrival Time</h1>
+        return <div className="bg-02 p-4 grid grid-cols-1 gap-4 md:grid-cols-4">
+          <div className="mx-2 md:w-full">
+            <h1 >Arrival Time</h1>
             <input
               type="text"
-              className="block p-3 pl-5 my-2 border border-gray-300 rounded-3xl"
+              className="p-3 pl-5  md:w-full my-2 border border-gray-300 rounded-3xl"
               placeholder="eg: 1 4 5 6"
               value={arrivalTime}
               onChange={(e) => setArrivalTime(e.target.value)}
             />
           </div>
-          <div className="mx-3">
+          <div className="mx-2 md:w-full">
             <h1>Burst Time</h1>
             <input
               type="text"
-              className="block p-3 pl-5 my-2 border border-gray-300 rounded-3xl"
+              className="p-3 pl-5 md:w-full my-2 border border-gray-300 rounded-3xl"
               placeholder="eg: 1 4 5 6"
               value={burstTime}
               onChange={(e) => setBurstTime(e.target.value)}
             />
           </div>
-          <div className="mx-3">
+          <div className="mx-2 md:w-full">
             <h1>Priorities</h1>
             <input
               type="text"
@@ -601,75 +605,78 @@ export default function Home() {
               onChange={(e) => setPriority(e.target.value)}
             />
           </div>
-          <button
-            onClick={handleSubmit}
-            className="absolute bottom-2 right-3 mr-3 block my-5 p-3 bg-red-800 text-white rounded-xl">
-            Submit
-          </button>
+          <div className="flex flex-wrap justify-end content-center">
+            <button
+              onClick={handleSubmit}
+              className="block bg-red-800 text-white rounded-xl h-12 px-2">
+              Submit
+            </button>
+          </div>
         </div>;
       //non-preemptive-priority
       case 'npp':
-        return <div className="flex static ml-6 my-3">
-          <div className="mx-3">
-            <h1>Arrival Time</h1>
+        return <div className="bg-02 p-4 grid grid-cols-1 gap-4 md:grid-cols-4">
+          <div className="mx-2 md:w-full">
+            <h1 >Arrival Time</h1>
             <input
               type="text"
-              className="block p-3 pl-5 my-2 border border-gray-300 rounded-3xl"
+              className="p-3 pl-5  md:w-full my-2 border border-gray-300 rounded-3xl"
               placeholder="eg: 1 4 5 6"
               value={arrivalTime}
               onChange={(e) => setArrivalTime(e.target.value)}
             />
           </div>
-          <div className="mx-3">
+          <div className="mx-2 md:w-full">
             <h1>Burst Time</h1>
             <input
               type="text"
-              className="block p-3 pl-5 my-2 border border-gray-300 rounded-3xl"
+              className="p-3 pl-5 md:w-full my-2 border border-gray-300 rounded-3xl"
               placeholder="eg: 1 4 5 6"
               value={burstTime}
               onChange={(e) => setBurstTime(e.target.value)}
             />
           </div>
-          <div className="mx-3">
+          <div className="mx-2 md:w-full">
             <h1>Priorities</h1>
             <input
               type="text"
               className="block p-3 pl-5 my-2 border border-gray-300 rounded-3xl"
               placeholder="Lower #= Higher"
-              value={burstTime}
-              onChange={(e) => setBurstTime(e.target.value)}
+              value={priority}
+              onChange={(e) => setPriority(e.target.value)}
             />
           </div>
-          <button
-            onClick={handleSubmit}
-            className="absolute bottom-2 right-3 mr-3 block my-5 p-3 bg-red-800 text-white rounded-xl">
-            Submit
-          </button>
+          <div className="flex flex-wrap justify-end content-center">
+            <button
+              onClick={handleSubmit}
+              className="block bg-red-800 text-white rounded-xl h-12 px-2">
+              Submit
+            </button></div>
         </div>;
       //round-robin
       case 'rr':
-        return <div className="static flex ml-6 my-3">
-          <div className="mx-3">
-            <h1>Arrival Time</h1>
+        return <div className="bg-02 p-4 grid grid-cols-1 gap-4 md:grid-cols-4">
+          <div className="mx-2 md:w-full">
+            <h1 >Arrival Time</h1>
             <input
               type="text"
-              className="block p-3 pl-5 my-2 border border-gray-300 rounded-3xl"
+              className="p-3 pl-5  md:w-full my-2 border border-gray-300 rounded-3xl"
               placeholder="eg: 1 4 5 6"
               value={arrivalTime}
               onChange={(e) => setArrivalTime(e.target.value)}
             />
           </div>
-          <div className="mx-3">
+          <div className="mx-2 md:w-full">
             <h1>Burst Time</h1>
             <input
               type="text"
-              className="block p-3 pl-5 my-2 border border-gray-300 rounded-3xl"
+              className="p-3 pl-5 md:w-full my-2 border border-gray-300 rounded-3xl"
               placeholder="eg: 1 4 5 6"
               value={burstTime}
               onChange={(e) => setBurstTime(e.target.value)}
             />
           </div>
-          <div className="mx-3">
+          <div className="mx-2 md:w-full">
             <h1>Time Quantum</h1>
             <input
               type="text"
@@ -679,40 +686,43 @@ export default function Home() {
               onChange={(e) => setTimeQuantum(e.target.value)}
             />
           </div>
-          <button
-            onClick={handleSubmit}
-            className="absolute bottom-2 right-3 mr-3 block my-5 p-3 bg-red-800 text-white rounded-xl">
-            Submit
-          </button>
+          <div className="flex flex-wrap justify-end content-center">
+            <button
+              onClick={handleSubmit}
+              className="block bg-red-800 text-white rounded-xl h-12 px-2">
+              Submit
+            </button></div>
         </div>;
       //srtf
       case 'srtf':
-        return <div className="flex static ml-6 my-3">
-          <div className="mx-3">
-            <h1>Arrival Time</h1>
+        return <div className="bg-02 p-4 grid grid-cols-1 gap-4 md:grid-cols-4">
+          <div className="mx-2 md:w-full">
+            <h1 >Arrival Time</h1>
             <input
               type="text"
-              className="block p-3 pl-5 my-2 border border-gray-300 rounded-3xl"
+              className="p-3 pl-5 md:w-full my-2 border border-gray-300 rounded-3xl"
               placeholder="eg: 1 4 5 6"
               value={arrivalTime}
               onChange={(e) => setArrivalTime(e.target.value)}
             />
           </div>
-          <div className="mx-3">
+          <div className="mx-2 md:w-full">
             <h1>Burst Time</h1>
             <input
               type="text"
-              className="block p-3 pl-5 my-2 border border-gray-300 rounded-3xl"
+              className="p-3 pl-5 md:w-full my-2 border border-gray-300 rounded-3xl"
               placeholder="eg: 1 4 5 6"
               value={burstTime}
               onChange={(e) => setBurstTime(e.target.value)}
             />
           </div>
-          <button
-            onClick={handleSubmit}
-            className="absolute bottom-2 right-3 mr-3 block my-5 p-3 bg-red-800 text-white rounded-xl">
-            Submit
-          </button>
+          <div className=" md:w-full"></div>
+          <div className="flex flex-wrap justify-end content-center">
+            <button
+              onClick={handleSubmit}
+              className="block bg-red-800 text-white rounded-xl h-12 px-2">
+              Submit
+            </button></div>
         </div>;
       default:
         return null;
@@ -720,47 +730,38 @@ export default function Home() {
   };
 
   return (
-    <div style={{ position: 'relative', height: '100vh' }}>
-      <Menu
-        onClick={onClick}
-        style={{
-          width: 260,
-          height: '100vh',
-          overflowY: 'auto',
-          overflowX: 'hidden',
-          backgroundColor: '#cfe1b9',
-        }}
-        mode="inline"
-        items={items}
-      />
-      <div style={{
-        position: 'absolute',
-        top: 0,
-        right: 300,
-      }}>
-        <h1 className="text-3xl font-bold mt-5">CPU Scheduling & Jamstack</h1>
-      </div>
-      <div style={{
-        position: 'absolute',
-        top: 80,
-        right: 0,
-        width: 1012,
-        height: 413,
-      }}>
-        <div className="ml-5">{result}</div>
+    <><button data-drawer-target="default-sidebar" data-drawer-toggle="default-sidebar" aria-controls="default-sidebar" type="button" className="inline-flex items-center p-2 mt-2 ms-3 text-sm text-gray-500 rounded-lg sm:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600">
+      <span className="sr-only">Open sidebar</span>
+      <svg className="w-6 h-6" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+        <path clip-rule="evenodd" fill-rule="evenodd" d="M2 4.75A.75.75 0 012.75 4h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 4.75zm0 10.5a.75.75 0 01.75-.75h7.5a.75.75 0 010 1.5h-7.5a.75.75 0 01-.75-.75zM2 10a.75.75 0 01.75-.75h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 10z"></path>
+      </svg>
+    </button>
+      <aside id="default-sidebar" className="fixed top-0 left-0 z-40 w-64 h-screen transition-transform -translate-x-full sm:translate-x-0" aria-label="Sidebar">
+        <div className="h-full px-3 py-4 overflow-y-auto bg-2 dark:bg-02">
+          <div className=" text-while">
+            <Menu
+              onClick={onClick}
+              className="bg-02"
+              mode="inline"
+              items={items} />
+          </div>
+        </div>
+      </aside>
+      <div className="h-screen sm:ml-64">
+        <div className="h-4/6 md:flex-col">
+          <div className="p-4 flex-none max-w-md mx-auto text-center md:max-w-2xl">
+            <p className="text-xl font-bold">Tìm hiểu công nghệ Jamstack và xây dựng ứng dụng Web minh họa các giải thuật định thời CPU</p>
+          </div>
+          <div className="p-4 md:min-h-full">
+            {result}
+          </div>
+          <div className="h-1/6">
+            {renderForm()}
+          </div>
+        </div>
+
       </div>
 
-      <div
-        className="flex"
-        style={{
-          position: 'absolute',
-          bottom: 0,
-          right: 0,
-          width: '100%',
-          backgroundColor: '#cfe1b9',
-        }}>
-        {renderForm()}
-      </div>
-    </div>
+    </>
   );
 }
