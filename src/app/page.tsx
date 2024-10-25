@@ -34,18 +34,9 @@ interface TienTrinhFCFS {
   tg_cho_tb: number;
   tg_hoantat_tb: number;
 }//khởi tạo interface cho tiến trình FCFS
-interface TienTrinhSRTF {
-  tg_cho: number;
-  tg_denRL: number;
-  tg_xuly: number;
-  tg_hoantat: number;
-  tg_cho_tb: number;
-  tg_hoantat_tb: number;
-}//khởi tạo interface cho tiến trình SRTF
 
 const aNPP: TienTrinhNPP[] = []; //khai báo mảng a chứa các tiến trình
 const aFCFS: TienTrinhFCFS[] = []; //khai báo mảng a chứa các tiến trình
-const aSRTF: TienTrinhSRTF[] = []; //khai báo mảng a chứa các tiến trình
 let responseData: ResponseData;
 
 export default function Home() {
@@ -55,14 +46,6 @@ export default function Home() {
   const [priority, setPriority] = useState<string>("");
   const [timeQuantum, setTimeQuantum] = useState<string>("");
   const [result, setResult] = useState<JSX.Element | null>(null);
-
-  //khởi tạo các biến state để lưu giá trị của các input và kết quả
-  let count = 0;
-  //khởi tạo biến count để lưu số lượng tiến trình
-  function demthoigianden(input: string): number {
-    const stringWithoutSpaces = input.replace(/\s+/g, '');
-    return stringWithoutSpaces.length;
-  }//hàm đếm số lượng tiến trình
 
   function getCharactersWithoutSpaces(input: string): number[] {
     const numbers = input.match(/\d+/g);
@@ -83,100 +66,6 @@ export default function Home() {
     return response.json();
   }
 
-  function npp() {
-    const tam: number[] = []; //khai báo mảng tạm chứa các tiến trình
-    let sotientrinh: number;
-    count = demthoigianden(arrivalTime);
-    let dem = 0;
-    let t = 0;
-    let TongTG_cho = 0;
-    let TongTG_hoantat = 0;
-    let uu_tien_nho = 0;
-    // eslint-disable-next-line prefer-const
-    sotientrinh = count;
-    const tg_denRL = getCharactersWithoutSpaces(arrivalTime)
-    const tg_xuly = getCharactersWithoutSpaces(burstTime)
-    const do_uu_tien = getCharactersWithoutSpaces(priority)
-    for (let i = 0; i < sotientrinh; i++) {
-      aNPP.push({
-        tg_cho: 0,
-        tg_denRL: tg_denRL[i],
-        tg_xuly: tg_xuly[i],
-        tg_hoantat: 0,
-        do_uu_tien: do_uu_tien[i],
-      });
-      tam.push(tg_xuly[i]);
-    }
-
-    aNPP[9] = new TienTrinhNPP(0, 5000, 5000);
-
-    for (t = 0; dem !== sotientrinh; t++) {
-      uu_tien_nho = 9;
-      for (let i = 0; i < sotientrinh; i++) {
-        if (aNPP[uu_tien_nho].do_uu_tien > aNPP[i].do_uu_tien && aNPP[i].tg_denRL <= t && aNPP[i].tg_xuly > 0) {
-          uu_tien_nho = i;
-        }
-      }
-
-      aNPP[uu_tien_nho].tg_xuly = aNPP[uu_tien_nho].tg_xuly - 1;
-
-      if (aNPP[uu_tien_nho].tg_xuly === 0) {
-        dem++;
-        aNPP[uu_tien_nho].tg_cho = t + 1 - aNPP[uu_tien_nho].tg_denRL - tam[uu_tien_nho];
-        aNPP[uu_tien_nho].tg_hoantat = t + 1 - aNPP[uu_tien_nho].tg_denRL;
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        TongTG_cho += aNPP[uu_tien_nho].tg_cho;
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        TongTG_hoantat += aNPP[uu_tien_nho].tg_hoantat;
-      }
-      t++;
-    }
-  }//Hàm xử lý bài toán Priority Non Preemptive
-
-  function srtf() {
-    const tam: number[] = [];
-    let nhonhat: number;
-    let dem = 0;
-    let thoigian: number;
-    let soTT: number;
-    let tgcho = 0;
-    let tght = 0;
-    let ketthuc: number;
-    count = demthoigianden(arrivalTime);
-    // eslint-disable-next-line prefer-const
-    soTT = count;
-    for (let i = 0; i < soTT; i++) {
-      aSRTF.push({
-        tg_cho: 0,
-        tg_denRL: getCharactersWithoutSpaces(arrivalTime)[i],
-        tg_hoantat: 0,
-        tg_xuly: getCharactersWithoutSpaces(burstTime)[i],
-        tg_cho_tb: 0,
-        tg_hoantat_tb: 0,
-      });
-      tam[i] = aSRTF[i].tg_xuly;
-    }
-    aSRTF[9].tg_xuly = 60;  // Giả sử thời gian xử lý của tiến trình cuối cùng là 60 giây
-
-    for (thoigian = 0; dem !== soTT; thoigian++) {
-      nhonhat = 9; // Xét tiến trình có thời gian nhỏ nhất (tiến trình sau cùng)
-      for (let i = 0; i < soTT; i++) {
-        if (aSRTF[i].tg_denRL <= thoigian && aSRTF[i].tg_xuly < aSRTF[nhonhat].tg_xuly && aSRTF[i].tg_xuly > 0) {
-          nhonhat = i;
-        }
-      }
-      aSRTF[nhonhat].tg_xuly--;
-      if (aSRTF[nhonhat].tg_xuly === 0) {
-        dem++;
-        ketthuc = thoigian + 1;
-        tgcho += ketthuc - aSRTF[nhonhat].tg_denRL - tam[nhonhat];
-        tght += ketthuc - aSRTF[nhonhat].tg_denRL;
-      }
-    }
-
-    aSRTF[0].tg_cho_tb = tgcho / soTT;
-    aSRTF[0].tg_hoantat_tb = tght / soTT;
-  }//Hàm xử lý bài toán SRTF
 
   const rr = async () => {
     const request = {
@@ -240,6 +129,41 @@ export default function Home() {
 
     try {
       const data = await callingAPIWithCPUSchedulingAlgo(request, 'sjf');
+      responseData = data;
+      // console.log(data);
+      // console.log('response data', responseData);
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  }
+
+  const srtf = async () => {
+    const request = {
+      arrPro: getCharactersWithoutSpaces(arrivalTime).map((_item, index) => index + 1),
+      arrArrivalTime: getCharactersWithoutSpaces(arrivalTime),
+      arrBurstTime: getCharactersWithoutSpaces(burstTime)
+    };
+
+    try {
+      const data = await callingAPIWithCPUSchedulingAlgo(request, 'srtf');
+      responseData = data;
+      // console.log(data);
+      // console.log('response data', responseData);
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  }
+
+  const npp = async () => {
+    const request = {
+      arrPro: getCharactersWithoutSpaces(arrivalTime).map((_item, index) => index + 1),
+      arrArrivalTime: getCharactersWithoutSpaces(arrivalTime),
+      arrBurstTime: getCharactersWithoutSpaces(burstTime),
+      arrPriority: getCharactersWithoutSpaces(priority)
+    };
+
+    try {
+      const data = await callingAPIWithCPUSchedulingAlgo(request, 'prio-nonp');
       responseData = data;
       // console.log(data);
       // console.log('response data', responseData);
@@ -334,7 +258,7 @@ export default function Home() {
       resetForm();
     }//Xử lý bài toán SJF
     if (selectedKey === "srtf") {
-      srtf()
+      await srtf()
       output = (
         <div>
           {
@@ -344,26 +268,21 @@ export default function Home() {
                   <TableColumn>Job</TableColumn>
                   <TableColumn>Arrival Time</TableColumn>
                   <TableColumn>Burst Time</TableColumn>
-                  <TableColumn>Finish Time</TableColumn>
-                  <TableColumn>Turn Around Time</TableColumn>
-                  <TableColumn>Waiting Time</TableColumn>
+
                 </TableHeader>
                 <TableBody>
-                  {aSRTF.map((process, index) => (
-                    <TableRow key={index}>
-                      <TableCell className="text-center">{index + 1}</TableCell>
-                      <TableCell className="text-center">{process.tg_denRL}</TableCell>
-                      <TableCell className="text-center">{process.tg_xuly}</TableCell>
-                      <TableCell className="text-center">{process.tg_hoantat}</TableCell>
-                      <TableCell className="text-center">{process.tg_hoantat - process.tg_denRL}</TableCell>
-                      <TableCell className="text-center">{process.tg_cho}</TableCell>
+                  {(responseData?.data?.processes || []).map(process => (
+                    <TableRow key={process.id}>
+                      <TableCell className="text-center">{process.id}</TableCell>
+                      <TableCell className="text-center">{process.arrivalTime}</TableCell>
+                      <TableCell className="text-center">{process.burstTime}</TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
               </Table>
             </div>}
-          <p>Thời gian chờ trung bình: {aSRTF[0].tg_cho_tb}</p>
-          <p>Thời gian hoàn tất trung bình: {aSRTF[0].tg_hoantat_tb}</p>
+          <p>Thời gian chờ trung bình: {responseData?.data?.averageWaitingTime}</p>
+          <p>Thời gian hoàn tất trung bình: {responseData?.data?.averageFinishTime}</p>
         </div>
       );
       setResult(output);
@@ -403,7 +322,7 @@ export default function Home() {
       );
     }//Xử lý bài toán RR
     if (selectedKey === "npp") {
-      npp()
+      await npp()
       output = (
         <div>
           <Table aria-label="Example static collection table">
@@ -415,19 +334,21 @@ export default function Home() {
               <TableColumn>Waiting Time</TableColumn>
             </TableHeader>
             <TableBody>
-              {aNPP.map((process, index) => (
-                // eslint-disable-next-line react/jsx-key
-                <TableRow key={index}>
-                  <TableCell className="text-center">{index + 1}</TableCell>
-                  <TableCell className="text-center">{process.tg_denRL}</TableCell>
-                  <TableCell className="text-center">{process.tg_xuly}</TableCell>
-                  <TableCell className="text-center">{process.tg_hoantat}</TableCell>
-                  <TableCell className="text-center">{process.tg_cho}</TableCell>
+              {(responseData?.data?.processes || []).map(process => (
+                <TableRow key={process.id}>
+                  <TableCell className="text-center">{process.id}</TableCell>
+                  <TableCell className="text-center">{process.arrivalTime}</TableCell>
+                  <TableCell className="text-center">{process.burstTime}</TableCell>
+                  <TableCell className="text-center">{process.finishTime}</TableCell>
+                  <TableCell className="text-center">{process.waitingTime}</TableCell>
                 </TableRow>
               ))}
             </TableBody>
           </Table>
+          <p>Thời gian chờ trung bình: {responseData?.data?.averageWaitingTime}</p>
+          <p>Thời gian hoàn tất trung bình: {responseData?.data?.averageFinishTime}</p>
         </div>
+
       );
       setResult(output);
       resetForm();
@@ -452,6 +373,8 @@ export default function Home() {
               ))}
             </TableBody>
           </Table>
+          <p>Thời gian chờ trung bình: {responseData?.data?.averageWaitingTime}</p>
+          <p>Thời gian hoàn tất trung bình: {responseData?.data?.averageFinishTime}</p>
         </div>
       );
     }//Xử lý bài toán Priority Preemptive
@@ -755,7 +678,7 @@ export default function Home() {
           <div className="p-4 md:min-h-full">
             {result}
           </div>
-          <div className="h-1/6">
+          <div className="h-1/6 md:min-h-full">
             {renderForm()}
           </div>
         </div>

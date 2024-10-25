@@ -17,6 +17,45 @@ const validateRequestData = (arrArrivalTime: any, arrBurstTime: any, res: NextAp
 }
 
 const shortestRemainingTimeFirstAlgo = (req: ProcessRequest): ResponseData => {
+    let soTT: number;
+    let tg_xuly = new Array<number>(100);
+    let tg_denRL = new Array<number>(100);
+    let tam = new Array<number>(100);
+    let thoigian: number;
+    let dem = 0;
+    let nhonhat: number;
+    let ketthuc: number;
+    let tgcho = 0;
+    let tght = 0;
+    let tg_cho_tb = 0;
+    let tg_hoantat_tb = 0;
+
+    soTT = req.arrArrivalTime.length;
+    tg_xuly = [...req.arrBurstTime]; // Sử dụng spread operator để sao chép mảng
+    tg_denRL = [...req.arrArrivalTime]; // Sử dụng spread operator để sao chép mảng
+    tam = [...req.arrBurstTime]; // Sao chép thời gian xử lý ban đầu
+
+    for (thoigian = 0; dem !== soTT; thoigian++) {
+        nhonhat = -1; // Khởi tạo nhonhat là -1
+        for (let i = 0; i < soTT; i++) {
+            if (tg_denRL[i] <= thoigian && (nhonhat === -1 || tg_xuly[i] < tg_xuly[nhonhat]) && tg_xuly[i] > 0) {
+                nhonhat = i; // Cập nhật chỉ số của tiến trình nhỏ nhất
+            }
+        }
+        if (nhonhat !== -1) { // Kiểm tra nhonhat có hợp lệ không
+            tg_xuly[nhonhat]--;
+            if (tg_xuly[nhonhat] === 0) {
+                dem++;
+                ketthuc = thoigian + 1;
+                tgcho += ketthuc - tg_denRL[nhonhat] - tam[nhonhat];
+                tght += ketthuc - tg_denRL[nhonhat];
+            }
+        }
+    }
+
+    tg_cho_tb = dem > 0 ? tgcho / dem : 0; // Kiểm tra dem > 0 trước khi chia
+    tg_hoantat_tb = dem > 0 ? tght / dem : 0; // Kiểm tra dem > 0 trước khi chia
+
     return {
         statusCode: StatusCode.OK,
         message: undefined,
@@ -24,14 +63,14 @@ const shortestRemainingTimeFirstAlgo = (req: ProcessRequest): ResponseData => {
             processes: req.arrArrivalTime.map((item, index) => {
                 return {
                     id: index + 1,
-                    arrivalTime: item,
-                    burstTime: req.arrBurstTime[index],
-                    finishTime: 0,
-                    waitingTime: 0
+                    arrivalTime: tg_denRL[index],
+                    burstTime: tam[index],
+                    finishTime: item,
+                    waitingTime: item
                 };
             }),
-            averageFinishTime: 0,
-            averageWaitingTime: 0
+            averageFinishTime: tg_hoantat_tb,
+            averageWaitingTime: tg_cho_tb
         },
     };
 }
