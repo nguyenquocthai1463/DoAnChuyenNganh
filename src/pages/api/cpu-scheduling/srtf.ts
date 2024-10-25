@@ -17,60 +17,59 @@ const validateRequestData = (arrArrivalTime: any, arrBurstTime: any, res: NextAp
 }
 
 const shortestRemainingTimeFirstAlgo = (req: ProcessRequest): ResponseData => {
-    let soTT: number;
-    let tg_xuly = new Array<number>(100);
-    let tg_denRL = new Array<number>(100);
-    let tam = new Array<number>(100);
-    let thoigian: number;
-    let dem = 0;
+    let tgdenRL = new Array<number>(100).fill(0);
+    let tgxl = new Array<number>(100).fill(0);
+    let tam = new Array<number>(100).fill(0);
+    let i: number;
     let nhonhat: number;
+    let dem: number = 0;
+    let thoigian: number;
+    let soTT: number;
+    let tgcho: number = 0;
+    let tght: number = 0;
     let ketthuc: number;
-    let tgcho = 0;
-    let tght = 0;
-    let tg_cho_tb = 0;
-    let tg_hoantat_tb = 0;
+    let tgchotb: number, tghttb: number;
 
-    soTT = req.arrArrivalTime.length;
-    tg_xuly = [...req.arrBurstTime]; // Sử dụng spread operator để sao chép mảng
-    tg_denRL = [...req.arrArrivalTime]; // Sử dụng spread operator để sao chép mảng
-    tam = [...req.arrBurstTime]; // Sao chép thời gian xử lý ban đầu
 
-    for (thoigian = 0; dem !== soTT; thoigian++) {
-        nhonhat = -1; // Khởi tạo nhonhat là -1
-        for (let i = 0; i < soTT; i++) {
-            if (tg_denRL[i] <= thoigian && (nhonhat === -1 || tg_xuly[i] < tg_xuly[nhonhat]) && tg_xuly[i] > 0) {
-                nhonhat = i; // Cập nhật chỉ số của tiến trình nhỏ nhất
+    soTT = req.arrPro.length;
+    tgdenRL = req.arrArrivalTime;
+    tgxl = [...req.arrBurstTime];
+    tam = [...tgxl];
+
+    tgxl[9] = 60;
+    for (thoigian = 0; dem != soTT; thoigian++) {
+        nhonhat = 9;
+        for (i = 0; i < soTT; i++) {
+            if (tgdenRL[i] <= thoigian && tgxl[i] < tgxl[nhonhat] && tgxl[i] > 0) {
+                nhonhat = i;
             }
         }
-        if (nhonhat !== -1) { // Kiểm tra nhonhat có hợp lệ không
-            tg_xuly[nhonhat]--;
-            if (tg_xuly[nhonhat] === 0) {
-                dem++;
-                ketthuc = thoigian + 1;
-                tgcho += ketthuc - tg_denRL[nhonhat] - tam[nhonhat];
-                tght += ketthuc - tg_denRL[nhonhat];
-            }
+        tgxl[nhonhat]--;
+        if (tgxl[nhonhat] == 0) {
+            dem++;
+            ketthuc = thoigian + 1;
+            tgcho = tgcho + ketthuc - tgdenRL[nhonhat] - tam[nhonhat];
+            tght = tght + ketthuc - tgdenRL[nhonhat];
         }
     }
-
-    tg_cho_tb = dem > 0 ? tgcho / dem : 0; // Kiểm tra dem > 0 trước khi chia
-    tg_hoantat_tb = dem > 0 ? tght / dem : 0; // Kiểm tra dem > 0 trước khi chia
+    tgchotb = tgcho / soTT;
+    tghttb = tght / soTT;
 
     return {
         statusCode: StatusCode.OK,
         message: undefined,
         data: {
-            processes: req.arrArrivalTime.map((item, index) => {
+            processes: req.arrPro.map((item, index) => {
                 return {
-                    id: index + 1,
-                    arrivalTime: tg_denRL[index],
-                    burstTime: tam[index],
-                    finishTime: item,
-                    waitingTime: item
+                    id: item,
+                    arrivalTime: tgdenRL[index],
+                    burstTime: req.arrBurstTime[index],
+                    finishTime: tght,
+                    waitingTime: tgcho
                 };
             }),
-            averageFinishTime: tg_hoantat_tb,
-            averageWaitingTime: tg_cho_tb
+            averageFinishTime: tghttb,
+            averageWaitingTime: tgchotb
         },
     };
 }

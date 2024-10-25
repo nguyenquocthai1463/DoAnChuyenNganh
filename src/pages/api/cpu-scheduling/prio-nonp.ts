@@ -19,62 +19,68 @@ const validateRequestData = (arrArrivalTime: any, arrBurstTime: any, arrPriority
 
 
 const priorityNonPreemitiveAlgo = (req: ProcessRequest): ResponseData => {
-    const tam = [...req.arrBurstTime]; // sao chép mảng tg_xuly ban đầu
-    const sotientrinh: number = req.arrArrivalTime.length;
-    let dem = 0;
-    let t = 0;
-    let TongTG_cho = 0;
-    let TongTG_hoantat = 0;
-    const tg_cho = new Array<number>(100);
-    const tg_hoantat = new Array<number>(100);
-    const do_uu_tien = new Array<number>(100);
-    const tg_denRL = [...req.arrArrivalTime];
-    const tg_xuly = [...req.arrBurstTime];
-    let tg_cho_tb = 0;
-    let tg_hoantat_tb = 0;
+    let tg_denRL = new Array<number>(100).fill(0);
+    let tg_xuly = new Array<number>(100).fill(0);
+    let tg_cho = new Array<number>(100).fill(0);
+    let tg_hoantat = new Array<number>(100).fill(0);
+    let do_uu_tien = new Array<number>(100).fill(0);
+    let i: number;
+    let sotientrinh: number;
+    let tam = new Array<number>(100).fill(0);
+    let dem: number = 0;
+    let uu_tien_nho: number;
+    let t: number;
+    let TongTG_cho: number = 0;
+    let TongTG_hoantat: number = 0;
+    let tg_cho_tb: number;
+    let tg_hoantat_tb: number;
 
-    for (t = 0; dem !== sotientrinh; t++) {
-        let uu_tien_nho = -1;
-        for (let i = 0; i < sotientrinh; i++) {
-            if (tg_denRL[i] <= t && tg_xuly[i] > 0) {
-                if (do_uu_tien[uu_tien_nho] === -1 || tg_denRL[i] < tg_denRL[uu_tien_nho]) {
-                    uu_tien_nho = i;
-                }
+    sotientrinh = req.arrPro.length;
+    tg_denRL = req.arrArrivalTime;
+    tg_xuly = [...req.arrBurstTime];
+    do_uu_tien = req.arrPriority ? req.arrPriority : [];
+    tam = [...tg_xuly];
+
+    do_uu_tien[9] = 5000;
+
+    for (t = 0; dem != sotientrinh; t++) {
+        uu_tien_nho = 9;
+        for (i = 0; i < sotientrinh; i++) {
+            if (do_uu_tien[uu_tien_nho] > do_uu_tien[i] && tg_denRL[i] <= t && tg_xuly[i] > 0) {
+                uu_tien_nho = i;
             }
         }
 
-        if (uu_tien_nho !== -1) {
-            tg_xuly[uu_tien_nho]--;
-            if (tg_xuly[uu_tien_nho] === 0) {
-                dem++;
-                tg_cho[uu_tien_nho] = t + 1 - tg_denRL[uu_tien_nho] - tam[uu_tien_nho];
-                tg_hoantat[uu_tien_nho] = t + 1 - tg_denRL[uu_tien_nho];
-                TongTG_cho += tg_cho[uu_tien_nho];
-                TongTG_hoantat += tg_hoantat[uu_tien_nho];
-            }
+        tg_xuly[uu_tien_nho] = tg_xuly[uu_tien_nho] - 1;
+
+        if (tg_xuly[uu_tien_nho] == 0) {
+            dem++;
+            tg_cho[uu_tien_nho] = t + 1 - tg_denRL[uu_tien_nho] - tam[uu_tien_nho];
+            tg_hoantat[uu_tien_nho] = t + 1 - tg_denRL[uu_tien_nho];
+
+            TongTG_cho = TongTG_cho + tg_cho[uu_tien_nho];
+            TongTG_hoantat = TongTG_hoantat + tg_hoantat[uu_tien_nho];
         }
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    tg_cho_tb = dem > 0 ? TongTG_cho / dem : 0;
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    tg_hoantat_tb = dem > 0 ? TongTG_hoantat / dem : 0;
+    tg_cho_tb = TongTG_cho / sotientrinh;
+    tg_hoantat_tb = TongTG_hoantat / sotientrinh;
 
     return {
         statusCode: StatusCode.OK,
         message: undefined,
         data: {
-            processes: req.arrArrivalTime.map((item, index) => {
+            processes: req.arrPro.map((item, index) => {
                 return {
-                    id: index + 1,
+                    id: item,
                     arrivalTime: tg_denRL[index],
-                    burstTime: tam[index],
+                    burstTime: req.arrBurstTime[index],
                     finishTime: tg_hoantat[index],
-                    waitingTime: tg_cho[index],
+                    waitingTime: tg_cho[index]
                 };
             }),
-            averageFinishTime: tg_cho_tb,
-            averageWaitingTime: tg_hoantat_tb
+            averageFinishTime: tg_hoantat_tb,
+            averageWaitingTime: tg_cho_tb
         },
     };
 }
