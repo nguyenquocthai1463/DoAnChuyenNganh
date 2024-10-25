@@ -83,101 +83,6 @@ export default function Home() {
     return response.json();
   }
 
-  function npp() {
-    const tam: number[] = []; //khai báo mảng tạm chứa các tiến trình
-    let sotientrinh: number;
-    count = demthoigianden(arrivalTime);
-    let dem = 0;
-    let t = 0;
-    let TongTG_cho = 0;
-    let TongTG_hoantat = 0;
-    let uu_tien_nho = 0;
-    // eslint-disable-next-line prefer-const
-    sotientrinh = count;
-    const tg_denRL = getCharactersWithoutSpaces(arrivalTime)
-    const tg_xuly = getCharactersWithoutSpaces(burstTime)
-    const do_uu_tien = getCharactersWithoutSpaces(priority)
-    for (let i = 0; i < sotientrinh; i++) {
-      aNPP.push({
-        tg_cho: 0,
-        tg_denRL: tg_denRL[i],
-        tg_xuly: tg_xuly[i],
-        tg_hoantat: 0,
-        do_uu_tien: do_uu_tien[i],
-      });
-      tam.push(tg_xuly[i]);
-    }
-
-    aNPP[9] = new TienTrinhNPP(0, 5000, 5000);
-
-    for (t = 0; dem !== sotientrinh; t++) {
-      uu_tien_nho = 9;
-      for (let i = 0; i < sotientrinh; i++) {
-        if (aNPP[uu_tien_nho].do_uu_tien > aNPP[i].do_uu_tien && aNPP[i].tg_denRL <= t && aNPP[i].tg_xuly > 0) {
-          uu_tien_nho = i;
-        }
-      }
-
-      aNPP[uu_tien_nho].tg_xuly = aNPP[uu_tien_nho].tg_xuly - 1;
-
-      if (aNPP[uu_tien_nho].tg_xuly === 0) {
-        dem++;
-        aNPP[uu_tien_nho].tg_cho = t + 1 - aNPP[uu_tien_nho].tg_denRL - tam[uu_tien_nho];
-        aNPP[uu_tien_nho].tg_hoantat = t + 1 - aNPP[uu_tien_nho].tg_denRL;
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        TongTG_cho += aNPP[uu_tien_nho].tg_cho;
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        TongTG_hoantat += aNPP[uu_tien_nho].tg_hoantat;
-      }
-      t++;
-    }
-  }//Hàm xử lý bài toán Priority Non Preemptive
-
-  function srtf() {
-    const tam: number[] = [];
-    let nhonhat: number;
-    let dem = 0;
-    let thoigian: number;
-    let soTT: number;
-    let tgcho = 0;
-    let tght = 0;
-    let ketthuc: number;
-    count = demthoigianden(arrivalTime);
-    // eslint-disable-next-line prefer-const
-    soTT = count;
-    for (let i = 0; i < soTT; i++) {
-      aSRTF.push({
-        tg_cho: 0,
-        tg_denRL: getCharactersWithoutSpaces(arrivalTime)[i],
-        tg_hoantat: 0,
-        tg_xuly: getCharactersWithoutSpaces(burstTime)[i],
-        tg_cho_tb: 0,
-        tg_hoantat_tb: 0,
-      });
-      tam[i] = aSRTF[i].tg_xuly;
-    }
-    aSRTF[9].tg_xuly = 60;  // Giả sử thời gian xử lý của tiến trình cuối cùng là 60 giây
-
-    for (thoigian = 0; dem !== soTT; thoigian++) {
-      nhonhat = 9; // Xét tiến trình có thời gian nhỏ nhất (tiến trình sau cùng)
-      for (let i = 0; i < soTT; i++) {
-        if (aSRTF[i].tg_denRL <= thoigian && aSRTF[i].tg_xuly < aSRTF[nhonhat].tg_xuly && aSRTF[i].tg_xuly > 0) {
-          nhonhat = i;
-        }
-      }
-      aSRTF[nhonhat].tg_xuly--;
-      if (aSRTF[nhonhat].tg_xuly === 0) {
-        dem++;
-        ketthuc = thoigian + 1;
-        tgcho += ketthuc - aSRTF[nhonhat].tg_denRL - tam[nhonhat];
-        tght += ketthuc - aSRTF[nhonhat].tg_denRL;
-      }
-    }
-
-    aSRTF[0].tg_cho_tb = tgcho / soTT;
-    aSRTF[0].tg_hoantat_tb = tght / soTT;
-  }//Hàm xử lý bài toán SRTF
-
   const rr = async () => {
     const request = {
       arrPro: getCharactersWithoutSpaces(arrivalTime).map((_item, index) => index + 1),
@@ -231,6 +136,24 @@ export default function Home() {
     }
   }
 
+  const npp = async () => {
+    const request = {
+      arrPro: getCharactersWithoutSpaces(arrivalTime).map((_item, index) => index + 1),
+      arrArrivalTime: getCharactersWithoutSpaces(arrivalTime),
+      arrBurstTime: getCharactersWithoutSpaces(burstTime),
+      arrPriority: getCharactersWithoutSpaces(priority)
+    };
+
+    try {
+      const data = await callingAPIWithCPUSchedulingAlgo(request, 'prio-nonp');
+      responseData = data;
+      // console.log(data);
+      // console.log('response data', responseData);
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  }
+
   const sjf = async () => {
     const request = {
       arrPro: getCharactersWithoutSpaces(arrivalTime).map((_item, index) => index + 1),
@@ -240,6 +163,23 @@ export default function Home() {
 
     try {
       const data = await callingAPIWithCPUSchedulingAlgo(request, 'sjf');
+      responseData = data;
+      // console.log(data);
+      // console.log('response data', responseData);
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  }
+
+  const srtf = async () => {
+    const request = {
+      arrPro: getCharactersWithoutSpaces(arrivalTime).map((_item, index) => index + 1),
+      arrArrivalTime: getCharactersWithoutSpaces(arrivalTime),
+      arrBurstTime: getCharactersWithoutSpaces(burstTime)
+    };
+
+    try {
+      const data = await callingAPIWithCPUSchedulingAlgo(request, 'srtf');
       responseData = data;
       // console.log(data);
       // console.log('response data', responseData);
@@ -266,7 +206,7 @@ export default function Home() {
     resetTable();
     let output: JSX.Element | null = null;
     if (selectedKey === "fcfs") {
-      await fcfs()
+      await fcfs();
       output = (
         <div>
           {
@@ -274,6 +214,7 @@ export default function Home() {
               <Table aria-label="Example static collection table">
                 <TableHeader>
                   <TableColumn className="px-3 text-center">Job</TableColumn>
+                  <TableColumn className="px-3 text-center">Arrival Time</TableColumn>
                   <TableColumn className="px-3 text-center">Burst Time</TableColumn>
                   <TableColumn className="px-3 text-center">Finish Time</TableColumn>
                   <TableColumn className="px-3 text-center">Waiting Time</TableColumn>
@@ -282,6 +223,7 @@ export default function Home() {
                   {(responseData?.data?.processes || []).map(process => (
                     <TableRow key={process.id}>
                       <TableCell className="px-3 text-center">{process.id}</TableCell>
+                      <TableCell className="px-3 text-center">{process.arrivalTime}</TableCell>
                       <TableCell className="px-3 text-center">{process.burstTime}</TableCell>
                       <TableCell className="px-3 text-center">{process.finishTime}</TableCell>
                       <TableCell className="px-3 text-center">{process.waitingTime}</TableCell>
@@ -299,25 +241,65 @@ export default function Home() {
       setResult(output);
       resetForm();
     }//Xử lý bài toán FCFS
+
     if (selectedKey === "sjf") {
-      await sjf()
+      await sjf();
+      output = (
+        <div>
+          {
+            <div>
+              <Table aria-label="Example static collection table">
+                <TableHeader>
+                  <TableColumn className="px-2 text-center">Job</TableColumn>
+                  <TableColumn className="px-2 text-center">Arrival Time</TableColumn>
+                  <TableColumn className="px-2 text-center">Burst Time</TableColumn>
+                  <TableColumn className="px-2 text-center">Finish Time</TableColumn>
+                  <TableColumn className="px-2 text-center">Waiting Time</TableColumn>
+                </TableHeader>
+                <TableBody>
+                  {(responseData?.data?.processes || []).map(process => (
+                    <TableRow key={process.id}>
+                      <TableCell className="px-2 text-center">{process.id}</TableCell>
+                      <TableCell className="px-2 text-center">{process.arrivalTime}</TableCell>
+                      <TableCell className="px-2 text-center">{process.burstTime}</TableCell>
+                      <TableCell className="px-2 text-center">{process.finishTime}</TableCell>
+                      <TableCell className="px-2 text-center">{process.waitingTime}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+              <div className="mt-4">
+                <p>Thời gian chờ trung bình: {responseData?.data?.averageWaitingTime}</p>
+                <p>Thời gian hoàn tất trung bình: {responseData?.data?.averageFinishTime}</p>
+              </div>
+            </div>}
+        </div>
+      );
+      setResult(output);
+      resetForm();
+    }//Xử lý bài toán SJF
+
+    if (selectedKey === "srtf") {
+      await srtf();
       output = (
         <div>
           {<div>
             <Table aria-label="Example static collection table">
               <TableHeader>
-                <TableColumn>Job</TableColumn>
-                <TableColumn>Burst Time</TableColumn>
-                <TableColumn>Finish Time</TableColumn>
-                <TableColumn>Waiting Time</TableColumn>
+                <TableColumn className="px-2 text-center">Job</TableColumn>
+                <TableColumn className="px-2 text-center">Arrival Time</TableColumn>
+                <TableColumn className="px-2 text-center">Burst Time</TableColumn>
+                <TableColumn className="px-2 text-center">Finish Time</TableColumn>
+                <TableColumn className="px-2 text-center">Waiting Time</TableColumn>
               </TableHeader>
               <TableBody>
                 {(responseData?.data?.processes || []).map(process => (
                   <TableRow key={process.id}>
-                    <TableCell className="text-center">{process.id}</TableCell>
-                    <TableCell className="text-center">{process.burstTime}</TableCell>
-                    <TableCell className="text-center">{process.finishTime}</TableCell>
-                    <TableCell className="text-center">{process.waitingTime}</TableCell>
+                    <TableCell className="px-2 text-center">{process.id}</TableCell>
+                    <TableCell className="px-2 text-center">{process.arrivalTime}</TableCell>
+                    <TableCell className="px-2 text-center">{process.burstTime}</TableCell>
+                    <TableCell className="px-2 text-center">{process.finishTime}</TableCell>
+                    <TableCell className="px-2 text-center">{process.waitingTime}</TableCell>
                   </TableRow>
                 ))}
               </TableBody>
@@ -327,48 +309,12 @@ export default function Home() {
             <p>Thời gian chờ trung bình: {responseData?.data?.averageWaitingTime}</p>
             <p>Thời gian hoàn tất trung bình: {responseData?.data?.averageFinishTime}</p>
           </div>
-
-        </div>
-      );
-      setResult(output);
-      resetForm();
-    }//Xử lý bài toán SJF
-    if (selectedKey === "srtf") {
-      srtf()
-      output = (
-        <div>
-          {
-            <div>
-              <Table aria-label="Example static collection table">
-                <TableHeader>
-                  <TableColumn>Job</TableColumn>
-                  <TableColumn>Arrival Time</TableColumn>
-                  <TableColumn>Burst Time</TableColumn>
-                  <TableColumn>Finish Time</TableColumn>
-                  <TableColumn>Turn Around Time</TableColumn>
-                  <TableColumn>Waiting Time</TableColumn>
-                </TableHeader>
-                <TableBody>
-                  {aSRTF.map((process, index) => (
-                    <TableRow key={index}>
-                      <TableCell className="text-center">{index + 1}</TableCell>
-                      <TableCell className="text-center">{process.tg_denRL}</TableCell>
-                      <TableCell className="text-center">{process.tg_xuly}</TableCell>
-                      <TableCell className="text-center">{process.tg_hoantat}</TableCell>
-                      <TableCell className="text-center">{process.tg_hoantat - process.tg_denRL}</TableCell>
-                      <TableCell className="text-center">{process.tg_cho}</TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </div>}
-          <p>Thời gian chờ trung bình: {aSRTF[0].tg_cho_tb}</p>
-          <p>Thời gian hoàn tất trung bình: {aSRTF[0].tg_hoantat_tb}</p>
         </div>
       );
       setResult(output);
       resetForm();
     }
+
     if (selectedKey === "rr") {
       await rr();
       output = (
@@ -401,62 +347,81 @@ export default function Home() {
           }
         </div>
       );
+      setResult(output);
+      resetForm();
     }//Xử lý bài toán RR
+
     if (selectedKey === "npp") {
-      npp()
+      await npp();
       output = (
         <div>
-          <Table aria-label="Example static collection table">
-            <TableHeader>
-              <TableColumn>Job</TableColumn>
-              <TableColumn>Arrival Time</TableColumn>
-              <TableColumn>Burst Time</TableColumn>
-              <TableColumn>Turn Around Time</TableColumn>
-              <TableColumn>Waiting Time</TableColumn>
-            </TableHeader>
-            <TableBody>
-              {aNPP.map((process, index) => (
-                // eslint-disable-next-line react/jsx-key
-                <TableRow key={index}>
-                  <TableCell className="text-center">{index + 1}</TableCell>
-                  <TableCell className="text-center">{process.tg_denRL}</TableCell>
-                  <TableCell className="text-center">{process.tg_xuly}</TableCell>
-                  <TableCell className="text-center">{process.tg_hoantat}</TableCell>
-                  <TableCell className="text-center">{process.tg_cho}</TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+          {
+            <div>
+              <Table aria-label="Example static collection table">
+                <TableHeader>
+                  <TableColumn className="px-2 text-center">Job</TableColumn>
+                  <TableColumn className="px-2 text-center">Arrival Time</TableColumn>
+                  <TableColumn className="px-2 text-center">Burst Time</TableColumn>
+                  <TableColumn className="px-2 text-center">Finish Time</TableColumn>
+                  <TableColumn className="px-2 text-center">Waiting Time</TableColumn>
+                </TableHeader>
+                <TableBody>
+                  {(responseData?.data?.processes || []).map(process => (
+                    <TableRow key={process.id}>
+                      <TableCell className="px-2 text-center">{process.id}</TableCell>
+                      <TableCell className="px-2 text-center">{process.arrivalTime}</TableCell>
+                      <TableCell className="px-2 text-center">{process.burstTime}</TableCell>
+                      <TableCell className="px-2 text-center">{process.finishTime}</TableCell>
+                      <TableCell className="px-2 text-center">{process.waitingTime}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+              <p>Thời gian chờ trung bình: {responseData?.data?.averageWaitingTime}</p>
+              <p>Thời gian hoàn tất trung bình: {responseData?.data?.averageFinishTime}</p>
+            </div>
+          }
         </div>
       );
       setResult(output);
       resetForm();
     }//Xử lý bài toán Priority Non Preemptive
+
     if (selectedKey === "pp") {
-      await pp()
+      await pp();
       output = (
         <div>
-          <Table aria-label="Example static collection table">
-            <TableHeader>
-              <TableColumn>Job</TableColumn>
-              <TableColumn>Finish Time</TableColumn>
-              <TableColumn>Waiting Time</TableColumn>
-            </TableHeader>
-            <TableBody>
-              {(responseData?.data?.processes || []).map(process => (
-                <TableRow key={process.id}>
-                  <TableCell className="text-center">{process.id}</TableCell>
-                  <TableCell className="text-center">{process.finishTime}</TableCell>
-                  <TableCell className="text-center">{process.waitingTime}</TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+          {
+            <div>
+              <Table aria-label="Example static collection table">
+                <TableHeader>
+                  <TableColumn className="px-2 text-center">Job</TableColumn>
+                  <TableColumn className="px-2 text-center">Arrival Time</TableColumn>
+                  <TableColumn className="px-2 text-center">Burst Time</TableColumn>
+                  <TableColumn className="px-2 text-center">Finish Time</TableColumn>
+                  <TableColumn className="px-2 text-center">Waiting Time</TableColumn>
+                </TableHeader>
+                <TableBody>
+                  {(responseData?.data?.processes || []).map(process => (
+                    <TableRow key={process.id}>
+                      <TableCell className="px-2 text-center">{process.id}</TableCell>
+                      <TableCell className="px-2 text-center">{process.arrivalTime}</TableCell>
+                      <TableCell className="px-2 text-center">{process.burstTime}</TableCell>
+                      <TableCell className="px-2 text-center">{process.finishTime}</TableCell>
+                      <TableCell className="px-2 text-center">{process.waitingTime}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+              <p>Thời gian chờ trung bình: {responseData?.data?.averageWaitingTime}</p>
+              <p>Thời gian hoàn tất trung bình: {responseData?.data?.averageFinishTime}</p>
+            </div>
+          }
         </div>
       );
+      setResult(output);
+      resetForm();
     }//Xử lý bài toán Priority Preemptive
-    setResult(output);
-    resetForm();
   };//hàm xử lý form
 
   type MenuItem = Required<MenuProps>['items'][number];
@@ -504,7 +469,7 @@ export default function Home() {
     },
   ];//layout cac loai thuat toan
 
-  const onClick: MenuProps['onClick'] = (e) => {
+  const onClick: MenuProps['onClick'] = (e: any) => {
     setSelectedKey(e.key);
   };//hàm xử lý click
 

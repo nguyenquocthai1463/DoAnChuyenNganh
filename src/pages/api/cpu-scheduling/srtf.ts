@@ -17,21 +17,59 @@ const validateRequestData = (arrArrivalTime: any, arrBurstTime: any, res: NextAp
 }
 
 const shortestRemainingTimeFirstAlgo = (req: ProcessRequest): ResponseData => {
+    let tgdenRL = new Array<number>(100).fill(0);
+    let tgxl = new Array<number>(100).fill(0);
+    let tam = new Array<number>(100).fill(0);
+    let i: number;
+    let nhonhat: number;
+    let dem: number = 0;
+    let thoigian: number;
+    let soTT: number;
+    let tgcho: number = 0;
+    let tght: number = 0;
+    let ketthuc: number;
+    let tgchotb: number, tghttb: number;
+
+
+    soTT = req.arrPro.length;
+    tgdenRL = req.arrArrivalTime;
+    tgxl = [...req.arrBurstTime];
+    tam = [...tgxl];
+
+    tgxl[9] = 60;
+    for (thoigian = 0; dem != soTT; thoigian++) {
+        nhonhat = 9;
+        for (i = 0; i < soTT; i++) {
+            if (tgdenRL[i] <= thoigian && tgxl[i] < tgxl[nhonhat] && tgxl[i] > 0) {
+                nhonhat = i;
+            }
+        }
+        tgxl[nhonhat]--;
+        if (tgxl[nhonhat] == 0) {
+            dem++;
+            ketthuc = thoigian + 1;
+            tgcho = tgcho + ketthuc - tgdenRL[nhonhat] - tam[nhonhat];
+            tght = tght + ketthuc - tgdenRL[nhonhat];
+        }
+    }
+    tgchotb = tgcho / soTT;
+    tghttb = tght / soTT;
+
     return {
         statusCode: StatusCode.OK,
         message: undefined,
         data: {
-            processes: req.arrArrivalTime.map((item, index) => {
+            processes: req.arrPro.map((item, index) => {
                 return {
-                    id: index + 1,
-                    arrivalTime: item,
+                    id: item,
+                    arrivalTime: tgdenRL[index],
                     burstTime: req.arrBurstTime[index],
-                    finishTime: 0,
-                    waitingTime: 0
+                    finishTime: tght,
+                    waitingTime: tgcho
                 };
             }),
-            averageFinishTime: 0,
-            averageWaitingTime: 0
+            averageFinishTime: tghttb,
+            averageWaitingTime: tgchotb
         },
     };
 }

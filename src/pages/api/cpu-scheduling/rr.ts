@@ -59,7 +59,7 @@ const roundRobinAlgo = (req: ProcessRequest): ResponseData => {
 
     // Initialization
     sl_tt = req.arrPro.length;
-    tt = req.arrPro.map((_item, index) => index + 1);
+    tt = req.arrPro.map((item) => item);
     tg_den = req.arrArrivalTime;
     tamDen = [...tg_den];
     tgxl = req.arrBurstTime;
