@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import { Menu, type MenuProps } from 'antd';
+import { Menu, notification, type MenuProps } from 'antd';
 import {
   Table,
   TableHeader,
@@ -11,44 +11,14 @@ import {
 } from "@nextui-org/table";
 import { ResponseData } from "@/types/api-response";
 
-class TienTrinhNPP {
-  tg_cho: number;
-  tg_denRL: number;
-  tg_xuly: number;
-  tg_hoantat: number;
-  do_uu_tien: number;
-  constructor(tg_denRL: number, tg_xuly: number, do_uu_tien: number) {
-    this.tg_cho = 0;
-    this.tg_denRL = tg_denRL;
-    this.tg_xuly = tg_xuly;
-    this.tg_hoantat = 0;
-    this.do_uu_tien = do_uu_tien;
-  }
-}//Khởi tạo class cho tiến trình Priority Non Preemptive
-
-interface TienTrinhFCFS {
-  tg_cho: number;
-  tg_denRL: number;
-  tg_xuly: number;
-  tg_hoantat: number;
-  tg_cho_tb: number;
-  tg_hoantat_tb: number;
-}//khởi tạo interface cho tiến trình FCFS
-interface TienTrinhSRTF {
-  tg_cho: number;
-  tg_denRL: number;
-  tg_xuly: number;
-  tg_hoantat: number;
-  tg_cho_tb: number;
-  tg_hoantat_tb: number;
-}//khởi tạo interface cho tiến trình SRTF
-
-const aNPP: TienTrinhNPP[] = []; //khai báo mảng a chứa các tiến trình
-const aFCFS: TienTrinhFCFS[] = []; //khai báo mảng a chứa các tiến trình
-const aSRTF: TienTrinhSRTF[] = []; //khai báo mảng a chứa các tiến trình
-let responseData: ResponseData;
+let responseData: ResponseData = {
+  statusCode: undefined,
+  message: undefined,
+  data: undefined
+};
 
 export default function Home() {
+  //khởi tạo các biến state để lưu giá trị của các input và kết quả
   const [selectedKey, setSelectedKey] = useState<string | null>(null);
   const [arrivalTime, setArrivalTime] = useState<string>("");
   const [burstTime, setBurstTime] = useState<string>("");
@@ -56,17 +26,8 @@ export default function Home() {
   const [timeQuantum, setTimeQuantum] = useState<string>("");
   const [result, setResult] = useState<JSX.Element | null>(null);
 
-  //khởi tạo các biến state để lưu giá trị của các input và kết quả
-  let count = 0;
-  //khởi tạo biến count để lưu số lượng tiến trình
-  function demthoigianden(input: string): number {
-    const stringWithoutSpaces = input.replace(/\s+/g, '');
-    return stringWithoutSpaces.length;
-  }//hàm đếm số lượng tiến trình
-
-  function getCharactersWithoutSpaces(input: string): number[] {
-    const numbers = input.match(/\d+/g);
-    return numbers ? numbers.map(Number) : [];
+  function getCharactersWithoutSpaces(input: string): string[] {
+    return input.trim() === "" ? [] : input.trim().split(/\s+/);
   }//hàm lấy các số từ input
 
   // Hàm call API cho các thuật toán CPU
@@ -80,6 +41,15 @@ export default function Home() {
       body: JSON.stringify(req),
     });
 
+    if (!response.ok) {
+      const errorData = await response.json();
+      return {
+        statusCode: errorData.statusCode,
+        message: errorData.message,
+        data: undefined,
+      }
+    }
+
     return response.json();
   }
 
@@ -88,16 +58,21 @@ export default function Home() {
       arrPro: getCharactersWithoutSpaces(arrivalTime).map((_item, index) => index + 1),
       arrArrivalTime: getCharactersWithoutSpaces(arrivalTime),
       arrBurstTime: getCharactersWithoutSpaces(burstTime),
-      quantum: Number(timeQuantum)
+      quantum: timeQuantum
     };
 
-    try {
-      const data = await callingAPIWithCPUSchedulingAlgo(request, 'rr');
-      responseData = data;
-      // console.log(data);
-      // console.log('response data', responseData);
-    } catch (error) {
-      console.error('Error:', error);
+    responseData = await callingAPIWithCPUSchedulingAlgo(request, 'rr');
+
+    if (responseData.data === undefined) {
+      notification.error({
+        message: 'Invalid input',
+        description: responseData.message
+      });
+    } else {
+      notification.success({
+        message: 'Valid input',
+        description: 'Processed successfully'
+      });
     }
   }
 
@@ -108,13 +83,18 @@ export default function Home() {
       arrBurstTime: getCharactersWithoutSpaces(burstTime)
     };
 
-    try {
-      const data = await callingAPIWithCPUSchedulingAlgo(request, 'fcfs');
-      responseData = data;
-      // console.log(data);
-      // console.log('response data', responseData);
-    } catch (error) {
-      console.error('Error:', error);
+    responseData = await callingAPIWithCPUSchedulingAlgo(request, 'fcfs');
+
+    if (responseData.data === undefined) {
+      notification.error({
+        message: 'Invalid input',
+        description: responseData.message
+      });
+    } else {
+      notification.success({
+        message: 'Valid input',
+        description: 'Processed successfully'
+      });
     }
   }
 
@@ -126,13 +106,18 @@ export default function Home() {
       arrPriority: getCharactersWithoutSpaces(priority)
     };
 
-    try {
-      const data = await callingAPIWithCPUSchedulingAlgo(request, 'prio-p');
-      responseData = data;
-      // console.log(data);
-      // console.log('response data', responseData);
-    } catch (error) {
-      console.error('Error:', error);
+    responseData = await callingAPIWithCPUSchedulingAlgo(request, 'prio-p');
+
+    if (responseData.data === undefined) {
+      notification.error({
+        message: 'Invalid input',
+        description: responseData.message
+      });
+    } else {
+      notification.success({
+        message: 'Valid input',
+        description: 'Processed successfully'
+      });
     }
   }
 
@@ -144,13 +129,18 @@ export default function Home() {
       arrPriority: getCharactersWithoutSpaces(priority)
     };
 
-    try {
-      const data = await callingAPIWithCPUSchedulingAlgo(request, 'prio-nonp');
-      responseData = data;
-      // console.log(data);
-      // console.log('response data', responseData);
-    } catch (error) {
-      console.error('Error:', error);
+    responseData = await callingAPIWithCPUSchedulingAlgo(request, 'prio-nonp');
+
+    if (responseData.data === undefined) {
+      notification.error({
+        message: 'Invalid input',
+        description: responseData.message
+      });
+    } else {
+      notification.success({
+        message: 'Valid input',
+        description: 'Processed successfully'
+      });
     }
   }
 
@@ -161,30 +151,40 @@ export default function Home() {
       arrBurstTime: getCharactersWithoutSpaces(burstTime)
     };
 
-    try {
-      const data = await callingAPIWithCPUSchedulingAlgo(request, 'sjf');
-      responseData = data;
-      // console.log(data);
-      // console.log('response data', responseData);
-    } catch (error) {
-      console.error('Error:', error);
+    responseData = await callingAPIWithCPUSchedulingAlgo(request, 'sjf');
+
+    if (responseData.data === undefined) {
+      notification.error({
+        message: 'Invalid input',
+        description: responseData.message
+      });
+    } else {
+      notification.success({
+        message: 'Valid input',
+        description: 'Processed successfully'
+      });
     }
   }
 
-  const srtf = async () => {
+  const sjf_nonp = async () => {
     const request = {
       arrPro: getCharactersWithoutSpaces(arrivalTime).map((_item, index) => index + 1),
       arrArrivalTime: getCharactersWithoutSpaces(arrivalTime),
       arrBurstTime: getCharactersWithoutSpaces(burstTime)
     };
 
-    try {
-      const data = await callingAPIWithCPUSchedulingAlgo(request, 'srtf');
-      responseData = data;
-      // console.log(data);
-      // console.log('response data', responseData);
-    } catch (error) {
-      console.error('Error:', error);
+    responseData = await callingAPIWithCPUSchedulingAlgo(request, 'sjf-nonp');
+
+    if (responseData.data === undefined) {
+      notification.error({
+        message: 'Invalid input',
+        description: responseData.message
+      });
+    } else {
+      notification.success({
+        message: 'Valid input',
+        description: 'Processed successfully'
+      });
     }
   }
 
@@ -197,9 +197,6 @@ export default function Home() {
 
   const resetTable = () => {
     // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-    aNPP.splice(0, aNPP.length);
-    aNPP.splice(0, aNPP.length);
-    aFCFS.splice(0, aFCFS.length);
   }//hàm reset bảng
 
   const handleSubmit = async () => {
@@ -209,11 +206,11 @@ export default function Home() {
       await fcfs();
       output = (
         <div>
-          {
+          {typeof responseData.data !== 'undefined' &&
             <div>
               <Table aria-label="Example static collection table">
                 <TableHeader>
-                  <TableColumn className="px-3 text-center">Job</TableColumn>
+                  <TableColumn className="px-3 text-center">Process</TableColumn>
                   <TableColumn className="px-3 text-center">Arrival Time</TableColumn>
                   <TableColumn className="px-3 text-center">Burst Time</TableColumn>
                   <TableColumn className="px-3 text-center">Finish Time</TableColumn>
@@ -222,7 +219,7 @@ export default function Home() {
                 <TableBody>
                   {(responseData?.data?.processes || []).map(process => (
                     <TableRow key={process.id}>
-                      <TableCell className="px-3 text-center">{process.id}</TableCell>
+                      <TableCell className="px-3 text-center">P{process.id}</TableCell>
                       <TableCell className="px-3 text-center">{process.arrivalTime}</TableCell>
                       <TableCell className="px-3 text-center">{process.burstTime}</TableCell>
                       <TableCell className="px-3 text-center">{process.finishTime}</TableCell>
@@ -232,8 +229,8 @@ export default function Home() {
                 </TableBody>
               </Table>
               <div className="mt-4">
-                <p>Thời gian chờ trung bình: {responseData?.data?.averageWaitingTime}</p>
-                <p>Thời gian hoàn tất trung bình: {responseData?.data?.averageFinishTime}</p>
+                <p>Average Waiting Time: {responseData?.data?.averageWaitingTime}</p>
+                <p>Average Finished Time: {responseData?.data?.averageFinishTime}</p>
               </div>
             </div>}
         </div>
@@ -246,31 +243,31 @@ export default function Home() {
       await sjf();
       output = (
         <div>
-          {
+          {typeof responseData.data !== 'undefined' &&
             <div>
               <Table aria-label="Example static collection table">
                 <TableHeader>
-                  <TableColumn className="px-2 text-center">Job</TableColumn>
-                  <TableColumn className="px-2 text-center">Arrival Time</TableColumn>
-                  <TableColumn className="px-2 text-center">Burst Time</TableColumn>
-                  <TableColumn className="px-2 text-center">Finish Time</TableColumn>
-                  <TableColumn className="px-2 text-center">Waiting Time</TableColumn>
+                  <TableColumn className="px-3 text-center">Process</TableColumn>
+                  <TableColumn className="px-3 text-center">Arrival Time</TableColumn>
+                  <TableColumn className="px-3 text-center">Burst Time</TableColumn>
+                  <TableColumn className="px-3 text-center">Finish Time</TableColumn>
+                  <TableColumn className="px-3 text-center">Waiting Time</TableColumn>
                 </TableHeader>
                 <TableBody>
                   {(responseData?.data?.processes || []).map(process => (
                     <TableRow key={process.id}>
-                      <TableCell className="px-2 text-center">{process.id}</TableCell>
-                      <TableCell className="px-2 text-center">{process.arrivalTime}</TableCell>
-                      <TableCell className="px-2 text-center">{process.burstTime}</TableCell>
-                      <TableCell className="px-2 text-center">{process.finishTime}</TableCell>
-                      <TableCell className="px-2 text-center">{process.waitingTime}</TableCell>
+                      <TableCell className="px-3 text-center">P{process.id}</TableCell>
+                      <TableCell className="px-3 text-center">{process.arrivalTime}</TableCell>
+                      <TableCell className="px-3 text-center">{process.burstTime}</TableCell>
+                      <TableCell className="px-3 text-center">{process.finishTime}</TableCell>
+                      <TableCell className="px-3 text-center">{process.waitingTime}</TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
               </Table>
               <div className="mt-4">
-                <p>Thời gian chờ trung bình: {responseData?.data?.averageWaitingTime}</p>
-                <p>Thời gian hoàn tất trung bình: {responseData?.data?.averageFinishTime}</p>
+                <p>Average Waiting Time: {responseData?.data?.averageWaitingTime}</p>
+                <p>Average Finished Time: {responseData?.data?.averageFinishTime}</p>
               </div>
             </div>}
         </div>
@@ -280,71 +277,73 @@ export default function Home() {
     }//Xử lý bài toán SJF
 
     if (selectedKey === "srtf") {
-      await srtf();
+      await sjf_nonp();
       output = (
         <div>
-          {<div>
-            <Table aria-label="Example static collection table">
-              <TableHeader>
-                <TableColumn className="px-2 text-center">Job</TableColumn>
-                <TableColumn className="px-2 text-center">Arrival Time</TableColumn>
-                <TableColumn className="px-2 text-center">Burst Time</TableColumn>
-                <TableColumn className="px-2 text-center">Finish Time</TableColumn>
-                <TableColumn className="px-2 text-center">Waiting Time</TableColumn>
-              </TableHeader>
-              <TableBody>
-                {(responseData?.data?.processes || []).map(process => (
-                  <TableRow key={process.id}>
-                    <TableCell className="px-2 text-center">{process.id}</TableCell>
-                    <TableCell className="px-2 text-center">{process.arrivalTime}</TableCell>
-                    <TableCell className="px-2 text-center">{process.burstTime}</TableCell>
-                    <TableCell className="px-2 text-center">{process.finishTime}</TableCell>
-                    <TableCell className="px-2 text-center">{process.waitingTime}</TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </div>}
-          <div className="mt-4">
-            <p>Thời gian chờ trung bình: {responseData?.data?.averageWaitingTime}</p>
-            <p>Thời gian hoàn tất trung bình: {responseData?.data?.averageFinishTime}</p>
-          </div>
+          {typeof responseData.data !== 'undefined' &&
+            <div>
+              <Table aria-label="Example static collection table">
+                <TableHeader>
+                  <TableColumn className="px-3 text-center">Process</TableColumn>
+                  <TableColumn className="px-3 text-center">Arrival Time</TableColumn>
+                  <TableColumn className="px-3 text-center">Burst Time</TableColumn>
+                  <TableColumn className="px-3 text-center">Finish Time</TableColumn>
+                  <TableColumn className="px-3 text-center">Waiting Time</TableColumn>
+                </TableHeader>
+                <TableBody>
+                  {(responseData?.data?.processes || []).map(process => (
+                    <TableRow key={process.id}>
+                      <TableCell className="px-3 text-center">P{process.id}</TableCell>
+                      <TableCell className="px-3 text-center">{process.arrivalTime}</TableCell>
+                      <TableCell className="px-3 text-center">{process.burstTime}</TableCell>
+                      <TableCell className="px-3 text-center">{process.finishTime}</TableCell>
+                      <TableCell className="px-3 text-center">{process.waitingTime}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+              <div className="mt-4">
+                <p>Average Waiting Time: {responseData?.data?.averageWaitingTime}</p>
+                <p>Average Finished Time: {responseData?.data?.averageFinishTime}</p>
+              </div>
+            </div>}
         </div>
       );
       setResult(output);
       resetForm();
-    }
+    }//Xử lý bfi toán SRTF
 
     if (selectedKey === "rr") {
       await rr();
       output = (
         <div>
-          {
+          {typeof responseData.data !== 'undefined' &&
             <div>
               <Table aria-label="Example static collection table">
                 <TableHeader>
-                  <TableColumn className="px-2 text-center">Job</TableColumn>
-                  <TableColumn className="px-2 text-center">Arrival Time</TableColumn>
-                  <TableColumn className="px-2 text-center">Burst Time</TableColumn>
-                  <TableColumn className="px-2 text-center">Finish Time</TableColumn>
-                  <TableColumn className="px-2 text-center">Waiting Time</TableColumn>
+                  <TableColumn className="px-3 text-center">Process</TableColumn>
+                  <TableColumn className="px-3 text-center">Arrival Time</TableColumn>
+                  <TableColumn className="px-3 text-center">Burst Time</TableColumn>
+                  <TableColumn className="px-3 text-center">Finish Time</TableColumn>
+                  <TableColumn className="px-3 text-center">Waiting Time</TableColumn>
                 </TableHeader>
                 <TableBody>
                   {(responseData?.data?.processes || []).map(process => (
                     <TableRow key={process.id}>
-                      <TableCell className="px-2 text-center">{process.id}</TableCell>
-                      <TableCell className="px-2 text-center">{process.arrivalTime}</TableCell>
-                      <TableCell className="px-2 text-center">{process.burstTime}</TableCell>
-                      <TableCell className="px-2 text-center">{process.finishTime}</TableCell>
-                      <TableCell className="px-2 text-center">{process.waitingTime}</TableCell>
+                      <TableCell className="px-3 text-center">P{process.id}</TableCell>
+                      <TableCell className="px-3 text-center">{process.arrivalTime}</TableCell>
+                      <TableCell className="px-3 text-center">{process.burstTime}</TableCell>
+                      <TableCell className="px-3 text-center">{process.finishTime}</TableCell>
+                      <TableCell className="px-3 text-center">{process.waitingTime}</TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
               </Table>
-              <p>Thời gian chờ trung bình: {responseData?.data?.averageWaitingTime}</p>
-              <p>Thời gian hoàn tất trung bình: {responseData?.data?.averageFinishTime}</p>
-            </div>
-          }
+              <div className="mt-4">
+                <p>Average Waiting Time: {responseData?.data?.averageWaitingTime}</p>
+                <p>Average Finished Time: {responseData?.data?.averageFinishTime}</p>
+              </div>
+            </div>}
         </div>
       );
       setResult(output);
@@ -355,32 +354,33 @@ export default function Home() {
       await npp();
       output = (
         <div>
-          {
+          {typeof responseData.data !== 'undefined' &&
             <div>
               <Table aria-label="Example static collection table">
                 <TableHeader>
-                  <TableColumn className="px-2 text-center">Job</TableColumn>
-                  <TableColumn className="px-2 text-center">Arrival Time</TableColumn>
-                  <TableColumn className="px-2 text-center">Burst Time</TableColumn>
-                  <TableColumn className="px-2 text-center">Finish Time</TableColumn>
-                  <TableColumn className="px-2 text-center">Waiting Time</TableColumn>
+                  <TableColumn className="px-3 text-center">Process</TableColumn>
+                  <TableColumn className="px-3 text-center">Arrival Time</TableColumn>
+                  <TableColumn className="px-3 text-center">Burst Time</TableColumn>
+                  <TableColumn className="px-3 text-center">Finish Time</TableColumn>
+                  <TableColumn className="px-3 text-center">Waiting Time</TableColumn>
                 </TableHeader>
                 <TableBody>
                   {(responseData?.data?.processes || []).map(process => (
                     <TableRow key={process.id}>
-                      <TableCell className="px-2 text-center">{process.id}</TableCell>
-                      <TableCell className="px-2 text-center">{process.arrivalTime}</TableCell>
-                      <TableCell className="px-2 text-center">{process.burstTime}</TableCell>
-                      <TableCell className="px-2 text-center">{process.finishTime}</TableCell>
-                      <TableCell className="px-2 text-center">{process.waitingTime}</TableCell>
+                      <TableCell className="px-3 text-center">P{process.id}</TableCell>
+                      <TableCell className="px-3 text-center">{process.arrivalTime}</TableCell>
+                      <TableCell className="px-3 text-center">{process.burstTime}</TableCell>
+                      <TableCell className="px-3 text-center">{process.finishTime}</TableCell>
+                      <TableCell className="px-3 text-center">{process.waitingTime}</TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
               </Table>
-              <p>Thời gian chờ trung bình: {responseData?.data?.averageWaitingTime}</p>
-              <p>Thời gian hoàn tất trung bình: {responseData?.data?.averageFinishTime}</p>
-            </div>
-          }
+              <div className="mt-4">
+                <p>Average Waiting Time: {responseData?.data?.averageWaitingTime}</p>
+                <p>Average Finished Time: {responseData?.data?.averageFinishTime}</p>
+              </div>
+            </div>}
         </div>
       );
       setResult(output);
@@ -391,32 +391,33 @@ export default function Home() {
       await pp();
       output = (
         <div>
-          {
+          {typeof responseData.data !== 'undefined' &&
             <div>
               <Table aria-label="Example static collection table">
                 <TableHeader>
-                  <TableColumn className="px-2 text-center">Job</TableColumn>
-                  <TableColumn className="px-2 text-center">Arrival Time</TableColumn>
-                  <TableColumn className="px-2 text-center">Burst Time</TableColumn>
-                  <TableColumn className="px-2 text-center">Finish Time</TableColumn>
-                  <TableColumn className="px-2 text-center">Waiting Time</TableColumn>
+                  <TableColumn className="px-3 text-center">Process</TableColumn>
+                  <TableColumn className="px-3 text-center">Arrival Time</TableColumn>
+                  <TableColumn className="px-3 text-center">Burst Time</TableColumn>
+                  <TableColumn className="px-3 text-center">Finish Time</TableColumn>
+                  <TableColumn className="px-3 text-center">Waiting Time</TableColumn>
                 </TableHeader>
                 <TableBody>
                   {(responseData?.data?.processes || []).map(process => (
                     <TableRow key={process.id}>
-                      <TableCell className="px-2 text-center">{process.id}</TableCell>
-                      <TableCell className="px-2 text-center">{process.arrivalTime}</TableCell>
-                      <TableCell className="px-2 text-center">{process.burstTime}</TableCell>
-                      <TableCell className="px-2 text-center">{process.finishTime}</TableCell>
-                      <TableCell className="px-2 text-center">{process.waitingTime}</TableCell>
+                      <TableCell className="px-3 text-center">P{process.id}</TableCell>
+                      <TableCell className="px-3 text-center">{process.arrivalTime}</TableCell>
+                      <TableCell className="px-3 text-center">{process.burstTime}</TableCell>
+                      <TableCell className="px-3 text-center">{process.finishTime}</TableCell>
+                      <TableCell className="px-3 text-center">{process.waitingTime}</TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
               </Table>
-              <p>Thời gian chờ trung bình: {responseData?.data?.averageWaitingTime}</p>
-              <p>Thời gian hoàn tất trung bình: {responseData?.data?.averageFinishTime}</p>
-            </div>
-          }
+              <div className="mt-4">
+                <p>Average Waiting Time: {responseData?.data?.averageWaitingTime}</p>
+                <p>Average Finished Time: {responseData?.data?.averageFinishTime}</p>
+              </div>
+            </div>}
         </div>
       );
       setResult(output);
@@ -439,11 +440,11 @@ export default function Home() {
         },
         {
           key: 'sjf',
-          label: 'Shortest Job First',
+          label: 'Shortest Job First Pre',
         },
         {
           key: 'pp',
-          label: 'Priority',
+          label: 'Priority Pre',
         },
       ],
     },
@@ -455,7 +456,7 @@ export default function Home() {
       children: [
         {
           key: 'npp',
-          label: 'Priority Non Preemptive',
+          label: 'Priority NonPre',
         },
         {
           key: 'rr',
@@ -463,7 +464,7 @@ export default function Home() {
         },
         {
           key: 'srtf',
-          label: 'Shortest Remaining Time First',
+          label: 'Shortest Job First NonPre',
         },
       ],
     },

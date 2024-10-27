@@ -2,103 +2,133 @@ import { NextApiRequest, NextApiResponse } from "next";
 import { ProcessRequest, ProcessResponse } from "@/types/process";
 import { StatusCode } from "@/types/status-code";
 import { ResponseData } from "@/types/api-response";
-import { validateArrivalTimeAndBurstTime } from "@/types/data-validation";
+import {
+  validateTheLengthOfProcesses,
+  validateArrivalTimeAndBurstTime,
+  validateThatEachElementInTheProcessesIsNumeric
+} from "@/types/data-validation";
 
-const validateRequestData = (arrArrivalTime: any, arrBurstTime: any, res: NextApiResponse<ResponseData>) => {
-    if (!Array.isArray(arrArrivalTime) || arrArrivalTime.length === 0 ||
-        !Array.isArray(arrBurstTime) || arrBurstTime.length === 0)
-        return res.status(StatusCode.BAD_REQUEST).json({
-            statusCode: StatusCode.BAD_REQUEST,
-            message: "Invalid request. Please provide an array of process requests.",
-            data: undefined,
-        });
 
-    validateArrivalTimeAndBurstTime(arrArrivalTime, arrBurstTime, undefined, res);
-}
+const shortestJobFirstPreemitiveAlgo = (req: ProcessRequest): ResponseData => {
+  let tam: number, i: number, j: number, soTT: number, vitri: number, tong: number = 0;
+  let tgchotb: number, tghttb: number;
+  let tgxl = new Array<number>(100).fill(0);
+  let tt = new Array<number>(100).fill(0);
+  let tgcho = new Array<number>(100).fill(0);
+  let tght = new Array<number>(100).fill(0);
 
-const shortestJobFirstAlgo = (req: ProcessRequest): ResponseData => {
-    let tam: number;
-    let tong = 0;
-    let vitri: number;
-    const tt: number[] = [];
-    let soTT: number;
-    let tg_xuly = new Array<number>(100);
-    const tg_cho = new Array<number>(100);
-    const tg_hoantat = new Array<number>(100);
-    let tg_cho_tb = 0;
-    let tg_hoantat_tb = 0;
-    tg_xuly = req.arrBurstTime;
+  soTT = req.arrPro.length;
+  tgxl = req.arrBurstTime;
+  tt = req.arrPro;
 
-    soTT = req.arrBurstTime.length;
-    for (let i = 0; i < soTT; i++) {
-      vitri = i;
-      for (let j = i + 1; j < soTT; j++) {
-        if (tg_xuly[j] < tg_xuly[vitri]) {
-          vitri = j;
-        }
+  for (i = 0; i < soTT; i++) {
+    vitri = i;
+    for (j = i + 1; j < soTT; j++) {
+      if (tgxl[j] < tgxl[vitri]) {
+        vitri = j;
       }
-      tam = tg_xuly[i];
-      tg_xuly[i] = tg_xuly[vitri];
-      tg_xuly[vitri] = tam;
-      tam = tt[i];
-      tt[i] = tt[vitri];
-      tt[vitri] = tam;
     }
+    tam = tgxl[i];
+    tgxl[i] = tgxl[vitri];
+    tgxl[vitri] = tam;
+    tam = tt[i];
+    tt[i] = tt[vitri];
+    tt[vitri] = tam;
+  }
 
-    tg_cho[0] = 0;
-    for (let i = 1; i < soTT; i++) {
-      tg_cho[i] = 0;
-      for (let j = 0; j < i; j++) {
-        tg_cho[i] += tg_xuly[j];
-      }
-      tong += tg_cho[i];
+  tgcho[0] = 0;
+  for (i = 1; i < soTT; i++) {
+    tgcho[i] = 0;
+    for (j = 0; j < i; j++) {
+      tgcho[i] = tgcho[i] + tgxl[j];
     }
-    tg_cho_tb = tong / soTT;
-    tong = 0;
-    for (let i = 0; i < soTT; i++) {
-      tg_hoantat[i] = tg_xuly[i] + tg_cho[i];
-      tong += tg_hoantat[i];
-    }
-    tg_hoantat_tb = tong / soTT;
-    return {
-        statusCode: StatusCode.OK,
-        message: undefined,
-        data: {
-            processes: req.arrArrivalTime.map((item, index) => {
-                return {
-                    id: index + 1,
-                    arrivalTime: item,
-                    burstTime: tg_xuly[index],
-                    finishTime: tg_hoantat[index],
-                    waitingTime: tg_cho[index],
-                };
-            }),
-            averageFinishTime: tg_hoantat_tb,
-            averageWaitingTime: tg_cho_tb,
-        },
-    };
+    tong = tong + tgcho[i];
+  }
+  tgchotb = tong / soTT;
+
+  tong = 0;
+  for (i = 0; i < soTT; i++) {
+    tght[i] = tgxl[i] + tgcho[i];
+    tong = tong + tght[i];
+  }
+  tghttb = tong / soTT;
+
+  return {
+    statusCode: StatusCode.OK,
+    message: undefined,
+    data: {
+      processes: tt.map((item, index) => {
+        return {
+          id: item,
+          arrivalTime: req.arrArrivalTime[index],
+          burstTime: tgxl[index],
+          finishTime: tght[index],
+          waitingTime: tgcho[index],
+        };
+      }),
+      averageFinishTime: tghttb,
+      averageWaitingTime: tgchotb,
+    },
+  };
 }
 
 export default function handler(req: NextApiRequest, res: NextApiResponse<ResponseData>) {
 
-    if (req.method !== 'POST')
-        return res.status(StatusCode.METHOD_NOT_ALLOWED).json({
-            statusCode: StatusCode.METHOD_NOT_ALLOWED,
-            message: "Method not allowed. Only POST method is supported.",
-            data: undefined,
-        });
+  if (req.method !== 'POST') {
+    res.status(StatusCode.METHOD_NOT_ALLOWED).json({
+      statusCode: StatusCode.METHOD_NOT_ALLOWED,
+      message: "Method not allowed. Only POST method is supported.",
+      data: undefined,
+    });
+    return;
+  }
 
-    const { arrPro, arrArrivalTime, arrBurstTime } = req.body;
-    validateRequestData(arrArrivalTime, arrBurstTime, res);
+  const { arrPro, arrArrivalTime, arrBurstTime } = req.body;
+
+  try {
+    if (!validateTheLengthOfProcesses(arrArrivalTime, arrBurstTime)) {
+      res.status(StatusCode.BAD_REQUEST).json({
+        statusCode: StatusCode.BAD_REQUEST,
+        message: `Please provide an array of processes as well as corresponding arrival and burst times.`,
+        data: undefined,
+      });
+      return;
+    }
+
+    if (!validateArrivalTimeAndBurstTime(arrArrivalTime, arrBurstTime)) {
+      res.status(StatusCode.BAD_REQUEST).json({
+        statusCode: StatusCode.BAD_REQUEST,
+        message: `The length of arrival times and burst times should be the same.`,
+        data: undefined,
+      });
+      return;
+    }
+
+    const ans = validateThatEachElementInTheProcessesIsNumeric(arrArrivalTime, arrBurstTime, undefined);
+    if (!ans[0]) {
+      res.status(StatusCode.BAD_REQUEST).json({
+        statusCode: StatusCode.BAD_REQUEST,
+        message: ans[1],
+        data: undefined,
+      });
+      return;
+    }
 
     const request: ProcessRequest = {
-        arrPro: arrPro,
-        arrArrivalTime: arrArrivalTime,
-        arrBurstTime: arrBurstTime,
-        arrPriority: undefined,
-        quantum: undefined
+      arrPro: arrPro,
+      arrArrivalTime: arrArrivalTime.map(Number),
+      arrBurstTime: arrBurstTime.map(Number),
+      arrPriority: undefined,
+      quantum: undefined
     };
 
-    const response: ResponseData = shortestJobFirstAlgo(request);
-    return res.status(StatusCode.OK).json(response);
+    const response: ResponseData = shortestJobFirstPreemitiveAlgo(request);
+    res.status(StatusCode.OK).json(response);
+  } catch (error: any) {
+    res.status(StatusCode.SERVER_ERROR).json({
+      statusCode: StatusCode.SERVER_ERROR,
+      message: error.message,
+      data: undefined,
+    });
+  }
 }

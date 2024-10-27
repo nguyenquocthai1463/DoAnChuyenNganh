@@ -2,20 +2,12 @@ import { NextApiRequest, NextApiResponse } from "next";
 import { ProcessRequest } from "@/types/process";
 import { StatusCode } from "@/types/status-code";
 import { ResponseData } from "@/types/api-response";
-import { validateArrivalTimeAndBurstTime } from "@/types/data-validation";
-
-const validateRequestData = (arrArrivalTime: any, arrBurstTime: any, quantum: any, res: NextApiResponse<ResponseData>) => {
-    if (!Array.isArray(arrArrivalTime) || arrArrivalTime.length === 0 ||
-        !Array.isArray(arrBurstTime) || arrBurstTime.length === 0 ||
-        !quantum || (quantum && quantum <= 0) || typeof quantum !== 'number')
-        return res.status(StatusCode.BAD_REQUEST).json({
-            statusCode: StatusCode.BAD_REQUEST,
-            message: "Invalid request. Please provide an array of process requests and a quantum positive number.",
-            data: undefined,
-        });
-
-    validateArrivalTimeAndBurstTime(arrArrivalTime, arrBurstTime, undefined, res);
-}
+import {
+    validateTheLengthOfProcesses,
+    validateArrivalTimeAndBurstTime,
+    validateThatEachElementInTheProcessesIsNumeric,
+    validateQuantum
+} from "@/types/data-validation";
 
 const roundRobinAlgo = (req: ProcessRequest): ResponseData => {
     // Declaration
@@ -148,24 +140,70 @@ const roundRobinAlgo = (req: ProcessRequest): ResponseData => {
 
 export default function handler(req: NextApiRequest, res: NextApiResponse<ResponseData>) {
 
-    if (req.method !== 'POST')
-        return res.status(StatusCode.METHOD_NOT_ALLOWED).json({
+    if (req.method !== 'POST') {
+        res.status(StatusCode.METHOD_NOT_ALLOWED).json({
             statusCode: StatusCode.METHOD_NOT_ALLOWED,
             message: "Method not allowed. Only POST method is supported.",
             data: undefined,
         });
+        return;
+    }
 
     const { arrPro, arrArrivalTime, arrBurstTime, quantum } = req.body;
-    validateRequestData(arrArrivalTime, arrBurstTime, quantum, res);
 
-    const request: ProcessRequest = {
-        arrPro: arrPro,
-        arrArrivalTime: arrArrivalTime,
-        arrBurstTime: arrBurstTime,
-        arrPriority: undefined,
-        quantum: quantum
-    };
+    try {
+        if (!validateTheLengthOfProcesses(arrArrivalTime, arrBurstTime)) {
+            res.status(StatusCode.BAD_REQUEST).json({
+                statusCode: StatusCode.BAD_REQUEST,
+                message: `Please provide an array of processes as well as corresponding arrival and burst times.`,
+                data: undefined,
+            });
+            return;
+        }
 
-    const response: ResponseData = roundRobinAlgo(request);
-    return res.status(StatusCode.OK).json(response);
+        if (!validateQuantum(quantum)) {
+            res.status(StatusCode.BAD_REQUEST).json({
+                statusCode: StatusCode.BAD_REQUEST,
+                message: `Please provide a quantum positive number (greater than 0).`,
+                data: undefined,
+            });
+            return;
+        }
+
+        if (!validateArrivalTimeAndBurstTime(arrArrivalTime, arrBurstTime)) {
+            res.status(StatusCode.BAD_REQUEST).json({
+                statusCode: StatusCode.BAD_REQUEST,
+                message: `The length of arrival times and burst times should be the same.`,
+                data: undefined,
+            });
+            return;
+        }
+
+        const ans = validateThatEachElementInTheProcessesIsNumeric(arrArrivalTime, arrBurstTime, undefined);
+        if (!ans[0]) {
+            res.status(StatusCode.BAD_REQUEST).json({
+                statusCode: StatusCode.BAD_REQUEST,
+                message: ans[1],
+                data: undefined,
+            });
+            return;
+        }
+
+        const request: ProcessRequest = {
+            arrPro: arrPro,
+            arrArrivalTime: arrArrivalTime.map(Number),
+            arrBurstTime: arrBurstTime.map(Number),
+            arrPriority: undefined,
+            quantum: Number(quantum)
+        };
+
+        const response: ResponseData = roundRobinAlgo(request);
+        res.status(StatusCode.OK).json(response);
+    } catch (error: any) {
+        res.status(StatusCode.SERVER_ERROR).json({
+            statusCode: StatusCode.SERVER_ERROR,
+            message: error.message,
+            data: undefined,
+        });
+    }
 }

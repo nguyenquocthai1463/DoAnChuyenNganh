@@ -9,35 +9,51 @@ import {
 } from "@/types/data-validation";
 
 
-const firstComeFirstServeAlgo = (req: ProcessRequest): ResponseData => {
-    let TG_XuLy = new Array<number>(100).fill(0);
-    let TG_Cho = new Array<number>(100).fill(0);
-    let TG_HoanTat = new Array<number>(100).fill(0);
-    let TG_Cho_TB: number = 0.0;
-    let TG_HoanTat_TB: number = 0.0;
-    let count: number;
-    let j: number;
-    let So_TienTrinh: number;
+const shortestJobFirstNonPreemitiveAlgo = (req: ProcessRequest): ResponseData => {
+    let tgdenRL = new Array<number>(100).fill(0);
+    let tgxl = new Array<number>(100).fill(0);
+    let tam = new Array<number>(100).fill(0);
+    let tg_cho = new Array<number>(100).fill(0);
+    let tg_ht = new Array<number>(100).fill(0);
+    let i: number;
+    let nhonhat: number;
+    let dem: number = 0;
+    let thoigian: number;
+    let soTT: number;
+    let tgcho: number = 0;
+    let tght: number = 0;
+    let ketthuc: number;
+    let tgchotb: number, tghttb: number;
 
-    So_TienTrinh = req.arrPro.length;
-    TG_XuLy = req.arrBurstTime;
 
-    TG_Cho[0] = 0;
-    for (count = 1; count < So_TienTrinh; count++) {
-        TG_Cho[count] = 0;
-        for (j = 0; j < count; j++) {
-            TG_Cho[count] = TG_Cho[count] + TG_XuLy[j];
+    soTT = req.arrPro.length;
+    tgdenRL = req.arrArrivalTime;
+    tgxl = [...req.arrBurstTime];
+    tam = [...tgxl];
+
+    tgxl[9] = 60;
+    for (thoigian = 0; dem != soTT; thoigian++) {
+        nhonhat = 9;
+        for (i = 0; i < soTT; i++) {
+            if (tgdenRL[i] <= thoigian && tgxl[i] < tgxl[nhonhat] && tgxl[i] > 0) {
+                nhonhat = i;
+            }
+        }
+
+        tgxl[nhonhat]--;
+        if (tgxl[nhonhat] == 0) {
+            dem++;
+            ketthuc = thoigian + 1;
+
+            tg_cho[nhonhat] = ketthuc - tgdenRL[nhonhat] - tam[nhonhat];
+            tg_ht[nhonhat] = ketthuc - tgdenRL[nhonhat];
+
+            tgcho = tgcho + tg_cho[nhonhat];
+            tght = tght + tg_ht[nhonhat];
         }
     }
-
-    for (count = 0; count < So_TienTrinh; count++) {
-        TG_HoanTat[count] = TG_XuLy[count] + TG_Cho[count];
-        TG_Cho_TB = TG_Cho_TB + TG_Cho[count];
-        TG_HoanTat_TB = TG_HoanTat_TB + TG_HoanTat[count];
-    }
-
-    TG_Cho_TB = TG_Cho_TB / count;
-    TG_HoanTat_TB = TG_HoanTat_TB / count;
+    tgchotb = tgcho / soTT;
+    tghttb = tght / soTT;
 
     return {
         statusCode: StatusCode.OK,
@@ -46,15 +62,15 @@ const firstComeFirstServeAlgo = (req: ProcessRequest): ResponseData => {
             processes: req.arrPro.map((item, index) => {
                 return {
                     id: item,
-                    arrivalTime: req.arrArrivalTime[index],
-                    burstTime: TG_XuLy[index],
-                    finishTime: TG_HoanTat[index],
-                    waitingTime: TG_Cho[index],
+                    arrivalTime: tgdenRL[index],
+                    burstTime: req.arrBurstTime[index],
+                    finishTime: tg_ht[index],
+                    waitingTime: tg_cho[index]
                 };
             }),
-            averageFinishTime: TG_HoanTat_TB,
-            averageWaitingTime: TG_Cho_TB,
-        },
+            averageFinishTime: tghttb,
+            averageWaitingTime: tgchotb
+        }
     };
 }
 
@@ -108,7 +124,7 @@ export default function handler(req: NextApiRequest, res: NextApiResponse<Respon
             quantum: undefined
         };
 
-        const response: ResponseData = firstComeFirstServeAlgo(request);
+        const response: ResponseData = shortestJobFirstNonPreemitiveAlgo(request);
         res.status(StatusCode.OK).json(response);
     } catch (error: any) {
         res.status(StatusCode.SERVER_ERROR).json({
