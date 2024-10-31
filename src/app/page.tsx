@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Menu, type MenuProps } from 'antd';
 import {
   Table,
@@ -10,6 +10,7 @@ import {
   TableCell
 } from "@nextui-org/table";
 import { ResponseData } from "@/types/api-response";
+import Swal from 'sweetalert2';
 
 class TienTrinhNPP {
   tg_cho: number;
@@ -46,6 +47,29 @@ export default function Home() {
   const [priority, setPriority] = useState<string>("");
   const [timeQuantum, setTimeQuantum] = useState<string>("");
   const [result, setResult] = useState<JSX.Element | null>(null);
+  const [isSidebarOpen, setSidebarOpen] = useState(false);
+  const toggleSidebar = () => setSidebarOpen(!isSidebarOpen);
+  const sidebarRef = useRef<HTMLDivElement>(null);
+
+  const handleClickOutside = (event: { target: any; }) => {
+    if (sidebarRef.current && !sidebarRef.current.contains(event.target)) {
+      setSidebarOpen(false); // Đóng sidebar nếu click ngoài sidebar
+    }
+  };
+
+  const handleMenuItemClick = () => {
+    setSidebarOpen(false); // Đóng sidebar khi nhấn vào item
+  };
+
+  useEffect(() => {
+    // Thêm sự kiện lắng nghe khi component được render
+    document.addEventListener('mousedown', handleClickOutside);
+
+    // Dọn dẹp sự kiện khi component bị hủy
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
 
   function getCharactersWithoutSpaces(input: string): number[] {
     const numbers = input.match(/\d+/g);
@@ -185,227 +209,390 @@ export default function Home() {
     aFCFS.splice(0, aFCFS.length);
   }//hàm reset bảng
 
+  function kiemTraChuoiToanSoHayKhong(value: string) {
+    return /^\d+$/.test(value.replace(/\s+/g, ''));
+  }
+
+  function kiemTraChuoiBangNhau(str1: string, str2: string) {
+    const digitsInStr1 = str1.replace(/\D/g, '').length;
+    const digitsInStr2 = str2.replace(/\D/g, '').length;
+    return digitsInStr1 === digitsInStr2;
+  }
+
   const handleSubmit = async () => {
     resetTable();
+    await fcfs();
     let output: JSX.Element | null = null;
     if (selectedKey === "fcfs") {
-      await fcfs();
-      output = (
-        <div>
-          {
-            <div>
-              <Table aria-label="Example static collection table">
-                <TableHeader>
-                  <TableColumn className="px-3 text-center">Job</TableColumn>
-                  <TableColumn className="px-3 text-center">Arrival Time</TableColumn>
-                  <TableColumn className="px-3 text-center">Burst Time</TableColumn>
-                  <TableColumn className="px-3 text-center">Finish Time</TableColumn>
-                  <TableColumn className="px-3 text-center">Waiting Time</TableColumn>
-                </TableHeader>
-                <TableBody>
-                  {(responseData?.data?.processes || []).map(process => (
-                    <TableRow key={process.id}>
-                      <TableCell className="px-3 text-center">{process.id}</TableCell>
-                      <TableCell className="px-3 text-center">{process.arrivalTime}</TableCell>
-                      <TableCell className="px-3 text-center">{process.burstTime}</TableCell>
-                      <TableCell className="px-3 text-center">{process.finishTime}</TableCell>
-                      <TableCell className="px-3 text-center">{process.waitingTime}</TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-              <div className="mt-4">
-                <p>Thời gian chờ trung bình: {responseData?.data?.averageWaitingTime}</p>
-                <p>Thời gian hoàn tất trung bình: {responseData?.data?.averageFinishTime}</p>
+      if (arrivalTime !== "" && burstTime !== "") {
+        if (kiemTraChuoiToanSoHayKhong(arrivalTime) && kiemTraChuoiToanSoHayKhong(burstTime)) {
+          if (kiemTraChuoiBangNhau(arrivalTime, burstTime)) {
+            output = (
+              <div>
+                {
+                  <div>
+                    <Table aria-label="Example static collection table">
+                      <TableHeader>
+                        <TableColumn className="px-3 text-center">Job</TableColumn>
+                        <TableColumn className="px-3 text-center">Arrival Time</TableColumn>
+                        <TableColumn className="px-3 text-center">Burst Time</TableColumn>
+                        <TableColumn className="px-3 text-center">Finish Time</TableColumn>
+                        <TableColumn className="px-3 text-center">Waiting Time</TableColumn>
+                      </TableHeader>
+                      <TableBody>
+                        {(responseData?.data?.processes || []).map(process => (
+                          <TableRow key={process.id}>
+                            <TableCell className="px-3 text-center">{process.id}</TableCell>
+                            <TableCell className="px-3 text-center">{process.arrivalTime}</TableCell>
+                            <TableCell className="px-3 text-center">{process.burstTime}</TableCell>
+                            <TableCell className="px-3 text-center">{process.finishTime}</TableCell>
+                            <TableCell className="px-3 text-center">{process.waitingTime}</TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                    <div className="mt-4">
+                      <p>Thời gian chờ trung bình: {responseData?.data?.averageWaitingTime}</p>
+                      <p>Thời gian hoàn tất trung bình: {responseData?.data?.averageFinishTime}</p>
+                    </div>
+                  </div>}
               </div>
-            </div>}
-        </div>
-      );
-      setResult(output);
-      resetForm();
-    }//Xử lý bài toán FCFS
+            );
+            setResult(output);
+            resetForm();
+          }
+          else {
+            Swal.fire({
+              icon: 'error',
+              title: 'Oops...',
+              text: 'Số lượng tiến trình không khớp nhau!',
+            })
+          }
+        }
+        else {
+          Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: 'Vui lòng nhập đúng định dạng!',
+          })
+        }
+      } else {
+        Swal.fire({
+          icon: 'error',
+          title: 'Oops...',
+          text: 'Vui lòng nhập đủ thông tin!',
+        })
+      }
+    }
 
     if (selectedKey === "sjf") {
-      await sjf();
-      output = (
-        <div>
-          {
-            <div>
-              <Table aria-label="Example static collection table">
-                <TableHeader>
-                  <TableColumn className="px-2 text-center">Job</TableColumn>
-                  <TableColumn className="px-2 text-center">Arrival Time</TableColumn>
-                  <TableColumn className="px-2 text-center">Burst Time</TableColumn>
-                  <TableColumn className="px-2 text-center">Finish Time</TableColumn>
-                  <TableColumn className="px-2 text-center">Waiting Time</TableColumn>
-                </TableHeader>
-                <TableBody>
-                  {(responseData?.data?.processes || []).map(process => (
-                    <TableRow key={process.id}>
-                      <TableCell className="px-2 text-center">{process.id}</TableCell>
-                      <TableCell className="px-2 text-center">{process.arrivalTime}</TableCell>
-                      <TableCell className="px-2 text-center">{process.burstTime}</TableCell>
-                      <TableCell className="px-2 text-center">{process.finishTime}</TableCell>
-                      <TableCell className="px-2 text-center">{process.waitingTime}</TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-              <div className="mt-4">
-                <p>Thời gian chờ trung bình: {responseData?.data?.averageWaitingTime}</p>
-                <p>Thời gian hoàn tất trung bình: {responseData?.data?.averageFinishTime}</p>
+      if (arrivalTime !== "" && burstTime !== "") {
+        if (kiemTraChuoiToanSoHayKhong(arrivalTime) && kiemTraChuoiToanSoHayKhong(burstTime)) {
+          if (kiemTraChuoiBangNhau(arrivalTime, burstTime)) {
+            await sjf();
+            output = (
+              <div>
+                {
+                  <div>
+                    <Table aria-label="Example static collection table">
+                      <TableHeader>
+                        <TableColumn className="px-2 text-center">Job</TableColumn>
+                        <TableColumn className="px-2 text-center">Arrival Time</TableColumn>
+                        <TableColumn className="px-2 text-center">Burst Time</TableColumn>
+                        <TableColumn className="px-2 text-center">Finish Time</TableColumn>
+                        <TableColumn className="px-2 text-center">Waiting Time</TableColumn>
+                      </TableHeader>
+                      <TableBody>
+                        {(responseData?.data?.processes || []).map(process => (
+                          <TableRow key={process.id}>
+                            <TableCell className="px-2 text-center">{process.id}</TableCell>
+                            <TableCell className="px-2 text-center">{process.arrivalTime}</TableCell>
+                            <TableCell className="px-2 text-center">{process.burstTime}</TableCell>
+                            <TableCell className="px-2 text-center">{process.finishTime}</TableCell>
+                            <TableCell className="px-2 text-center">{process.waitingTime}</TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                    <div className="mt-4">
+                      <p>Thời gian chờ trung bình: {responseData?.data?.averageWaitingTime}</p>
+                      <p>Thời gian hoàn tất trung bình: {responseData?.data?.averageFinishTime}</p>
+                    </div>
+                  </div>}
               </div>
-            </div>}
-        </div>
-      );
-      setResult(output);
-      resetForm();
-    }//Xử lý bài toán SJF
+            );
+            setResult(output);
+            resetForm();
+          }
+          else {
+            Swal.fire({
+              icon: 'error',
+              title: 'Oops...',
+              text: 'Số lượng tiến trình không khớp nhau!',
+            })
+          }
+        }
+        else {
+          Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: 'Vui lòng nhập đúng định dạng!',
+          })
+        }
+      } else {
+        Swal.fire({
+          icon: 'error',
+          title: 'Oops...',
+          text: 'Vui lòng nhập đủ thông tin!',
+        })
+      }
+    }
+
 
     if (selectedKey === "srtf") {
-      await srtf();
-      output = (
-        <div>
-          {<div>
-            <Table aria-label="Example static collection table">
-              <TableHeader>
-                <TableColumn className="px-2 text-center">Job</TableColumn>
-                <TableColumn className="px-2 text-center">Arrival Time</TableColumn>
-                <TableColumn className="px-2 text-center">Burst Time</TableColumn>
-                <TableColumn className="px-2 text-center">Finish Time</TableColumn>
-                <TableColumn className="px-2 text-center">Waiting Time</TableColumn>
-              </TableHeader>
-              <TableBody>
-                {(responseData?.data?.processes || []).map(process => (
-                  <TableRow key={process.id}>
-                    <TableCell className="px-2 text-center">{process.id}</TableCell>
-                    <TableCell className="px-2 text-center">{process.arrivalTime}</TableCell>
-                    <TableCell className="px-2 text-center">{process.burstTime}</TableCell>
-                    <TableCell className="px-2 text-center">{process.finishTime}</TableCell>
-                    <TableCell className="px-2 text-center">{process.waitingTime}</TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </div>}
-          <div className="mt-4">
-            <p>Thời gian chờ trung bình: {responseData?.data?.averageWaitingTime}</p>
-            <p>Thời gian hoàn tất trung bình: {responseData?.data?.averageFinishTime}</p>
-          </div>
-        </div>
-      );
-      setResult(output);
-      resetForm();
+      if (arrivalTime !== "" && burstTime !== "") {
+        if (kiemTraChuoiToanSoHayKhong(arrivalTime) && kiemTraChuoiToanSoHayKhong(burstTime)) {
+          if (kiemTraChuoiBangNhau(arrivalTime, burstTime)) {
+            await srtf();
+            output = (
+              <div>
+                {<div>
+                  <Table aria-label="Example static collection table">
+                    <TableHeader>
+                      <TableColumn className="px-2 text-center">Job</TableColumn>
+                      <TableColumn className="px-2 text-center">Arrival Time</TableColumn>
+                      <TableColumn className="px-2 text-center">Burst Time</TableColumn>
+                    </TableHeader>
+                    <TableBody>
+                      {(responseData?.data?.processes || []).map(process => (
+                        <TableRow key={process.id}>
+                          <TableCell className="px-2 text-center">{process.id}</TableCell>
+                          <TableCell className="px-2 text-center">{process.arrivalTime}</TableCell>
+                          <TableCell className="px-2 text-center">{process.burstTime}</TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>}
+                <div className="mt-4">
+                  <p>Thời gian chờ trung bình: {responseData?.data?.averageWaitingTime}</p>
+                  <p>Thời gian hoàn tất trung bình: {responseData?.data?.averageFinishTime}</p>
+                </div>
+              </div>
+            );
+            setResult(output);
+            resetForm();
+          }
+          else {
+            Swal.fire({
+              icon: 'error',
+              title: 'Oops...',
+              text: 'Số lượng tiến trình không khớp nhau!',
+            })
+          }
+        }
+        else {
+          Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: 'Vui lòng nhập đúng định dạng!',
+          })
+        }
+      } else {
+        Swal.fire({
+          icon: 'error',
+          title: 'Oops...',
+          text: 'Vui lòng nhập đủ thông tin!',
+        })
+      }
     }
 
     if (selectedKey === "rr") {
-      await rr();
-      output = (
-        <div>
-          {
-            <div>
-              <Table aria-label="Example static collection table">
-                <TableHeader>
-                  <TableColumn className="px-2 text-center">Job</TableColumn>
-                  <TableColumn className="px-2 text-center">Arrival Time</TableColumn>
-                  <TableColumn className="px-2 text-center">Burst Time</TableColumn>
-                  <TableColumn className="px-2 text-center">Finish Time</TableColumn>
-                  <TableColumn className="px-2 text-center">Waiting Time</TableColumn>
-                </TableHeader>
-                <TableBody>
-                  {(responseData?.data?.processes || []).map(process => (
-                    <TableRow key={process.id}>
-                      <TableCell className="px-2 text-center">{process.id}</TableCell>
-                      <TableCell className="px-2 text-center">{process.arrivalTime}</TableCell>
-                      <TableCell className="px-2 text-center">{process.burstTime}</TableCell>
-                      <TableCell className="px-2 text-center">{process.finishTime}</TableCell>
-                      <TableCell className="px-2 text-center">{process.waitingTime}</TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-              <p>Thời gian chờ trung bình: {responseData?.data?.averageWaitingTime}</p>
-              <p>Thời gian hoàn tất trung bình: {responseData?.data?.averageFinishTime}</p>
-            </div>
+      if (arrivalTime !== "" && burstTime !== "" && timeQuantum !== "") {
+        if (kiemTraChuoiToanSoHayKhong(arrivalTime) && kiemTraChuoiToanSoHayKhong(burstTime) && kiemTraChuoiToanSoHayKhong(timeQuantum)) {
+          if (kiemTraChuoiBangNhau(arrivalTime, burstTime)) {
+            await rr();
+            output = (
+              <div>
+                {
+                  <div>
+                    <Table aria-label="Example static collection table">
+                      <TableHeader>
+                        <TableColumn className="px-2 text-center">Job</TableColumn>
+                        <TableColumn className="px-2 text-center">Arrival Time</TableColumn>
+                        <TableColumn className="px-2 text-center">Burst Time</TableColumn>
+                        <TableColumn className="px-2 text-center">Finish Time</TableColumn>
+                        <TableColumn className="px-2 text-center">Waiting Time</TableColumn>
+                      </TableHeader>
+                      <TableBody>
+                        {(responseData?.data?.processes || []).map(process => (
+                          <TableRow key={process.id}>
+                            <TableCell className="px-2 text-center">{process.id}</TableCell>
+                            <TableCell className="px-2 text-center">{process.arrivalTime}</TableCell>
+                            <TableCell className="px-2 text-center">{process.burstTime}</TableCell>
+                            <TableCell className="px-2 text-center">{process.finishTime}</TableCell>
+                            <TableCell className="px-2 text-center">{process.waitingTime}</TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                    <p>Thời gian chờ trung bình: {responseData?.data?.averageWaitingTime}</p>
+                    <p>Thời gian hoàn tất trung bình: {responseData?.data?.averageFinishTime}</p>
+                  </div>
+                }
+              </div>
+            );
+            setResult(output);
+            resetForm();
           }
-        </div>
-      );
-      setResult(output);
-      resetForm();
-    }//Xử lý bài toán RR
+          else {
+            Swal.fire({
+              icon: 'error',
+              title: 'Oops...',
+              text: 'Số lượng tiến trình không khớp nhau!',
+            })
+          }
+        }
+        else {
+          Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: 'Vui lòng nhập đúng định dạng!',
+          })
+        }
+      } else {
+        Swal.fire({
+          icon: 'error',
+          title: 'Oops...',
+          text: 'Vui lòng nhập đủ thông tin!',
+        })
+      }
+    }
 
     if (selectedKey === "npp") {
-      await npp();
-      output = (
-        <div>
-          {
-            <div>
-              <Table aria-label="Example static collection table">
-                <TableHeader>
-                  <TableColumn className="px-2 text-center">Job</TableColumn>
-                  <TableColumn className="px-2 text-center">Arrival Time</TableColumn>
-                  <TableColumn className="px-2 text-center">Burst Time</TableColumn>
-                  <TableColumn className="px-2 text-center">Finish Time</TableColumn>
-                  <TableColumn className="px-2 text-center">Waiting Time</TableColumn>
-                </TableHeader>
-                <TableBody>
-                  {(responseData?.data?.processes || []).map(process => (
-                    <TableRow key={process.id}>
-                      <TableCell className="px-2 text-center">{process.id}</TableCell>
-                      <TableCell className="px-2 text-center">{process.arrivalTime}</TableCell>
-                      <TableCell className="px-2 text-center">{process.burstTime}</TableCell>
-                      <TableCell className="px-2 text-center">{process.finishTime}</TableCell>
-                      <TableCell className="px-2 text-center">{process.waitingTime}</TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-              <p>Thời gian chờ trung bình: {responseData?.data?.averageWaitingTime}</p>
-              <p>Thời gian hoàn tất trung bình: {responseData?.data?.averageFinishTime}</p>
-            </div>
-          }
-        </div>
+      if (arrivalTime !== "" && burstTime !== "" && priority !== "") {
+        if (kiemTraChuoiToanSoHayKhong(arrivalTime) && kiemTraChuoiToanSoHayKhong(burstTime) && kiemTraChuoiToanSoHayKhong(priority)) {
+          if (kiemTraChuoiBangNhau(arrivalTime, burstTime) && kiemTraChuoiBangNhau(arrivalTime, priority) && kiemTraChuoiBangNhau(burstTime, priority)) {
+            await npp();
+            output = (
+              <div>
+                {
+                  <div>
+                    <Table aria-label="Example static collection table">
+                      <TableHeader>
+                        <TableColumn className="px-2 text-center">Job</TableColumn>
+                        <TableColumn className="px-2 text-center">Arrival Time</TableColumn>
+                        <TableColumn className="px-2 text-center">Burst Time</TableColumn>
+                        <TableColumn className="px-2 text-center">Finish Time</TableColumn>
+                        <TableColumn className="px-2 text-center">Waiting Time</TableColumn>
+                      </TableHeader>
+                      <TableBody>
+                        {(responseData?.data?.processes || []).map(process => (
+                          <TableRow key={process.id}>
+                            <TableCell className="px-2 text-center">{process.id}</TableCell>
+                            <TableCell className="px-2 text-center">{process.arrivalTime}</TableCell>
+                            <TableCell className="px-2 text-center">{process.burstTime}</TableCell>
+                            <TableCell className="px-2 text-center">{process.finishTime}</TableCell>
+                            <TableCell className="px-2 text-center">{process.waitingTime}</TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                    <p>Thời gian chờ trung bình: {responseData?.data?.averageWaitingTime}</p>
+                    <p>Thời gian hoàn tất trung bình: {responseData?.data?.averageFinishTime}</p>
+                  </div>
+                }
+              </div>
 
-      );
-      setResult(output);
-      resetForm();
-    }//Xử lý bài toán Priority Non Preemptive
+            );
+            setResult(output);
+            resetForm();
+          }
+          else {
+            Swal.fire({
+              icon: 'error',
+              title: 'Oops...',
+              text: 'Số lượng tiến trình không khớp nhau!',
+            })
+          }
+        }
+        else {
+          Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: 'Vui lòng nhập đúng định dạng!',
+          })
+        }
+      } else {
+        Swal.fire({
+          icon: 'error',
+          title: 'Oops...',
+          text: 'Vui lòng nhập đủ thông tin!',
+        })
+      }
+    }
 
     if (selectedKey === "pp") {
-      await pp();
-      output = (
-        <div>
-          {
-            <div>
-              <Table aria-label="Example static collection table">
-                <TableHeader>
-                  <TableColumn className="px-2 text-center">Job</TableColumn>
-                  <TableColumn className="px-2 text-center">Arrival Time</TableColumn>
-                  <TableColumn className="px-2 text-center">Burst Time</TableColumn>
-                  <TableColumn className="px-2 text-center">Finish Time</TableColumn>
-                  <TableColumn className="px-2 text-center">Waiting Time</TableColumn>
-                </TableHeader>
-                <TableBody>
-                  {(responseData?.data?.processes || []).map(process => (
-                    <TableRow key={process.id}>
-                      <TableCell className="px-2 text-center">{process.id}</TableCell>
-                      <TableCell className="px-2 text-center">{process.arrivalTime}</TableCell>
-                      <TableCell className="px-2 text-center">{process.burstTime}</TableCell>
-                      <TableCell className="px-2 text-center">{process.finishTime}</TableCell>
-                      <TableCell className="px-2 text-center">{process.waitingTime}</TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-              <p>Thời gian chờ trung bình: {responseData?.data?.averageWaitingTime}</p>
-              <p>Thời gian hoàn tất trung bình: {responseData?.data?.averageFinishTime}</p>
-            </div>
+      if (arrivalTime !== "" && burstTime !== "" && priority !== "") {
+        if (kiemTraChuoiToanSoHayKhong(arrivalTime) && kiemTraChuoiToanSoHayKhong(burstTime) && kiemTraChuoiToanSoHayKhong(priority)) {
+          if (kiemTraChuoiBangNhau(arrivalTime, burstTime) && kiemTraChuoiBangNhau(arrivalTime, priority) && kiemTraChuoiBangNhau(burstTime, priority)) {
+            await pp();
+            output = (
+              <div>
+                {
+                  <div>
+                    <Table aria-label="Example static collection table">
+                      <TableHeader>
+                        <TableColumn className="px-2 text-center">Job</TableColumn>
+                        <TableColumn className="px-2 text-center">Arrival Time</TableColumn>
+                        <TableColumn className="px-2 text-center">Burst Time</TableColumn>
+                        <TableColumn className="px-2 text-center">Finish Time</TableColumn>
+                        <TableColumn className="px-2 text-center">Waiting Time</TableColumn>
+                      </TableHeader>
+                      <TableBody>
+                        {(responseData?.data?.processes || []).map(process => (
+                          <TableRow key={process.id}>
+                            <TableCell className="px-2 text-center">{process.id}</TableCell>
+                            <TableCell className="px-2 text-center">{process.arrivalTime}</TableCell>
+                            <TableCell className="px-2 text-center">{process.burstTime}</TableCell>
+                            <TableCell className="px-2 text-center">{process.finishTime}</TableCell>
+                            <TableCell className="px-2 text-center">{process.waitingTime}</TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                    <p>Thời gian chờ trung bình: {responseData?.data?.averageWaitingTime}</p>
+                    <p>Thời gian hoàn tất trung bình: {responseData?.data?.averageFinishTime}</p>
+                  </div>
+                }
+              </div>
+            );
+            setResult(output);
+            resetForm();
           }
-        </div>
-      );
-      setResult(output);
-      resetForm();
-    }//Xử lý bài toán Priority Preemptive
+          else {
+            Swal.fire({
+              icon: 'error',
+              title: 'Oops...',
+              text: 'Số lượng tiến trình không khớp nhau!',
+            })
+          }
+        }
+        else {
+          Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: 'Vui lòng nhập đúng định dạng!',
+          })
+        }
+      } else {
+        Swal.fire({
+          icon: 'error',
+          title: 'Oops...',
+          text: 'Vui lòng nhập đủ thông tin!',
+        })
+      }
+    }
   };//hàm xử lý form
 
   type MenuItem = Required<MenuProps>['items'][number];
@@ -455,6 +642,7 @@ export default function Home() {
 
   const onClick: MenuProps['onClick'] = (e: any) => {
     setSelectedKey(e.key);
+    handleMenuItemClick();
   };//hàm xử lý click
 
   const renderForm = () => {
@@ -679,13 +867,14 @@ export default function Home() {
   };
 
   return (
-    <><button data-drawer-target="default-sidebar" data-drawer-toggle="default-sidebar" aria-controls="default-sidebar" type="button" className="inline-flex items-center p-2 mt-2 ms-3 text-sm text-gray-500 rounded-lg sm:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600">
-      <span className="sr-only">Open sidebar</span>
-      <svg className="w-6 h-6" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-        <path clip-rule="evenodd" fill-rule="evenodd" d="M2 4.75A.75.75 0 012.75 4h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 4.75zm0 10.5a.75.75 0 01.75-.75h7.5a.75.75 0 010 1.5h-7.5a.75.75 0 01-.75-.75zM2 10a.75.75 0 01.75-.75h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 10z"></path>
-      </svg>
-    </button>
-      <aside id="default-sidebar" className="fixed top-0 left-0 z-40 w-64 h-screen transition-transform -translate-x-full sm:translate-x-0" aria-label="Sidebar">
+    <div>
+      <button onClick={toggleSidebar} data-drawer-target="default-sidebar" data-drawer-toggle="default-sidebar" aria-controls="default-sidebar" type="button" className="inline-flex items-center p-2 mt-2 ms-3 text-sm text-gray-500 rounded-lg sm:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600">
+        <span className="sr-only">Open sidebar</span>
+        <svg className="w-6 h-6" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+          <path clip-rule="evenodd" fill-rule="evenodd" d="M2 4.75A.75.75 0 012.75 4h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 4.75zm0 10.5a.75.75 0 01.75-.75h7.5a.75.75 0 010 1.5h-7.5a.75.75 0 01-.75-.75zM2 10a.75.75 0 01.75-.75h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 10z"></path>
+        </svg>
+      </button>
+      <aside ref={sidebarRef} id="default-sidebar" className={`fixed top-0 left-0 z-40 w-64 h-screen transition-transform ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'} sm:translate-x-0`} aria-label="Sidebar">
         <div className="h-full px-3 py-4 overflow-y-auto bg-2 dark:bg-02">
           <div className=" text-while">
             <Menu
@@ -696,21 +885,17 @@ export default function Home() {
           </div>
         </div>
       </aside>
-      <div className="h-screen sm:ml-64">
-        <div className="h-4/6 md:flex-col">
-          <div className="p-4 flex-none max-w-md mx-auto text-center md:max-w-2xl">
-            <p className="text-xl font-bold">Tìm hiểu công nghệ Jamstack và xây dựng ứng dụng Web minh họa các giải thuật định thời CPU</p>
-          </div>
-          <div className="p-4 md:min-h-full">
-            {result}
-          </div>
-          <div className="h-1/6 md:min-h-full">
-            {renderForm()}
-          </div>
+      <div className="h-screen sm:ml-64 md:flex-col">
+        <div className="p-4 flex-none max-w-md mx-auto text-center md:max-w-2xl">
+          <p className="text-xl font-bold">Tìm hiểu công nghệ Jamstack và xây dựng ứng dụng Web minh họa các giải thuật định thời CPU</p>
         </div>
-
+        <div className="p-4 md:h-4/6">
+          {result}
+        </div>
+        <div className="md:content-end md:h-1/6">
+          {renderForm()}
+        </div>
       </div>
-
-    </>
+    </div>
   );
 }

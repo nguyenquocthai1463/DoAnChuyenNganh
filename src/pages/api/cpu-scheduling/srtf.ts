@@ -64,8 +64,8 @@ const shortestRemainingTimeFirstAlgo = (req: ProcessRequest): ResponseData => {
                     id: item,
                     arrivalTime: tgdenRL[index],
                     burstTime: req.arrBurstTime[index],
-                    finishTime: tght,
-                    waitingTime: tgcho
+                    finishTime: item,
+                    waitingTime: item
                 };
             }),
             averageFinishTime: tghttb,
