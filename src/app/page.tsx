@@ -470,6 +470,7 @@ export default function Home() {
     },
   ];//layout cac loai thuat toan
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const onClick: MenuProps['onClick'] = (e: any) => {
     setSelectedKey(e.key);
   };//hàm xử lý click
