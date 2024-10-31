@@ -170,12 +170,10 @@ export default function Home() {
     return /^\d+$/.test(value.replace(/\s+/g, ''));
   }
 
-  function kiemTraChuoiBangNhau(str1: string, str2: string) {
-    // const digitsInStr1 = str1.replace(/\D/g, '').length;
-    // const digitsInStr2 = str2.replace(/\D/g, '').length;
-    // return digitsInStr1 === digitsInStr2;
-    return true;
+  function kiemTraHopLeCuaThoiGianXuLy(value: string) {
+    return /\b0\b|-\d+/.test(value.replace(/\s+/g, ''));
   }
+
 
   const handleSubmit = async () => {
     resetTable();
@@ -184,49 +182,55 @@ export default function Home() {
     if (selectedKey === "fcfs") {
       if (arrivalTime !== "" && burstTime !== "") {
         if (kiemTraChuoiToanSoHayKhong(arrivalTime) && kiemTraChuoiToanSoHayKhong(burstTime)) {
-          if (kiemTraChuoiBangNhau(arrivalTime, burstTime)) {
-            output = (
-              <div>
-                {
-                  <div>
-                    <Table aria-label="Example static collection table">
-                      <TableHeader>
-                        <TableColumn className="px-3 text-center">Job</TableColumn>
-                        <TableColumn className="px-3 text-center">Arrival Time</TableColumn>
-                        <TableColumn className="px-3 text-center">Burst Time</TableColumn>
-                        <TableColumn className="px-3 text-center">Finish Time</TableColumn>
-                        <TableColumn className="px-3 text-center">Waiting Time</TableColumn>
-                      </TableHeader>
-                      <TableBody>
-                        {(responseData?.data?.processes || []).map(process => (
-                          <TableRow key={process.id}>
-                            <TableCell className="px-3 text-center">{process.id}</TableCell>
-                            <TableCell className="px-3 text-center">{process.arrivalTime}</TableCell>
-                            <TableCell className="px-3 text-center">{process.burstTime}</TableCell>
-                            <TableCell className="px-3 text-center">{process.finishTime}</TableCell>
-                            <TableCell className="px-3 text-center">{process.waitingTime}</TableCell>
-                          </TableRow>
-                        ))}
-                      </TableBody>
-                    </Table>
-                    <div className="mt-4">
-                      <p>Thời gian chờ trung bình: {responseData?.data?.averageWaitingTime}</p>
-                      <p>Thời gian hoàn tất trung bình: {responseData?.data?.averageFinishTime}</p>
-                    </div>
-                    <div className="mt-16">
-                        <FCFSGanttChart processes={responseData?.data?.processes} />
-                    </div>
-                  </div>}
-              </div>
-            );
-            setResult(output);
-            resetForm();
+          if (kiemTraHopLeCuaThoiGianXuLy(burstTime) === false) { 
+            if (getCharactersWithoutSpaces(arrivalTime).length === getCharactersWithoutSpaces(burstTime).length) {
+              output = (
+                <div>
+                  {
+                    <div>
+                      <Table aria-label="Example static collection table">
+                        <TableHeader>
+                          <TableColumn className="px-3 text-center">Job</TableColumn>
+                          <TableColumn className="px-3 text-center">Arrival Time</TableColumn>
+                          <TableColumn className="px-3 text-center">Burst Time</TableColumn>
+                          <TableColumn className="px-3 text-center">Finish Time</TableColumn>
+                          <TableColumn className="px-3 text-center">Waiting Time</TableColumn>
+                        </TableHeader>
+                        <TableBody>
+                          {(responseData?.data?.processes || []).map(process => (
+                            <TableRow key={process.id}>
+                              <TableCell className="px-3 text-center">{process.id}</TableCell>
+                              <TableCell className="px-3 text-center">{process.arrivalTime}</TableCell>
+                              <TableCell className="px-3 text-center">{process.burstTime}</TableCell>
+                              <TableCell className="px-3 text-center">{process.finishTime}</TableCell>
+                              <TableCell className="px-3 text-center">{process.waitingTime}</TableCell>
+                            </TableRow>
+                          ))}
+                        </TableBody>
+                      </Table>
+                      <div className="mt-4">
+                        <p>Thời gian chờ trung bình: {responseData?.data?.averageWaitingTime}</p>
+                        <p>Thời gian hoàn tất trung bình: {responseData?.data?.averageFinishTime}</p>
+                      </div>
+                    </div>}
+                </div>
+              );
+              setResult(output);
+              resetForm();
+            }
+            else {
+              Swal.fire({
+                icon: 'error',
+                title: 'Oops...',
+                text: 'Số lượng tiến trình không khớp nhau!',
+              })
+            }
           }
           else {
             Swal.fire({
               icon: 'error',
               title: 'Oops...',
-              text: 'Số lượng tiến trình không khớp nhau!',
+              text: 'Số 0 và số âm không hợp lệ!',
             })
           }
         }
@@ -237,6 +241,7 @@ export default function Home() {
             text: 'Vui lòng nhập đúng định dạng!',
           })
         }
+
       } else {
         Swal.fire({
           icon: 'error',
@@ -249,7 +254,8 @@ export default function Home() {
     if (selectedKey === "sjf") {
       if (arrivalTime !== "" && burstTime !== "") {
         if (kiemTraChuoiToanSoHayKhong(arrivalTime) && kiemTraChuoiToanSoHayKhong(burstTime)) {
-          if (kiemTraChuoiBangNhau(arrivalTime, burstTime)) {
+          if (kiemTraHopLeCuaThoiGianXuLy(burstTime) === false) {
+            if (getCharactersWithoutSpaces(arrivalTime).length === getCharactersWithoutSpaces(burstTime).length) {
             await sjf();
             output = (
               <div>
@@ -300,6 +306,14 @@ export default function Home() {
           Swal.fire({
             icon: 'error',
             title: 'Oops...',
+            text: 'Số 0 và số âm không hợp lệ!',
+          })
+        }
+      }
+        else {
+          Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
             text: 'Vui lòng nhập đúng định dạng!',
           })
         }
@@ -316,7 +330,8 @@ export default function Home() {
     if (selectedKey === "srtf") {
       if (arrivalTime !== "" && burstTime !== "") {
         if (kiemTraChuoiToanSoHayKhong(arrivalTime) && kiemTraChuoiToanSoHayKhong(burstTime)) {
-          if (kiemTraChuoiBangNhau(arrivalTime, burstTime)) {
+          if (kiemTraHopLeCuaThoiGianXuLy(burstTime) === false) {
+            if (getCharactersWithoutSpaces(arrivalTime).length === getCharactersWithoutSpaces(burstTime).length) {
             await srtf();
             output = (
               <div>
@@ -366,6 +381,14 @@ export default function Home() {
           Swal.fire({
             icon: 'error',
             title: 'Oops...',
+            text: 'Số 0 và số âm không hợp lệ!',
+          })
+        }
+      }
+        else {
+          Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
             text: 'Vui lòng nhập đúng định dạng!',
           })
         }
@@ -381,7 +404,8 @@ export default function Home() {
     if (selectedKey === "rr") {
       if (arrivalTime !== "" && burstTime !== "" && timeQuantum !== "") {
         if (kiemTraChuoiToanSoHayKhong(arrivalTime) && kiemTraChuoiToanSoHayKhong(burstTime) && kiemTraChuoiToanSoHayKhong(timeQuantum)) {
-          if (kiemTraChuoiBangNhau(arrivalTime, burstTime)) {
+          if (kiemTraHopLeCuaThoiGianXuLy(burstTime) === false && kiemTraHopLeCuaThoiGianXuLy(timeQuantum) === false) {
+            if (getCharactersWithoutSpaces(arrivalTime).length === getCharactersWithoutSpaces(burstTime).length) {
             await rr();
             output = (
               <div>
@@ -431,6 +455,14 @@ export default function Home() {
           Swal.fire({
             icon: 'error',
             title: 'Oops...',
+            text: 'Số 0 và số âm không hợp lệ!',
+          })
+        }
+      }
+        else {
+          Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
             text: 'Vui lòng nhập đúng định dạng!',
           })
         }
@@ -446,7 +478,8 @@ export default function Home() {
     if (selectedKey === "npp") {
       if (arrivalTime !== "" && burstTime !== "" && priority !== "") {
         if (kiemTraChuoiToanSoHayKhong(arrivalTime) && kiemTraChuoiToanSoHayKhong(burstTime) && kiemTraChuoiToanSoHayKhong(priority)) {
-          if (kiemTraChuoiBangNhau(arrivalTime, burstTime) && kiemTraChuoiBangNhau(arrivalTime, priority) && kiemTraChuoiBangNhau(burstTime, priority)) {
+          if (kiemTraHopLeCuaThoiGianXuLy(burstTime) === false) {
+            if (getCharactersWithoutSpaces(arrivalTime).length === getCharactersWithoutSpaces(burstTime).length && getCharactersWithoutSpaces(arrivalTime).length === getCharactersWithoutSpaces(priority).length) {
             await npp();
             output = (
               <div>
@@ -498,6 +531,14 @@ export default function Home() {
           Swal.fire({
             icon: 'error',
             title: 'Oops...',
+            text: 'Số 0 và số âm không hợp lệ!',
+          })
+        }
+      }
+        else {
+          Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
             text: 'Vui lòng nhập đúng định dạng!',
           })
         }
@@ -513,7 +554,8 @@ export default function Home() {
     if (selectedKey === "pp") {
       if (arrivalTime !== "" && burstTime !== "" && priority !== "") {
         if (kiemTraChuoiToanSoHayKhong(arrivalTime) && kiemTraChuoiToanSoHayKhong(burstTime) && kiemTraChuoiToanSoHayKhong(priority)) {
-          if (kiemTraChuoiBangNhau(arrivalTime, burstTime) && kiemTraChuoiBangNhau(arrivalTime, priority) && kiemTraChuoiBangNhau(burstTime, priority)) {
+          if (kiemTraHopLeCuaThoiGianXuLy(burstTime) === false) {
+            if (getCharactersWithoutSpaces(arrivalTime).length === getCharactersWithoutSpaces(burstTime).length && getCharactersWithoutSpaces(arrivalTime).length === getCharactersWithoutSpaces(priority).length) {
             await pp();
             output = (
               <div>
@@ -561,6 +603,14 @@ export default function Home() {
             })
           }
         }
+        else {
+          Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: 'Số 0 và số âm không hợp lệ!',
+          })
+        }
+      }
         else {
           Swal.fire({
             icon: 'error',
