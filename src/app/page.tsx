@@ -17,9 +17,10 @@ import SJFNPGanttChart from "@/components/SJFNPGanttChart";
 import handleSJFNPGanttChart from "@/types/handle-sjfnp-gantt-chart";
 import handleRRGanttChart from "@/types/handle-rr-gantt-chart";
 import RRGanttChart from "@/components/RRGanttChart";
-import PPGanttChart from "@/components/NPPGanttChart";
-import handlePPGanttChart from "@/types/handle-npp-gantt-chart";
+import PPGanttChart from "@/components/PPGanttChart";
+import handlePPGanttChart from "@/types/handle-pp-gantt-chart";
 import handleNPPGanttChart from "@/types/handle-npp-gantt-chart";
+import NPPGanttChart from "@/components/NPPGanttChart";
 
 let responseData: ResponseData = {
   statusCode: undefined,
@@ -164,6 +165,7 @@ export default function Home() {
 
   const resetTable = () => {
     // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+    setResult(null);
   }//hàm reset bảng
 
   function kiemTraChuoiToanSoHayKhong(value: string) {
@@ -177,13 +179,13 @@ export default function Home() {
 
   const handleSubmit = async () => {
     resetTable();
-    await fcfs();
     let output: JSX.Element | null = null;
     if (selectedKey === "fcfs") {
       if (arrivalTime !== "" && burstTime !== "") {
         if (kiemTraChuoiToanSoHayKhong(arrivalTime) && kiemTraChuoiToanSoHayKhong(burstTime)) {
           if (kiemTraHopLeCuaThoiGianXuLy(burstTime) === false) { 
             if (getCharactersWithoutSpaces(arrivalTime).length === getCharactersWithoutSpaces(burstTime).length) {
+              await fcfs();
               output = (
                 <div>
                   {
@@ -211,6 +213,9 @@ export default function Home() {
                       <div className="mt-4">
                         <p>Thời gian chờ trung bình: {responseData?.data?.averageWaitingTime}</p>
                         <p>Thời gian hoàn tất trung bình: {responseData?.data?.averageFinishTime}</p>
+                      </div>
+                      <div className="mt-16">
+                          <FCFSGanttChart processes={responseData.data?.processes} />
                       </div>
                     </div>}
                 </div>
@@ -263,20 +268,20 @@ export default function Home() {
                   <div>
                     <Table aria-label="Example static collection table">
                       <TableHeader>
-                        <TableColumn className="px-2 text-center">Job</TableColumn>
-                        <TableColumn className="px-2 text-center">Arrival Time</TableColumn>
-                        <TableColumn className="px-2 text-center">Burst Time</TableColumn>
-                        <TableColumn className="px-2 text-center">Finish Time</TableColumn>
-                        <TableColumn className="px-2 text-center">Waiting Time</TableColumn>
+                        <TableColumn className="px-3 text-center">Job</TableColumn>
+                        <TableColumn className="px-3 text-center">Arrival Time</TableColumn>
+                        <TableColumn className="px-3 text-center">Burst Time</TableColumn>
+                        <TableColumn className="px-3 text-center">Finish Time</TableColumn>
+                        <TableColumn className="px-3 text-center">Waiting Time</TableColumn>
                       </TableHeader>
                       <TableBody>
                         {(responseData?.data?.processes || []).map(process => (
                           <TableRow key={process.id}>
-                            <TableCell className="px-2 text-center">{process.id}</TableCell>
-                            <TableCell className="px-2 text-center">{process.arrivalTime}</TableCell>
-                            <TableCell className="px-2 text-center">{process.burstTime}</TableCell>
-                            <TableCell className="px-2 text-center">{process.finishTime}</TableCell>
-                            <TableCell className="px-2 text-center">{process.waitingTime}</TableCell>
+                            <TableCell className="px-3 text-center">{process.id}</TableCell>
+                            <TableCell className="px-3 text-center">{process.arrivalTime}</TableCell>
+                            <TableCell className="px-3 text-center">{process.burstTime}</TableCell>
+                            <TableCell className="px-3 text-center">{process.finishTime}</TableCell>
+                            <TableCell className="px-3 text-center">{process.waitingTime}</TableCell>
                           </TableRow>
                         ))}
                       </TableBody>
@@ -286,7 +291,7 @@ export default function Home() {
                       <p>Thời gian hoàn tất trung bình: {responseData?.data?.averageFinishTime}</p>
                     </div>
                     <div className="mt-16">
-                        <SJFPGanttChart processes={responseData?.data?.processes} />
+                        <SJFPGanttChart processes={responseData.data?.processes} />
                     </div>
                   </div>}
               </div>
@@ -326,7 +331,6 @@ export default function Home() {
       }
     }
 
-
     if (selectedKey === "srtf") {
       if (arrivalTime !== "" && burstTime !== "") {
         if (kiemTraChuoiToanSoHayKhong(arrivalTime) && kiemTraChuoiToanSoHayKhong(burstTime)) {
@@ -338,20 +342,20 @@ export default function Home() {
                 {<div>
                   <Table aria-label="Example static collection table">
                     <TableHeader>
-                      <TableColumn className="px-2 text-center">Job</TableColumn>
-                      <TableColumn className="px-2 text-center">Arrival Time</TableColumn>
-                      <TableColumn className="px-2 text-center">Burst Time</TableColumn>
-                      <TableColumn className="px-2 text-center">Finish Time</TableColumn>
-                      <TableColumn className="px-2 text-center">Waiting Time</TableColumn>
+                      <TableColumn className="px-3 text-center">Job</TableColumn>
+                      <TableColumn className="px-3 text-center">Arrival Time</TableColumn>
+                      <TableColumn className="px-3 text-center">Burst Time</TableColumn>
+                      <TableColumn className="px-3 text-center">Finish Time</TableColumn>
+                      <TableColumn className="px-3 text-center">Waiting Time</TableColumn>
                     </TableHeader>
                     <TableBody>
                       {(responseData?.data?.processes || []).map(process => (
                         <TableRow key={process.id}>
-                          <TableCell className="px-2 text-center">{process.id}</TableCell>
-                          <TableCell className="px-2 text-center">{process.arrivalTime}</TableCell>
-                          <TableCell className="px-2 text-center">{process.burstTime}</TableCell>
-                          <TableCell className="px-2 text-center">{process.finishTime}</TableCell>
-                          <TableCell className="px-2 text-center">{process.waitingTime}</TableCell>
+                          <TableCell className="px-3 text-center">{process.id}</TableCell>
+                          <TableCell className="px-3 text-center">{process.arrivalTime}</TableCell>
+                          <TableCell className="px-3 text-center">{process.burstTime}</TableCell>
+                          <TableCell className="px-3 text-center">{process.finishTime}</TableCell>
+                          <TableCell className="px-3 text-center">{process.waitingTime}</TableCell>
                         </TableRow>
                       ))}
                     </TableBody>
@@ -412,20 +416,20 @@ export default function Home() {
                 {<div>
                   <Table aria-label="Example static collection table">
                     <TableHeader>
-                      <TableColumn className="px-2 text-center">Job</TableColumn>
-                      <TableColumn className="px-2 text-center">Arrival Time</TableColumn>
-                      <TableColumn className="px-2 text-center">Burst Time</TableColumn>
-                      <TableColumn className="px-2 text-center">Finish Time</TableColumn>
-                      <TableColumn className="px-2 text-center">Waiting Time</TableColumn>
+                      <TableColumn className="px-3 text-center">Job</TableColumn>
+                      <TableColumn className="px-3 text-center">Arrival Time</TableColumn>
+                      <TableColumn className="px-3 text-center">Burst Time</TableColumn>
+                      <TableColumn className="px-3 text-center">Finish Time</TableColumn>
+                      <TableColumn className="px-3 text-center">Waiting Time</TableColumn>
                     </TableHeader>
                     <TableBody>
                       {(responseData?.data?.processes || []).map(process => (
                         <TableRow key={process.id}>
-                          <TableCell className="px-2 text-center">{process.id}</TableCell>
-                          <TableCell className="px-2 text-center">{process.arrivalTime}</TableCell>
-                          <TableCell className="px-2 text-center">{process.burstTime}</TableCell>
-                          <TableCell className="px-2 text-center">{process.finishTime}</TableCell>
-                          <TableCell className="px-2 text-center">{process.waitingTime}</TableCell>
+                          <TableCell className="px-3 text-center">{process.id}</TableCell>
+                          <TableCell className="px-3 text-center">{process.arrivalTime}</TableCell>
+                          <TableCell className="px-3 text-center">{process.burstTime}</TableCell>
+                          <TableCell className="px-3 text-center">{process.finishTime}</TableCell>
+                          <TableCell className="px-3 text-center">{process.waitingTime}</TableCell>
                         </TableRow>
                       ))}
                     </TableBody>
@@ -486,20 +490,20 @@ export default function Home() {
                 {<div>
                   <Table aria-label="Example static collection table">
                     <TableHeader>
-                      <TableColumn className="px-2 text-center">Job</TableColumn>
-                      <TableColumn className="px-2 text-center">Arrival Time</TableColumn>
-                      <TableColumn className="px-2 text-center">Burst Time</TableColumn>
-                      <TableColumn className="px-2 text-center">Finish Time</TableColumn>
-                      <TableColumn className="px-2 text-center">Waiting Time</TableColumn>
+                      <TableColumn className="px-3 text-center">Job</TableColumn>
+                      <TableColumn className="px-3 text-center">Arrival Time</TableColumn>
+                      <TableColumn className="px-3 text-center">Burst Time</TableColumn>
+                      <TableColumn className="px-3 text-center">Finish Time</TableColumn>
+                      <TableColumn className="px-3 text-center">Waiting Time</TableColumn>
                     </TableHeader>
                     <TableBody>
                       {(responseData?.data?.processes || []).map(process => (
                         <TableRow key={process.id}>
-                          <TableCell className="px-2 text-center">{process.id}</TableCell>
-                          <TableCell className="px-2 text-center">{process.arrivalTime}</TableCell>
-                          <TableCell className="px-2 text-center">{process.burstTime}</TableCell>
-                          <TableCell className="px-2 text-center">{process.finishTime}</TableCell>
-                          <TableCell className="px-2 text-center">{process.waitingTime}</TableCell>
+                          <TableCell className="px-3 text-center">{process.id}</TableCell>
+                          <TableCell className="px-3 text-center">{process.arrivalTime}</TableCell>
+                          <TableCell className="px-3 text-center">{process.burstTime}</TableCell>
+                          <TableCell className="px-3 text-center">{process.finishTime}</TableCell>
+                          <TableCell className="px-3 text-center">{process.waitingTime}</TableCell>
                         </TableRow>
                       ))}
                     </TableBody>
@@ -510,7 +514,7 @@ export default function Home() {
                   <p>Thời gian hoàn tất trung bình: {responseData?.data?.averageFinishTime}</p>
                 </div>
                 <div className="mt-16">
-                    <PPGanttChart processes={
+                    <NPPGanttChart processes={
                       handleNPPGanttChart(responseData?.data?.processes, getCharactersWithoutSpaces(priority))
                     } />
                 </div>
@@ -562,20 +566,20 @@ export default function Home() {
                 {<div>
                   <Table aria-label="Example static collection table">
                     <TableHeader>
-                      <TableColumn className="px-2 text-center">Job</TableColumn>
-                      <TableColumn className="px-2 text-center">Arrival Time</TableColumn>
-                      <TableColumn className="px-2 text-center">Burst Time</TableColumn>
-                      <TableColumn className="px-2 text-center">Finish Time</TableColumn>
-                      <TableColumn className="px-2 text-center">Waiting Time</TableColumn>
+                      <TableColumn className="px-3 text-center">Job</TableColumn>
+                      <TableColumn className="px-3 text-center">Arrival Time</TableColumn>
+                      <TableColumn className="px-3 text-center">Burst Time</TableColumn>
+                      <TableColumn className="px-3 text-center">Finish Time</TableColumn>
+                      <TableColumn className="px-3 text-center">Waiting Time</TableColumn>
                     </TableHeader>
                     <TableBody>
                       {(responseData?.data?.processes || []).map(process => (
                         <TableRow key={process.id}>
-                          <TableCell className="px-2 text-center">{process.id}</TableCell>
-                          <TableCell className="px-2 text-center">{process.arrivalTime}</TableCell>
-                          <TableCell className="px-2 text-center">{process.burstTime}</TableCell>
-                          <TableCell className="px-2 text-center">{process.finishTime}</TableCell>
-                          <TableCell className="px-2 text-center">{process.waitingTime}</TableCell>
+                          <TableCell className="px-3 text-center">{process.id}</TableCell>
+                          <TableCell className="px-3 text-center">{process.arrivalTime}</TableCell>
+                          <TableCell className="px-3 text-center">{process.burstTime}</TableCell>
+                          <TableCell className="px-3 text-center">{process.finishTime}</TableCell>
+                          <TableCell className="px-3 text-center">{process.waitingTime}</TableCell>
                         </TableRow>
                       ))}
                     </TableBody>
@@ -587,7 +591,7 @@ export default function Home() {
                 </div>
                 <div className="mt-16">
                     <PPGanttChart processes={
-                      handleNPPGanttChart(responseData?.data?.processes, getCharactersWithoutSpaces(priority))
+                      handlePPGanttChart(responseData?.data?.processes, getCharactersWithoutSpaces(priority))
                     } />
                 </div>
               </div>
@@ -676,6 +680,7 @@ export default function Home() {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const onClick: MenuProps['onClick'] = (e: any) => {
     setSelectedKey(e.key);
+    resetTable();
     handleMenuItemClick();
   };//hàm xử lý click
 
