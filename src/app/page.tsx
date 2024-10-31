@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Menu, type MenuProps } from 'antd';
 import {
   Table,
@@ -12,35 +12,14 @@ import {
 import { ResponseData } from "@/types/api-response";
 import Swal from 'sweetalert2';
 
-class TienTrinhNPP {
-  tg_cho: number;
-  tg_denRL: number;
-  tg_xuly: number;
-  tg_hoantat: number;
-  do_uu_tien: number;
-  constructor(tg_denRL: number, tg_xuly: number, do_uu_tien: number) {
-    this.tg_cho = 0;
-    this.tg_denRL = tg_denRL;
-    this.tg_xuly = tg_xuly;
-    this.tg_hoantat = 0;
-    this.do_uu_tien = do_uu_tien;
-  }
-}//Khởi tạo class cho tiến trình Priority Non Preemptive
-
-interface TienTrinhFCFS {
-  tg_cho: number;
-  tg_denRL: number;
-  tg_xuly: number;
-  tg_hoantat: number;
-  tg_cho_tb: number;
-  tg_hoantat_tb: number;
-}//khởi tạo interface cho tiến trình FCFS
-
-const aNPP: TienTrinhNPP[] = []; //khai báo mảng a chứa các tiến trình
-const aFCFS: TienTrinhFCFS[] = []; //khai báo mảng a chứa các tiến trình
-let responseData: ResponseData;
+let responseData: ResponseData = {
+  statusCode: undefined,
+  message: undefined,
+  data: undefined
+};
 
 export default function Home() {
+  //khởi tạo các biến state để lưu giá trị của các input và kết quả
   const [selectedKey, setSelectedKey] = useState<string | null>(null);
   const [arrivalTime, setArrivalTime] = useState<string>("");
   const [burstTime, setBurstTime] = useState<string>("");
@@ -87,6 +66,15 @@ export default function Home() {
       body: JSON.stringify(req),
     });
 
+    if (!response.ok) {
+      const errorData = await response.json();
+      return {
+        statusCode: errorData.statusCode,
+        message: errorData.message,
+        data: undefined,
+      }
+    }
+
     return response.json();
   }
 
@@ -95,17 +83,10 @@ export default function Home() {
       arrPro: getCharactersWithoutSpaces(arrivalTime).map((_item, index) => index + 1),
       arrArrivalTime: getCharactersWithoutSpaces(arrivalTime),
       arrBurstTime: getCharactersWithoutSpaces(burstTime),
-      quantum: Number(timeQuantum)
+      quantum: timeQuantum
     };
 
-    try {
-      const data = await callingAPIWithCPUSchedulingAlgo(request, 'rr');
-      responseData = data;
-      // console.log(data);
-      // console.log('response data', responseData);
-    } catch (error) {
-      console.error('Error:', error);
-    }
+    responseData = await callingAPIWithCPUSchedulingAlgo(request, 'rr');
   }
 
   const fcfs = async () => {
@@ -115,14 +96,8 @@ export default function Home() {
       arrBurstTime: getCharactersWithoutSpaces(burstTime)
     };
 
-    try {
-      const data = await callingAPIWithCPUSchedulingAlgo(request, 'fcfs');
-      responseData = data;
-      // console.log(data);
-      // console.log('response data', responseData);
-    } catch (error) {
-      console.error('Error:', error);
-    }
+    responseData = await callingAPIWithCPUSchedulingAlgo(request, 'fcfs');
+
   }
 
   const pp = async () => {
@@ -133,14 +108,8 @@ export default function Home() {
       arrPriority: getCharactersWithoutSpaces(priority)
     };
 
-    try {
-      const data = await callingAPIWithCPUSchedulingAlgo(request, 'prio-p');
-      responseData = data;
-      // console.log(data);
-      // console.log('response data', responseData);
-    } catch (error) {
-      console.error('Error:', error);
-    }
+    responseData = await callingAPIWithCPUSchedulingAlgo(request, 'prio-p');
+
   }
 
   const npp = async () => {
@@ -151,14 +120,8 @@ export default function Home() {
       arrPriority: getCharactersWithoutSpaces(priority)
     };
 
-    try {
-      const data = await callingAPIWithCPUSchedulingAlgo(request, 'prio-nonp');
-      responseData = data;
-      // console.log(data);
-      // console.log('response data', responseData);
-    } catch (error) {
-      console.error('Error:', error);
-    }
+    responseData = await callingAPIWithCPUSchedulingAlgo(request, 'prio-nonp');
+
   }
 
   const sjf = async () => {
@@ -168,14 +131,8 @@ export default function Home() {
       arrBurstTime: getCharactersWithoutSpaces(burstTime)
     };
 
-    try {
-      const data = await callingAPIWithCPUSchedulingAlgo(request, 'sjf');
-      responseData = data;
-      // console.log(data);
-      // console.log('response data', responseData);
-    } catch (error) {
-      console.error('Error:', error);
-    }
+    responseData = await callingAPIWithCPUSchedulingAlgo(request, 'sjf');
+
   }
 
   const srtf = async () => {
@@ -185,14 +142,8 @@ export default function Home() {
       arrBurstTime: getCharactersWithoutSpaces(burstTime)
     };
 
-    try {
-      const data = await callingAPIWithCPUSchedulingAlgo(request, 'srtf');
-      responseData = data;
-      // console.log(data);
-      // console.log('response data', responseData);
-    } catch (error) {
-      console.error('Error:', error);
-    }
+    responseData = await callingAPIWithCPUSchedulingAlgo(request, 'sjf-nonp');
+
   }
 
   const resetForm = () => {
@@ -204,9 +155,6 @@ export default function Home() {
 
   const resetTable = () => {
     // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-    aNPP.splice(0, aNPP.length);
-    aNPP.splice(0, aNPP.length);
-    aFCFS.splice(0, aFCFS.length);
   }//hàm reset bảng
 
   function kiemTraChuoiToanSoHayKhong(value: string) {
@@ -214,8 +162,8 @@ export default function Home() {
   }
 
   function kiemTraChuoiBangNhau(str1: string, str2: string) {
-    const digitsInStr1 = str1.replace(/\D/g, '').length;
-    const digitsInStr2 = str2.replace(/\D/g, '').length;
+    const digitsInStr1 = str1.replace(/\D/g, ' ').length;
+    const digitsInStr2 = str2.replace(/\D/g, ' ').length;
     return digitsInStr1 === digitsInStr2;
   }
 
@@ -610,11 +558,11 @@ export default function Home() {
         },
         {
           key: 'sjf',
-          label: 'Shortest Job First',
+          label: 'Shortest Job First Pre',
         },
         {
           key: 'pp',
-          label: 'Priority',
+          label: 'Priority Pre',
         },
       ],
     },
@@ -626,7 +574,7 @@ export default function Home() {
       children: [
         {
           key: 'npp',
-          label: 'Priority Non Preemptive',
+          label: 'Priority NonPre',
         },
         {
           key: 'rr',
@@ -634,7 +582,7 @@ export default function Home() {
         },
         {
           key: 'srtf',
-          label: 'Shortest Remaining Time First',
+          label: 'Shortest Job First NonPre',
         },
       ],
     },

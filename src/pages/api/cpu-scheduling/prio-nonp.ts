@@ -2,20 +2,12 @@ import { NextApiRequest, NextApiResponse } from "next";
 import { ProcessRequest, ProcessResponse } from "@/types/process";
 import { StatusCode } from "@/types/status-code";
 import { ResponseData } from "@/types/api-response";
-import { validateArrivalTimeAndBurstTime } from "@/types/data-validation";
+import {
+    validateTheLengthOfProcesses,
+    validateArrivalTimeBurstTimeAndPriority,
+    validateThatEachElementInTheProcessesIsNumeric
+} from "@/types/data-validation";
 
-const validateRequestData = (arrArrivalTime: any, arrBurstTime: any, arrPriority: any, res: NextApiResponse<ResponseData>) => {
-    if (!Array.isArray(arrArrivalTime) || arrArrivalTime.length === 0 ||
-        !Array.isArray(arrBurstTime) || arrBurstTime.length === 0 ||
-        !Array.isArray(arrPriority) || arrPriority.length === 0)
-        return res.status(StatusCode.BAD_REQUEST).json({
-            statusCode: StatusCode.BAD_REQUEST,
-            message: "Invalid request. Please provide an array of process requests.",
-            data: undefined,
-        });
-
-    validateArrivalTimeAndBurstTime(arrArrivalTime, arrBurstTime, arrPriority, res);
-}
 
 
 const priorityNonPreemitiveAlgo = (req: ProcessRequest): ResponseData => {
@@ -87,24 +79,61 @@ const priorityNonPreemitiveAlgo = (req: ProcessRequest): ResponseData => {
 
 export default function handler(req: NextApiRequest, res: NextApiResponse<ResponseData>) {
 
-    if (req.method !== 'POST')
-        return res.status(StatusCode.METHOD_NOT_ALLOWED).json({
+    if (req.method !== 'POST') {
+        res.status(StatusCode.METHOD_NOT_ALLOWED).json({
             statusCode: StatusCode.METHOD_NOT_ALLOWED,
             message: "Method not allowed. Only POST method is supported.",
             data: undefined,
         });
+        return;
+    }
 
     const { arrPro, arrArrivalTime, arrBurstTime, arrPriority } = req.body;
-    validateRequestData(arrArrivalTime, arrBurstTime, arrPriority, res);
 
-    const request: ProcessRequest = {
-        arrPro: arrPro,
-        arrArrivalTime: arrArrivalTime,
-        arrBurstTime: arrBurstTime,
-        arrPriority: arrPriority,
-        quantum: undefined
-    };
+    try {
+        if (!validateTheLengthOfProcesses(arrArrivalTime, arrBurstTime)) {
+            res.status(StatusCode.BAD_REQUEST).json({
+                statusCode: StatusCode.BAD_REQUEST,
+                message: `Please provide an array of processes as well as corresponding arrival and burst times.`,
+                data: undefined,
+            });
+            return;
+        }
 
-    const response: ResponseData = priorityNonPreemitiveAlgo(request);
-    return res.status(StatusCode.OK).json(response);
+        if (!validateArrivalTimeBurstTimeAndPriority(arrArrivalTime, arrBurstTime, arrPriority)) {
+            res.status(StatusCode.BAD_REQUEST).json({
+                statusCode: StatusCode.BAD_REQUEST,
+                message: `The length of arrival times, burst times, and priorities should be the same.`,
+                data: undefined,
+            });
+            return;
+        }
+
+        const ans = validateThatEachElementInTheProcessesIsNumeric(arrArrivalTime, arrBurstTime, arrPriority);
+        if (!ans[0]) {
+            res.status(StatusCode.BAD_REQUEST).json({
+                statusCode: StatusCode.BAD_REQUEST,
+                message: ans[1],
+                data: undefined,
+            });
+            return;
+        }
+
+        const request: ProcessRequest = {
+            arrPro: arrPro,
+            arrArrivalTime: arrArrivalTime.map(Number),
+            arrBurstTime: arrBurstTime.map(Number),
+            arrPriority: arrPriority.map(Number),
+            quantum: undefined
+        };
+
+        const response: ResponseData = priorityNonPreemitiveAlgo(request);
+        res.status(StatusCode.OK).json(response);
+    } catch (error: any) {
+        res.status(StatusCode.SERVER_ERROR).json({
+            statusCode: StatusCode.SERVER_ERROR,
+            message: error.message,
+            data: undefined,
+        });
+    }
 }
