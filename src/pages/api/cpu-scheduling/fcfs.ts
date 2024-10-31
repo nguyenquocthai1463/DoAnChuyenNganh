@@ -11,8 +11,8 @@ import {
 
 const firstComeFirstServeAlgo = (req: ProcessRequest): ResponseData => {
     let TG_XuLy = new Array<number>(100).fill(0);
-    let TG_Cho = new Array<number>(100).fill(0);
-    let TG_HoanTat = new Array<number>(100).fill(0);
+    const TG_Cho = new Array<number>(100).fill(0);
+    const TG_HoanTat = new Array<number>(100).fill(0);
     let TG_Cho_TB: number = 0.0;
     let TG_HoanTat_TB: number = 0.0;
     let count: number;
