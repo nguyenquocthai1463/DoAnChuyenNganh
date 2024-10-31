@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { ProcessRequest, ProcessResponse } from "@/types/process";
+import { ProcessRequest } from "@/types/process";
 import { StatusCode } from "@/types/status-code";
 import { ResponseData } from "@/types/api-response";
 import {

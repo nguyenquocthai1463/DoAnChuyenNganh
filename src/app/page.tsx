@@ -11,6 +11,15 @@ import {
 } from "@nextui-org/table";
 import { ResponseData } from "@/types/api-response";
 import Swal from 'sweetalert2';
+import FCFSGanttChart from "@/components/FCFSGanttChart";
+import SJFPGanttChart from "@/components/SJFPGanttChart";
+import SJFNPGanttChart from "@/components/SJFNPGanttChart";
+import handleSJFNPGanttChart from "@/types/handle-sjfnp-gantt-chart";
+import handleRRGanttChart from "@/types/handle-rr-gantt-chart";
+import RRGanttChart from "@/components/RRGanttChart";
+import PPGanttChart from "@/components/NPPGanttChart";
+import handlePPGanttChart from "@/types/handle-npp-gantt-chart";
+import handleNPPGanttChart from "@/types/handle-npp-gantt-chart";
 
 let responseData: ResponseData = {
   statusCode: undefined,
@@ -162,9 +171,10 @@ export default function Home() {
   }
 
   function kiemTraChuoiBangNhau(str1: string, str2: string) {
-    const digitsInStr1 = str1.replace(/\D/g, ' ').length;
-    const digitsInStr2 = str2.replace(/\D/g, ' ').length;
-    return digitsInStr1 === digitsInStr2;
+    // const digitsInStr1 = str1.replace(/\D/g, '').length;
+    // const digitsInStr2 = str2.replace(/\D/g, '').length;
+    // return digitsInStr1 === digitsInStr2;
+    return true;
   }
 
   const handleSubmit = async () => {
@@ -202,6 +212,9 @@ export default function Home() {
                     <div className="mt-4">
                       <p>Thời gian chờ trung bình: {responseData?.data?.averageWaitingTime}</p>
                       <p>Thời gian hoàn tất trung bình: {responseData?.data?.averageFinishTime}</p>
+                    </div>
+                    <div className="mt-16">
+                        <FCFSGanttChart processes={responseData?.data?.processes} />
                     </div>
                   </div>}
               </div>
@@ -266,6 +279,9 @@ export default function Home() {
                       <p>Thời gian chờ trung bình: {responseData?.data?.averageWaitingTime}</p>
                       <p>Thời gian hoàn tất trung bình: {responseData?.data?.averageFinishTime}</p>
                     </div>
+                    <div className="mt-16">
+                        <SJFPGanttChart processes={responseData?.data?.processes} />
+                    </div>
                   </div>}
               </div>
             );
@@ -310,6 +326,8 @@ export default function Home() {
                       <TableColumn className="px-2 text-center">Job</TableColumn>
                       <TableColumn className="px-2 text-center">Arrival Time</TableColumn>
                       <TableColumn className="px-2 text-center">Burst Time</TableColumn>
+                      <TableColumn className="px-2 text-center">Finish Time</TableColumn>
+                      <TableColumn className="px-2 text-center">Waiting Time</TableColumn>
                     </TableHeader>
                     <TableBody>
                       {(responseData?.data?.processes || []).map(process => (
@@ -317,6 +335,8 @@ export default function Home() {
                           <TableCell className="px-2 text-center">{process.id}</TableCell>
                           <TableCell className="px-2 text-center">{process.arrivalTime}</TableCell>
                           <TableCell className="px-2 text-center">{process.burstTime}</TableCell>
+                          <TableCell className="px-2 text-center">{process.finishTime}</TableCell>
+                          <TableCell className="px-2 text-center">{process.waitingTime}</TableCell>
                         </TableRow>
                       ))}
                     </TableBody>
@@ -325,6 +345,9 @@ export default function Home() {
                 <div className="mt-4">
                   <p>Thời gian chờ trung bình: {responseData?.data?.averageWaitingTime}</p>
                   <p>Thời gian hoàn tất trung bình: {responseData?.data?.averageFinishTime}</p>
+                </div>
+                <div className="mt-16">
+                    <SJFNPGanttChart processes={handleSJFNPGanttChart(responseData?.data?.processes)} />
                 </div>
               </div>
             );
@@ -362,32 +385,35 @@ export default function Home() {
             await rr();
             output = (
               <div>
-                {
-                  <div>
-                    <Table aria-label="Example static collection table">
-                      <TableHeader>
-                        <TableColumn className="px-2 text-center">Job</TableColumn>
-                        <TableColumn className="px-2 text-center">Arrival Time</TableColumn>
-                        <TableColumn className="px-2 text-center">Burst Time</TableColumn>
-                        <TableColumn className="px-2 text-center">Finish Time</TableColumn>
-                        <TableColumn className="px-2 text-center">Waiting Time</TableColumn>
-                      </TableHeader>
-                      <TableBody>
-                        {(responseData?.data?.processes || []).map(process => (
-                          <TableRow key={process.id}>
-                            <TableCell className="px-2 text-center">{process.id}</TableCell>
-                            <TableCell className="px-2 text-center">{process.arrivalTime}</TableCell>
-                            <TableCell className="px-2 text-center">{process.burstTime}</TableCell>
-                            <TableCell className="px-2 text-center">{process.finishTime}</TableCell>
-                            <TableCell className="px-2 text-center">{process.waitingTime}</TableCell>
-                          </TableRow>
-                        ))}
-                      </TableBody>
-                    </Table>
-                    <p>Thời gian chờ trung bình: {responseData?.data?.averageWaitingTime}</p>
-                    <p>Thời gian hoàn tất trung bình: {responseData?.data?.averageFinishTime}</p>
-                  </div>
-                }
+                {<div>
+                  <Table aria-label="Example static collection table">
+                    <TableHeader>
+                      <TableColumn className="px-2 text-center">Job</TableColumn>
+                      <TableColumn className="px-2 text-center">Arrival Time</TableColumn>
+                      <TableColumn className="px-2 text-center">Burst Time</TableColumn>
+                      <TableColumn className="px-2 text-center">Finish Time</TableColumn>
+                      <TableColumn className="px-2 text-center">Waiting Time</TableColumn>
+                    </TableHeader>
+                    <TableBody>
+                      {(responseData?.data?.processes || []).map(process => (
+                        <TableRow key={process.id}>
+                          <TableCell className="px-2 text-center">{process.id}</TableCell>
+                          <TableCell className="px-2 text-center">{process.arrivalTime}</TableCell>
+                          <TableCell className="px-2 text-center">{process.burstTime}</TableCell>
+                          <TableCell className="px-2 text-center">{process.finishTime}</TableCell>
+                          <TableCell className="px-2 text-center">{process.waitingTime}</TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>}
+                <div className="mt-4">
+                  <p>Thời gian chờ trung bình: {responseData?.data?.averageWaitingTime}</p>
+                  <p>Thời gian hoàn tất trung bình: {responseData?.data?.averageFinishTime}</p>
+                </div>
+                <div className="mt-16">
+                    <RRGanttChart processes={handleRRGanttChart(responseData?.data?.processes, Number(timeQuantum))} />
+                </div>
               </div>
             );
             setResult(output);
@@ -424,34 +450,38 @@ export default function Home() {
             await npp();
             output = (
               <div>
-                {
-                  <div>
-                    <Table aria-label="Example static collection table">
-                      <TableHeader>
-                        <TableColumn className="px-2 text-center">Job</TableColumn>
-                        <TableColumn className="px-2 text-center">Arrival Time</TableColumn>
-                        <TableColumn className="px-2 text-center">Burst Time</TableColumn>
-                        <TableColumn className="px-2 text-center">Finish Time</TableColumn>
-                        <TableColumn className="px-2 text-center">Waiting Time</TableColumn>
-                      </TableHeader>
-                      <TableBody>
-                        {(responseData?.data?.processes || []).map(process => (
-                          <TableRow key={process.id}>
-                            <TableCell className="px-2 text-center">{process.id}</TableCell>
-                            <TableCell className="px-2 text-center">{process.arrivalTime}</TableCell>
-                            <TableCell className="px-2 text-center">{process.burstTime}</TableCell>
-                            <TableCell className="px-2 text-center">{process.finishTime}</TableCell>
-                            <TableCell className="px-2 text-center">{process.waitingTime}</TableCell>
-                          </TableRow>
-                        ))}
-                      </TableBody>
-                    </Table>
-                    <p>Thời gian chờ trung bình: {responseData?.data?.averageWaitingTime}</p>
-                    <p>Thời gian hoàn tất trung bình: {responseData?.data?.averageFinishTime}</p>
-                  </div>
-                }
+                {<div>
+                  <Table aria-label="Example static collection table">
+                    <TableHeader>
+                      <TableColumn className="px-2 text-center">Job</TableColumn>
+                      <TableColumn className="px-2 text-center">Arrival Time</TableColumn>
+                      <TableColumn className="px-2 text-center">Burst Time</TableColumn>
+                      <TableColumn className="px-2 text-center">Finish Time</TableColumn>
+                      <TableColumn className="px-2 text-center">Waiting Time</TableColumn>
+                    </TableHeader>
+                    <TableBody>
+                      {(responseData?.data?.processes || []).map(process => (
+                        <TableRow key={process.id}>
+                          <TableCell className="px-2 text-center">{process.id}</TableCell>
+                          <TableCell className="px-2 text-center">{process.arrivalTime}</TableCell>
+                          <TableCell className="px-2 text-center">{process.burstTime}</TableCell>
+                          <TableCell className="px-2 text-center">{process.finishTime}</TableCell>
+                          <TableCell className="px-2 text-center">{process.waitingTime}</TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>}
+                <div className="mt-4">
+                  <p>Thời gian chờ trung bình: {responseData?.data?.averageWaitingTime}</p>
+                  <p>Thời gian hoàn tất trung bình: {responseData?.data?.averageFinishTime}</p>
+                </div>
+                <div className="mt-16">
+                    <PPGanttChart processes={
+                      handleNPPGanttChart(responseData?.data?.processes, getCharactersWithoutSpaces(priority))
+                    } />
+                </div>
               </div>
-
             );
             setResult(output);
             resetForm();
@@ -487,32 +517,37 @@ export default function Home() {
             await pp();
             output = (
               <div>
-                {
-                  <div>
-                    <Table aria-label="Example static collection table">
-                      <TableHeader>
-                        <TableColumn className="px-2 text-center">Job</TableColumn>
-                        <TableColumn className="px-2 text-center">Arrival Time</TableColumn>
-                        <TableColumn className="px-2 text-center">Burst Time</TableColumn>
-                        <TableColumn className="px-2 text-center">Finish Time</TableColumn>
-                        <TableColumn className="px-2 text-center">Waiting Time</TableColumn>
-                      </TableHeader>
-                      <TableBody>
-                        {(responseData?.data?.processes || []).map(process => (
-                          <TableRow key={process.id}>
-                            <TableCell className="px-2 text-center">{process.id}</TableCell>
-                            <TableCell className="px-2 text-center">{process.arrivalTime}</TableCell>
-                            <TableCell className="px-2 text-center">{process.burstTime}</TableCell>
-                            <TableCell className="px-2 text-center">{process.finishTime}</TableCell>
-                            <TableCell className="px-2 text-center">{process.waitingTime}</TableCell>
-                          </TableRow>
-                        ))}
-                      </TableBody>
-                    </Table>
-                    <p>Thời gian chờ trung bình: {responseData?.data?.averageWaitingTime}</p>
-                    <p>Thời gian hoàn tất trung bình: {responseData?.data?.averageFinishTime}</p>
-                  </div>
-                }
+                {<div>
+                  <Table aria-label="Example static collection table">
+                    <TableHeader>
+                      <TableColumn className="px-2 text-center">Job</TableColumn>
+                      <TableColumn className="px-2 text-center">Arrival Time</TableColumn>
+                      <TableColumn className="px-2 text-center">Burst Time</TableColumn>
+                      <TableColumn className="px-2 text-center">Finish Time</TableColumn>
+                      <TableColumn className="px-2 text-center">Waiting Time</TableColumn>
+                    </TableHeader>
+                    <TableBody>
+                      {(responseData?.data?.processes || []).map(process => (
+                        <TableRow key={process.id}>
+                          <TableCell className="px-2 text-center">{process.id}</TableCell>
+                          <TableCell className="px-2 text-center">{process.arrivalTime}</TableCell>
+                          <TableCell className="px-2 text-center">{process.burstTime}</TableCell>
+                          <TableCell className="px-2 text-center">{process.finishTime}</TableCell>
+                          <TableCell className="px-2 text-center">{process.waitingTime}</TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>}
+                <div className="mt-4">
+                  <p>Thời gian chờ trung bình: {responseData?.data?.averageWaitingTime}</p>
+                  <p>Thời gian hoàn tất trung bình: {responseData?.data?.averageFinishTime}</p>
+                </div>
+                <div className="mt-16">
+                    <PPGanttChart processes={
+                      handleNPPGanttChart(responseData?.data?.processes, getCharactersWithoutSpaces(priority))
+                    } />
+                </div>
               </div>
             );
             setResult(output);
