@@ -126,4 +126,20 @@ h1{
   to { opacity: 0; }
 }
 
+.custom-table {
+  border-collapse: collapse;
+  width: 100%;
+}
 
+.custom-table .border {
+  border: 2px solid #ddd;
+}
+
+.title {
+  font-family: 'Arial', sans-serif;
+  font-weight: bold;
+  color: #333;
+  text-shadow: 
+    2px 2px 4px rgba(0, 0, 0, 0.3),
+    4px 4px 8px rgba(0, 0, 0, 0.2); 
+}
