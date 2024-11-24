@@ -8,6 +8,7 @@ export interface ProcessRequest {
 }
 
 export interface ProcessResponse {
+    priority: number;
     id: number;
     arrivalTime: number;
     burstTime: number;

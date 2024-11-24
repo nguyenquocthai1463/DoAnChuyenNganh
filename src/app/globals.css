@@ -25,6 +25,7 @@ h1{
   padding-left: 10px;
 }
 
+
 @layer utilities {
   .text-balance {
     text-wrap: balance;
@@ -43,7 +44,7 @@ h1{
 }
 @layer utilities {
   .bg-03 {
-    background-color: #b5c99a;
+    background-color: white;
   }
 }
 @layer utilities {
@@ -74,7 +75,7 @@ h1{
 }
 @layer utilities {
   .text-03 {
-    color: #b5c99a;
+    color: #64dcd4;
   }
 }
 @layer utilities {

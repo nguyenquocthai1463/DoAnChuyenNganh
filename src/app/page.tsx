@@ -78,10 +78,10 @@ export default function Home() {
     });
 
     if (!response.ok) {
-      const errorData = await response.json();
+      const warningData = await response.json();
       return {
-        statusCode: errorData.statusCode,
-        message: errorData.message,
+        statusCode: warningData.statusCode,
+        message: warningData.message,
         data: undefined,
       }
     }
@@ -189,14 +189,14 @@ export default function Home() {
               output = (
                 <div>
                   {
-                    <div>
+                    <div className="justify-center">
                       <Table aria-label="Example static collection table">
                         <TableHeader>
-                          <TableColumn className="px-3 text-center">Job</TableColumn>
-                          <TableColumn className="px-3 text-center">Arrival Time</TableColumn>
-                          <TableColumn className="px-3 text-center">Burst Time</TableColumn>
-                          <TableColumn className="px-3 text-center">Finish Time</TableColumn>
-                          <TableColumn className="px-3 text-center">Waiting Time</TableColumn>
+                          <TableColumn className="px-3 text-center">Tiến trình</TableColumn>
+                          <TableColumn className="px-3 text-center">Thời gian đến</TableColumn>
+                          <TableColumn className="px-3 text-center">Thời gian xử lý</TableColumn>
+                          <TableColumn className="px-3 text-center">Thời gian hoàn thành</TableColumn>
+                          <TableColumn className="px-3 text-center">Thời gian chờ</TableColumn>
                         </TableHeader>
                         <TableBody>
                           {(responseData?.data?.processes || []).map(process => (
@@ -214,7 +214,8 @@ export default function Home() {
                         <p>Thời gian chờ trung bình: {responseData?.data?.averageWaitingTime}</p>
                         <p>Thời gian hoàn tất trung bình: {responseData?.data?.averageFinishTime}</p>
                       </div>
-                      <div className="mt-16">
+                      <div className="mt-4">
+                        <p className="mb-2">Biểu đồ Gain:</p>
                         <FCFSGanttChart processes={responseData.data?.processes} />
                       </div>
                     </div>}
@@ -225,32 +226,32 @@ export default function Home() {
             }
             else {
               Swal.fire({
-                icon: 'error',
-                title: 'Oops...',
+                icon: 'warning',
                 text: 'Số lượng tiến trình không khớp nhau!',
+                confirmButtonColor: '#000',
               })
             }
           }
           else {
             Swal.fire({
-              icon: 'error',
-              title: 'Oops...',
+              icon: 'warning',
               text: 'Số 0 và số âm không hợp lệ!',
+              confirmButtonColor: '#000',
             })
           }
         }
         else {
           Swal.fire({
-            icon: 'error',
-            title: 'Oops...',
+            icon: 'warning',
             text: 'Vui lòng nhập đúng định dạng!',
+            confirmButtonColor: '#000',
           })
         }
 
       } else {
         Swal.fire({
-          icon: 'error',
-          title: 'Oops...',
+          icon: 'warning',
+          confirmButtonColor: '#000',
           text: 'Vui lòng nhập đủ thông tin!',
         })
       }
@@ -268,11 +269,11 @@ export default function Home() {
                     <div>
                       <Table aria-label="Example static collection table">
                         <TableHeader>
-                          <TableColumn className="px-3 text-center">Job</TableColumn>
-                          <TableColumn className="px-3 text-center">Arrival Time</TableColumn>
-                          <TableColumn className="px-3 text-center">Burst Time</TableColumn>
-                          <TableColumn className="px-3 text-center">Finish Time</TableColumn>
-                          <TableColumn className="px-3 text-center">Waiting Time</TableColumn>
+                          <TableColumn className="px-3 text-center">Tiến trình</TableColumn>
+                          <TableColumn className="px-3 text-center">Thời gian đến</TableColumn>
+                          <TableColumn className="px-3 text-center">Thời gian xử lý</TableColumn>
+                          <TableColumn className="px-3 text-center">Thời gian hoàn thành</TableColumn>
+                          <TableColumn className="px-3 text-center">Thời gian chờ</TableColumn>
                         </TableHeader>
                         <TableBody>
                           {(responseData?.data?.processes || []).map(process => (
@@ -290,7 +291,8 @@ export default function Home() {
                         <p>Thời gian chờ trung bình: {responseData?.data?.averageWaitingTime}</p>
                         <p>Thời gian hoàn tất trung bình: {responseData?.data?.averageFinishTime}</p>
                       </div>
-                      <div className="mt-16">
+                      <div className="mt-4">
+                        <p className="mb-2">Biểu đồ Gain:</p>
                         <SJFPGanttChart processes={responseData.data?.processes} />
                       </div>
                     </div>}
@@ -301,32 +303,32 @@ export default function Home() {
             }
             else {
               Swal.fire({
-                icon: 'error',
-                title: 'Oops...',
+                icon: 'warning',
                 text: 'Số lượng tiến trình không khớp nhau!',
+                confirmButtonColor: '#000',
               })
             }
           }
           else {
             Swal.fire({
-              icon: 'error',
-              title: 'Oops...',
+              icon: 'warning',
               text: 'Số 0 và số âm không hợp lệ!',
+              confirmButtonColor: '#000',
             })
           }
         }
         else {
           Swal.fire({
-            icon: 'error',
-            title: 'Oops...',
+            icon: 'warning',
             text: 'Vui lòng nhập đúng định dạng!',
+            confirmButtonColor: '#000',
           })
         }
       } else {
         Swal.fire({
-          icon: 'error',
-          title: 'Oops...',
+          icon: 'warning',
           text: 'Vui lòng nhập đủ thông tin!',
+          confirmButtonColor: '#000',
         })
       }
     }
@@ -342,11 +344,11 @@ export default function Home() {
                   {<div>
                     <Table aria-label="Example static collection table">
                       <TableHeader>
-                        <TableColumn className="px-3 text-center">Job</TableColumn>
-                        <TableColumn className="px-3 text-center">Arrival Time</TableColumn>
-                        <TableColumn className="px-3 text-center">Burst Time</TableColumn>
-                        <TableColumn className="px-3 text-center">Finish Time</TableColumn>
-                        <TableColumn className="px-3 text-center">Waiting Time</TableColumn>
+                        <TableColumn className="px-3 text-center">Tiến trình</TableColumn>
+                        <TableColumn className="px-3 text-center">Thời gian đến</TableColumn>
+                        <TableColumn className="px-3 text-center">Thời gian xử lý</TableColumn>
+                        <TableColumn className="px-3 text-center">Thời gian hoàn thành</TableColumn>
+                        <TableColumn className="px-3 text-center">Thời gian chờ</TableColumn>
                       </TableHeader>
                       <TableBody>
                         {(responseData?.data?.processes || []).map(process => (
@@ -365,7 +367,8 @@ export default function Home() {
                     <p>Thời gian chờ trung bình: {responseData?.data?.averageWaitingTime}</p>
                     <p>Thời gian hoàn tất trung bình: {responseData?.data?.averageFinishTime}</p>
                   </div>
-                  <div className="mt-16">
+                  <div className="mt-4">
+                  <p className="mb-2">Biểu đồ Gain:</p>
                     <SJFNPGanttChart processes={handleSJFNPGanttChart(responseData?.data?.processes)} />
                   </div>
                 </div>
@@ -375,32 +378,33 @@ export default function Home() {
             }
             else {
               Swal.fire({
-                icon: 'error',
-                title: 'Oops...',
+                icon: 'warning',
                 text: 'Số lượng tiến trình không khớp nhau!',
+                confirmButtonColor: '#000',
               })
             }
           }
           else {
             Swal.fire({
-              icon: 'error',
-              title: 'Oops...',
+              icon: 'warning',
+
               text: 'Số 0 và số âm không hợp lệ!',
+              confirmButtonColor: '#000',
             })
           }
         }
         else {
           Swal.fire({
-            icon: 'error',
-            title: 'Oops...',
+            icon: 'warning',
             text: 'Vui lòng nhập đúng định dạng!',
+            confirmButtonColor: '#000',
           })
         }
       } else {
         Swal.fire({
-          icon: 'error',
-          title: 'Oops...',
+          icon: 'warning',
           text: 'Vui lòng nhập đủ thông tin!',
+          confirmButtonColor: '#000',
         })
       }
     }
@@ -416,11 +420,11 @@ export default function Home() {
                   {<div>
                     <Table aria-label="Example static collection table" className="custom-table">
                       <TableHeader>
-                        <TableColumn className="px-3 text-center ">Job</TableColumn>
-                        <TableColumn className="px-3 text-center ">Arrival Time</TableColumn>
-                        <TableColumn className="px-3 text-center ">Burst Time</TableColumn>
-                        <TableColumn className="px-3 text-center ">Finish Time</TableColumn>
-                        <TableColumn className="px-3 text-center ">Waiting Time</TableColumn>
+                        <TableColumn className="px-3 text-center ">Tiến trình</TableColumn>
+                        <TableColumn className="px-3 text-center ">Thời gian đến</TableColumn>
+                        <TableColumn className="px-3 text-center ">Thời gian xử lý</TableColumn>
+                        <TableColumn className="px-3 text-center ">Thời gian hoàn thành</TableColumn>
+                        <TableColumn className="px-3 text-center ">Thời gian chờ</TableColumn>
                       </TableHeader>
                       <TableBody>
                         {(responseData?.data?.processes || []).map(process => (
@@ -440,7 +444,8 @@ export default function Home() {
                     <p>Thời gian chờ trung bình: {responseData?.data?.averageWaitingTime}</p>
                     <p>Thời gian hoàn tất trung bình: {responseData?.data?.averageFinishTime}</p>
                   </div>
-                  <div className="mt-16">
+                  <div className="mt-4">
+                  <p className="mb-2">Biểu đồ Gain:</p>
                     <RRGanttChart processes={handleRRGanttChart(responseData?.data?.processes, Number(timeQuantum))} />
                   </div>
                 </div>
@@ -450,32 +455,33 @@ export default function Home() {
             }
             else {
               Swal.fire({
-                icon: 'error',
-                title: 'Oops...',
+                icon: 'warning',
                 text: 'Số lượng tiến trình không khớp nhau!',
+                confirmButtonColor: '#000',
               })
             }
           }
           else {
             Swal.fire({
-              icon: 'error',
-              title: 'Oops...',
+              icon: 'warning',
               text: 'Số 0 và số âm không hợp lệ!',
+              confirmButtonColor: '#000',
             })
           }
         }
         else {
           Swal.fire({
-            icon: 'error',
-            title: 'Oops...',
+            icon: 'warning',
+            background: '#000',
             text: 'Vui lòng nhập đúng định dạng!',
+            confirmButtonColor: '#000',
           })
         }
       } else {
         Swal.fire({
-          icon: 'error',
-          title: 'Oops...',
+          icon: 'warning',
           text: 'Vui lòng nhập đủ thông tin!',
+          confirmButtonColor: '#000',
         })
       }
     }
@@ -491,11 +497,11 @@ export default function Home() {
                   {<div>
                     <Table aria-label="Example static collection table">
                       <TableHeader>
-                        <TableColumn className="px-3 text-center">Job</TableColumn>
-                        <TableColumn className="px-3 text-center">Arrival Time</TableColumn>
-                        <TableColumn className="px-3 text-center">Burst Time</TableColumn>
-                        <TableColumn className="px-3 text-center">Finish Time</TableColumn>
-                        <TableColumn className="px-3 text-center">Waiting Time</TableColumn>
+                        <TableColumn className="px-3 text-center">Tiến trình</TableColumn>
+                        <TableColumn className="px-3 text-center">Thời gian đến</TableColumn>
+                        <TableColumn className="px-3 text-center">Thời gian xử lý</TableColumn>
+                        <TableColumn className="px-3 text-center">Thời gian hoàn thành</TableColumn>
+                        <TableColumn className="px-3 text-center">Thời gian chờ</TableColumn>
                       </TableHeader>
                       <TableBody>
                         {(responseData?.data?.processes || []).map(process => (
@@ -514,7 +520,8 @@ export default function Home() {
                     <p>Thời gian chờ trung bình: {responseData?.data?.averageWaitingTime}</p>
                     <p>Thời gian hoàn tất trung bình: {responseData?.data?.averageFinishTime}</p>
                   </div>
-                  <div className="mt-16">
+                  <div className="mt-4">
+                  <p className="mb-2">Biểu đồ Gain:</p>
                     <NPPGanttChart processes={
                       handleNPPGanttChart(responseData?.data?.processes, getCharactersWithoutSpaces(priority))
                     } />
@@ -526,32 +533,33 @@ export default function Home() {
             }
             else {
               Swal.fire({
-                icon: 'error',
-                title: 'Oops...',
+                icon: 'warning',
                 text: 'Số lượng tiến trình không khớp nhau!',
+                confirmButtonColor: '#000',
               })
             }
           }
           else {
             Swal.fire({
-              icon: 'error',
-              title: 'Oops...',
+              icon: 'warning',
+
               text: 'Số 0 và số âm không hợp lệ!',
+              confirmButtonColor: '#000',
             })
           }
         }
         else {
           Swal.fire({
-            icon: 'error',
-            title: 'Oops...',
+            icon: 'warning',
             text: 'Vui lòng nhập đúng định dạng!',
+            confirmButtonColor: '#000',
           })
         }
       } else {
         Swal.fire({
-          icon: 'error',
-          title: 'Oops...',
+          icon: 'warning',
           text: 'Vui lòng nhập đủ thông tin!',
+          confirmButtonColor: '#000',
         })
       }
     }
@@ -563,15 +571,15 @@ export default function Home() {
             if (getCharactersWithoutSpaces(arrivalTime).length === getCharactersWithoutSpaces(burstTime).length && getCharactersWithoutSpaces(arrivalTime).length === getCharactersWithoutSpaces(priority).length) {
               await pp();
               output = (
-                <div>
+                <div className="justify-center">
                   {<div>
                     <Table aria-label="Example static collection table">
                       <TableHeader>
-                        <TableColumn className="px-3 text-center">Job</TableColumn>
-                        <TableColumn className="px-3 text-center">Arrival Time</TableColumn>
-                        <TableColumn className="px-3 text-center">Burst Time</TableColumn>
-                        <TableColumn className="px-3 text-center">Finish Time</TableColumn>
-                        <TableColumn className="px-3 text-center">Waiting Time</TableColumn>
+                        <TableColumn className="px-3 text-center">Tiến trình</TableColumn>
+                        <TableColumn className="px-3 text-center">Thời gian đến</TableColumn>
+                        <TableColumn className="px-3 text-center">Thời gian xử lý</TableColumn>
+                        <TableColumn className="px-3 text-center">Thời gian hoàn thành</TableColumn>
+                        <TableColumn className="px-3 text-center">Thời gian chờ</TableColumn>
                       </TableHeader>
                       <TableBody>
                         {(responseData?.data?.processes || []).map(process => (
@@ -590,7 +598,8 @@ export default function Home() {
                     <p>Thời gian chờ trung bình: {responseData?.data?.averageWaitingTime}</p>
                     <p>Thời gian hoàn tất trung bình: {responseData?.data?.averageFinishTime}</p>
                   </div>
-                  <div className="mt-16">
+                  <div className="mt-4">
+                  <p className="mb-2">Biểu đồ Gain:</p>
                     <PPGanttChart processes={
                       handlePPGanttChart(responseData?.data?.processes, getCharactersWithoutSpaces(priority))
                     } />
@@ -602,32 +611,33 @@ export default function Home() {
             }
             else {
               Swal.fire({
-                icon: 'error',
-                title: 'Oops...',
+                icon: 'warning',
                 text: 'Số lượng tiến trình không khớp nhau!',
+                confirmButtonColor: '#000',
               })
             }
           }
           else {
             Swal.fire({
-              icon: 'error',
-              title: 'Oops...',
+              icon: 'warning',
+
               text: 'Số 0 và số âm không hợp lệ!',
+              confirmButtonColor: '#000',
             })
           }
         }
         else {
           Swal.fire({
-            icon: 'error',
-            title: 'Oops...',
+            icon: 'warning',
             text: 'Vui lòng nhập đúng định dạng!',
+            confirmButtonColor: '#000',
           })
         }
       } else {
         Swal.fire({
-          icon: 'error',
-          title: 'Oops...',
+          icon: 'warning',
           text: 'Vui lòng nhập đủ thông tin!',
+          confirmButtonColor: '#000',
         })
       }
     }
@@ -638,41 +648,52 @@ export default function Home() {
   const items: MenuItem[] = [
     {
       key: 'preemptive',
-      label: 'Preemptive',
+      label: 'Độc quyền',
       type: 'group',
-      style: { fontSize: '1rem', },
+      style: { fontSize: '1rem', color: 'white' },
       children: [
         {
           key: 'fcfs',
           label: 'First Come First Serve',
+          style: { color: 'black',  },
         },
         {
           key: 'sjf',
           label: 'Shortest Job First Pre',
+          style: { color: 'black' },
+          className: 'on-forcus-items',
         },
         {
           key: 'pp',
           label: 'Priority Pre',
+          style: { color: 'black' },
+          className: 'on-forcus-items',
         },
       ],
     },
     {
       key: 'non-preemptive',
-      label: 'Non Preemptive',
+      label: 'Không độc quyền',
       type: 'group',
-      style: { fontSize: '1rem' },
+      style: { fontSize: '1rem', color: 'white' },
       children: [
         {
           key: 'npp',
           label: 'Priority NonPre',
+          style: { color: 'black' },
+          className: 'on-forcus-items',
         },
         {
           key: 'rr',
           label: 'Round Robin',
+          style: { color: 'black' },
+          className: 'on-forcus-items',
         },
         {
           key: 'srtf',
           label: 'Shortest Job First NonPre',
+          style: { color: 'black' },
+          className: 'on-forcus-items',
         },
       ],
     },
@@ -689,23 +710,23 @@ export default function Home() {
     switch (selectedKey) {
       //fcfs
       case 'fcfs':
-        return <div className="bg-03 py-2 px-6 grid grid-cols-1 gap-4 md:grid-cols-4">
+        return <div className="bg-03 p-4 grid grid-cols-1 gap-4 md:grid-cols-4">
           <div className="mx-2 md:w-full">
-            <h1 >Arrival Time</h1>
+            <h1 >Thời gian đến</h1>
             <input
               type="text"
               className="p-3 pl-5  md:w-full my-2 border border-gray-300 rounded-3xl"
-              placeholder="eg: 1 4 5 6"
+              placeholder="ví dụ: 1 4 5 6"
               value={arrivalTime}
               onChange={(e) => setArrivalTime(e.target.value)}
             />
           </div>
           <div className="mx-2 md:w-full">
-            <h1>Burst Time</h1>
+            <h1>Thời gian xử lý</h1>
             <input
               type="text"
               className="p-3 pl-5 md:w-full my-2 border border-gray-300 rounded-3xl"
-              placeholder="eg: 1 4 5 6"
+              placeholder="ví dụ: 1 4 5 6"
               value={burstTime}
               onChange={(e) => setBurstTime(e.target.value)}
             />
@@ -714,29 +735,29 @@ export default function Home() {
           <div className="flex flex-wrap justify-end content-center">
             <button
               onClick={handleSubmit}
-              className="block bg-red-800 text-white rounded-xl h-12 px-6">
-              Submit
+              className="block bg-black text-white rounded-xl h-12 px-6">
+             Kết quả
             </button></div>
         </div>;
       //sjf
       case 'sjf':
-        return <div className="bg-03 py-2 px-6 grid grid-cols-1 gap-4 md:grid-cols-4">
+        return <div className="bg-03 p-4 grid grid-cols-1 gap-4 md:grid-cols-4">
           <div className="mx-2 md:w-full">
-            <h1 >Arrival Time</h1>
+            <h1 >Thời gian đến</h1>
             <input
               type="text"
               className="p-3 pl-5  md:w-full my-2 border border-gray-300 rounded-3xl"
-              placeholder="eg: 1 4 5 6"
+              placeholder="ví dụ: 1 4 5 6"
               value={arrivalTime}
               onChange={(e) => setArrivalTime(e.target.value)}
             />
           </div>
           <div className="mx-2 md:w-full">
-            <h1>Burst Time</h1>
+            <h1>Thời gian xử lý</h1>
             <input
               type="text"
               className="p-3 pl-5 md:w-full my-2 border border-gray-300 rounded-3xl"
-              placeholder="eg: 1 4 5 6"
+              placeholder="ví dụ: 1 4 5 6"
               value={burstTime}
               onChange={(e) => setBurstTime(e.target.value)}
             />
@@ -745,39 +766,39 @@ export default function Home() {
           <div className="flex flex-wrap justify-end content-center">
             <button
               onClick={handleSubmit}
-              className="block bg-red-800 text-white rounded-xl h-12 px-6">
-              Submit
+              className="block bg-black text-white rounded-xl h-12 px-6">
+             Kết quả
             </button></div>
         </div>;
       //priority
       case 'pp':
-        return <div className="bg-03 py-2 px-6 grid grid-cols-1 gap-4 md:grid-cols-4">
+        return <div className="bg-03 p-4 grid grid-cols-1 gap-4 md:grid-cols-4">
           <div className="mx-2 md:w-full">
-            <h1 >Arrival Time</h1>
+            <h1 >Thời gian đến</h1>
             <input
               type="text"
               className="p-3 pl-5  md:w-full my-2 border border-gray-300 rounded-3xl"
-              placeholder="eg: 1 4 5 6"
+              placeholder="ví dụ: 1 4 5 6"
               value={arrivalTime}
               onChange={(e) => setArrivalTime(e.target.value)}
             />
           </div>
           <div className="mx-2 md:w-full">
-            <h1>Burst Time</h1>
+            <h1>Thời gian xử lý</h1>
             <input
               type="text"
               className="p-3 pl-5 md:w-full my-2 border border-gray-300 rounded-3xl"
-              placeholder="eg: 1 4 5 6"
+              placeholder="ví dụ: 1 4 5 6"
               value={burstTime}
               onChange={(e) => setBurstTime(e.target.value)}
             />
           </div>
           <div className="mx-2 md:w-full">
-            <h1>Priorities</h1>
+            <h1>Độ ưu tiên</h1>
             <input
               type="text"
               className="block p-3 pl-5 my-2 border border-gray-300 rounded-3xl"
-              placeholder="Lower #= Higher"
+              placeholder="ví dụ: 1 3 2 4"
               value={priority}
               onChange={(e) => setPriority(e.target.value)}
             />
@@ -785,40 +806,40 @@ export default function Home() {
           <div className="flex flex-wrap justify-end content-center">
             <button
               onClick={handleSubmit}
-              className="block bg-red-800 text-white rounded-xl h-12 px-6">
-              Submit
+              className="block bg-black text-white rounded-xl h-12 px-6">
+             Kết quả
             </button>
           </div>
         </div>;
       //non-preemptive-priority
       case 'npp':
-        return <div className="bg-03 py-2 px-6 grid grid-cols-1 gap-4 md:grid-cols-4">
+        return <div className="bg-03 p-4 grid grid-cols-1 gap-4 md:grid-cols-4">
           <div className="mx-2 md:w-full">
-            <h1 >Arrival Time</h1>
+            <h1>Thời gian đến</h1>
             <input
               type="text"
               className="p-3 pl-5  md:w-full my-2 border border-gray-300 rounded-3xl"
-              placeholder="eg: 1 4 5 6"
+              placeholder="ví dụ: 1 4 5 6"
               value={arrivalTime}
               onChange={(e) => setArrivalTime(e.target.value)}
             />
           </div>
           <div className="mx-2 md:w-full">
-            <h1>Burst Time</h1>
+            <h1>Thời gian xử lý</h1>
             <input
               type="text"
               className="p-3 pl-5 md:w-full my-2 border border-gray-300 rounded-3xl"
-              placeholder="eg: 1 4 5 6"
+              placeholder="ví dụ: 1 4 5 6"
               value={burstTime}
               onChange={(e) => setBurstTime(e.target.value)}
             />
           </div>
           <div className="mx-2 md:w-full">
-            <h1>Priorities</h1>
+            <h1>Độ ưu tiên</h1>
             <input
               type="text"
               className="block p-3 pl-5 my-2 border border-gray-300 rounded-3xl"
-              placeholder="Lower #= Higher"
+              placeholder="ví dụ: 1 3 2 4"
               value={priority}
               onChange={(e) => setPriority(e.target.value)}
             />
@@ -826,39 +847,39 @@ export default function Home() {
           <div className="flex flex-wrap justify-end content-center">
             <button
               onClick={handleSubmit}
-              className="block bg-red-800 text-white rounded-xl h-12 px-6">
-              Submit
+              className="block bg-black text-white rounded-xl h-12 px-6">
+             Kết quả
             </button></div>
         </div>;
       //round-robin
       case 'rr':
-        return <div className="bg-03 py-2 px-6 grid grid-cols-1 gap-4 md:grid-cols-4">
+        return <div className="bg-03 p-4 grid grid-cols-1 gap-4 md:grid-cols-4">
           <div className="mx-2 md:w-full">
-            <h1 >Arrival Time</h1>
+            <h1 >Thời gian đến</h1>
             <input
               type="text"
               className="p-3 pl-5  md:w-full my-2 border border-gray-300 rounded-3xl"
-              placeholder="eg: 1 4 5 6"
+              placeholder="ví dụ: 1 4 5 6"
               value={arrivalTime}
               onChange={(e) => setArrivalTime(e.target.value)}
             />
           </div>
           <div className="mx-2 md:w-full">
-            <h1>Burst Time</h1>
+            <h1>Thời gian xử lý</h1>
             <input
               type="text"
               className="p-3 pl-5 md:w-full my-2 border border-gray-300 rounded-3xl"
-              placeholder="eg: 1 4 5 6"
+              placeholder="ví dụ: 1 4 5 6"
               value={burstTime}
               onChange={(e) => setBurstTime(e.target.value)}
             />
           </div>
           <div className="mx-2 md:w-full">
-            <h1>Time Quantum</h1>
+            <h1>Thời gian xoay vòng</h1>
             <input
               type="text"
               className="block p-3 pl-5 my-2 border border-gray-300 rounded-3xl"
-              placeholder="eg: 3"
+              placeholder="ví dụ: 3"
               value={timeQuantum}
               onChange={(e) => setTimeQuantum(e.target.value)}
             />
@@ -866,29 +887,29 @@ export default function Home() {
           <div className="flex flex-wrap justify-end content-center">
             <button
               onClick={handleSubmit}
-              className="block bg-red-800 text-white rounded-xl h-12 px-6">
-              Submit
+              className="block bg-black text-white rounded-xl h-12 px-6">
+             Kết quả
             </button></div>
         </div>;
       //srtf
       case 'srtf':
-        return <div className="bg-03 py-2 px-6 grid grid-cols-1 gap-4 md:grid-cols-4">
+        return <div className="bg-03 p-4 grid grid-cols-1 gap-4 md:grid-cols-4">
           <div className="mx-2 md:w-full">
-            <h1 >Arrival Time</h1>
+            <h1 >Thời gian đến</h1>
             <input
               type="text"
               className="p-3 pl-5 md:w-full my-2 border border-gray-300 rounded-3xl"
-              placeholder="eg: 1 4 5 6"
+              placeholder="ví dụ: 1 4 5 6"
               value={arrivalTime}
               onChange={(e) => setArrivalTime(e.target.value)}
             />
           </div>
           <div className="mx-2 md:w-full">
-            <h1>Burst Time</h1>
+            <h1>Thời gian xử lý</h1>
             <input
               type="text"
               className="p-3 pl-5 md:w-full my-2 border border-gray-300 rounded-3xl"
-              placeholder="eg: 1 4 5 6"
+              placeholder="ví dụ: 1 4 5 6"
               value={burstTime}
               onChange={(e) => setBurstTime(e.target.value)}
             />
@@ -897,8 +918,8 @@ export default function Home() {
           <div className="flex flex-wrap justify-end content-center">
             <button
               onClick={handleSubmit}
-              className="block bg-red-800 text-white rounded-xl h-12 px-6">
-              Submit
+              className="block bg-black text-white rounded-xl h-12 px-6">
+             Kết quả
             </button></div>
         </div>;
       default:
@@ -910,7 +931,7 @@ export default function Home() {
     fontFamily: 'Arial, sans-serif',
     fontSize: '24px',
     fontWeight: 'bold',
-    color: '#333',
+    color: '#fff',
     textShadow: `
       2px 2px 4px rgba(0, 0, 0, 0.3),
       4px 4px 8px rgba(0, 0, 0, 0.2)
@@ -918,7 +939,7 @@ export default function Home() {
   };
 
   return (
-    <div>
+    <div className="h-screen">
       <button onClick={toggleSidebar} data-drawer-target="default-sidebar" data-drawer-toggle="default-sidebar" aria-controls="default-sidebar" type="button" className="inline-flex items-center p-2 mt-2 ms-3 text-sm text-gray-500 rounded-lg sm:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600">
         <span className="sr-only">Open sidebar</span>
         <svg className="w-6 h-6" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
@@ -930,21 +951,21 @@ export default function Home() {
           <div className="">
             <Menu
               onClick={onClick}
-              className="bg-03 text-01"
+              className="bg-03"
               mode="inline"
               items={items} />
           </div>
         </div>
       </aside>
-      <div className="h-screen sm:ml-64 md:flex-col">
-        <div className="p-4 flex-none max-w-md mx-auto text-center md:max-w-2xl md:h-1/6">
-          <p style={titleStyle} className=" font-serif font-bold">Tìm hiểu công nghệ Jamstack và xây dựng ứng dụng Web minh họa các giải thuật định thời CPU</p>
+      <div className="md:h-full sm:ml-64 md:flex-col">
+        <div className="px-32 py-6 content-start bg-black rounded-b-full mx-auto text-center md:w-auto md:h-auto">
+          <p style={titleStyle} className="font-serif font-bold">Tìm hiểu công nghệ Jamstack và xây dựng ứng dụng Web minh họa các giải thuật định thời CPU</p>
         </div>
-        <div className="p-4 md:h-4/6">
-          {result}
-        </div>
-        <div className="md:content-end">
+        <div className="md:h-auto">
           {renderForm()}
+        </div>
+        <div className="px-4 pb-12 md:h-auto">
+          {result}
         </div>
       </div>
     </div>
