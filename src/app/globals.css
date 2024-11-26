@@ -3,14 +3,14 @@
 @tailwind utilities;
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: white;
+  --foreground: black;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #061528;
-    --foreground: #061528;
+    --background: white;
+    --foreground: black;
   }
 }
 
@@ -20,8 +20,127 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
+h1{
+  font-family: 'Roboto', sans-serif;
+  padding-left: 10px;
+}
+
+
 @layer utilities {
   .text-balance {
     text-wrap: balance;
   }
+}
+
+@layer utilities {
+  .bg-01 {
+    background-color: #e9d5db;
+  }
+}
+@layer utilities {
+  .bg-02 {
+    background-color: #cfe1b9;
+  }
+}
+@layer utilities {
+  .bg-03 {
+    background-color: white;
+  }
+}
+@layer utilities {
+  .bg-04 {
+    background-color: #97a97c;
+  }
+}
+@layer utilities {
+  .bg-05 {
+    background-color: #87986a;
+  }
+}
+@layer utilities {
+  .bg-06 {
+    background-color: #718355;
+  }
+}
+
+@layer utilities {
+  .text-01 {
+    color: #e9d5db;
+  }
+}
+@layer utilities {
+  .text-02 {
+    color: #cfe1b9;
+  }
+}
+@layer utilities {
+  .text-03 {
+    color: #64dcd4;
+  }
+}
+@layer utilities {
+  .text-04 {
+    color: #97a97c;
+  }
+}
+@layer utilities {
+  .text-05 {
+    color: #87986a;
+  }
+}
+@layer utilities {
+  .text-06 {
+    color: #718355;
+  }
+}
+
+@layer utilities {
+  .text-06 {
+    color: #c9c9c9;
+  }
+}
+
+#toast-container {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 1000;
+}
+
+.toast {
+  padding: 10px 20px;
+  background-color: #f44336;
+  color: white;
+  margin-bottom: 10px;
+  border-radius: 3px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+  animation: fadein 0.5s, fadeout 0.5s 2.5s;
+}
+
+@keyframes fadein {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes fadeout {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+.custom-table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+.custom-table .border {
+  border: 2px solid #ddd;
+}
+
+.title {
+  font-family: 'Arial', sans-serif;
+  font-weight: bold;
+  color: #333;
+  text-shadow: 
+    2px 2px 4px rgba(0, 0, 0, 0.3),
+    4px 4px 8px rgba(0, 0, 0, 0.2); 
 }

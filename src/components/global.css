@@ -1,0 +1,70 @@
+.gantt-chart {
+    display: flex;
+    align-items: center;
+    height: 40px;
+    position: relative;
+}
+
+.gantt-bar {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: black;
+    font-weight: bold;
+    font-size: 16px;
+    position: relative;
+    height: 40px;
+    border-right: 2px solid #000;
+    border-top: 2px solid #000;
+    border-bottom: 2px solid #000;
+}
+
+.gantt-bar:first-child {
+    border-left: 2px solid #000;
+}
+
+.gantt-bar .time-label {
+    position: absolute;
+    bottom: -20px;
+    font-size: 12px;
+}
+
+.P1 {
+    background-color: rgb(243, 115, 115);
+}
+
+.P2 {
+    background-color: rgb(102, 239, 102);
+}
+
+.P3 {
+    background-color: rgb(101, 101, 244);
+}
+
+.P4 {
+    background-color: rgb(238, 116, 238);
+}
+
+.P5 {
+    background-color: rgb(103, 235, 235);
+}
+
+.P6 {
+    background-color: lawngreen;
+}
+
+.P7 {
+    background-color: salmon;
+}
+
+.P8 {
+    background-color: deeppink;
+}
+
+.P9 {
+    background-color: orange;
+}
+
+.P10 {
+    background-color: brown;
+}

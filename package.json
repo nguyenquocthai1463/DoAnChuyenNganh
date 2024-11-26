@@ -9,15 +9,24 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@ant-design/icons": "^5.5.1",
+    "@nextui-org/react": "^2.4.8",
+    "@nextui-org/table": "^2.0.40",
+    "antd": "^5.21.2",
+    "classnames": "^2.5.1",
     "next": "14.2.13",
     "react": "^18",
     "react-dom": "^18",
-    "scheduling": "file:"
+    "react-tabs": "^6.0.2",
+    "scheduling": "file:",
+    "styled-components": "^6.1.13",
+    "sweetalert2": "^11.14.4"
   },
   "devDependencies": {
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
+    "@types/styled-components": "^5.1.34",
     "eslint": "^8",
     "eslint-config-next": "14.2.13",
     "postcss": "^8",
