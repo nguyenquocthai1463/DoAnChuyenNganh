@@ -201,7 +201,7 @@ export default function Home() {
                         <TableBody>
                           {(responseData?.data?.processes || []).map(process => (
                             <TableRow key={process.id}>
-                              <TableCell className="px-3 text-center border">{process.id}</TableCell>
+                              <TableCell className="px-3 text-center border">P{process.id}</TableCell>
                               <TableCell className="px-3 text-center border">{process.arrivalTime}</TableCell>
                               <TableCell className="px-3 text-center border">{process.burstTime}</TableCell>
                               <TableCell className="px-3 text-center border">{process.finishTime}</TableCell>
@@ -215,7 +215,7 @@ export default function Home() {
                         <p>Thời gian hoàn tất trung bình: {responseData?.data?.averageFinishTime}</p>
                       </div>
                       <div className="mt-4">
-                        <p className="mb-2">Biểu đồ Gain:</p>
+                        <p className="mb-2">Biểu đồ Gantt:</p>
                         <FCFSGanttChart processes={responseData.data?.processes} />
                       </div>
                     </div>}
@@ -278,7 +278,7 @@ export default function Home() {
                         <TableBody>
                           {(responseData?.data?.processes || []).map(process => (
                             <TableRow key={process.id}>
-                              <TableCell className="px-3 text-center border">{process.id}</TableCell>
+                              <TableCell className="px-3 text-center border">P{process.id}</TableCell>
                               <TableCell className="px-3 text-center border">{process.arrivalTime}</TableCell>
                               <TableCell className="px-3 text-center border">{process.burstTime}</TableCell>
                               <TableCell className="px-3 text-center border">{process.finishTime}</TableCell>
@@ -292,7 +292,7 @@ export default function Home() {
                         <p>Thời gian hoàn tất trung bình: {responseData?.data?.averageFinishTime}</p>
                       </div>
                       <div className="mt-4">
-                        <p className="mb-2">Biểu đồ Gain:</p>
+                        <p className="mb-2">Biểu đồ Gantt:</p>
                         <SJFPGanttChart processes={responseData.data?.processes} />
                       </div>
                     </div>}
@@ -353,7 +353,7 @@ export default function Home() {
                       <TableBody>
                         {(responseData?.data?.processes || []).map(process => (
                           <TableRow key={process.id}>
-                            <TableCell className="px-3 text-center border">{process.id}</TableCell>
+                            <TableCell className="px-3 text-center border">P{process.id}</TableCell>
                             <TableCell className="px-3 text-center border">{process.arrivalTime}</TableCell>
                             <TableCell className="px-3 text-center border">{process.burstTime}</TableCell>
                             <TableCell className="px-3 text-center border">{process.finishTime}</TableCell>
@@ -368,7 +368,7 @@ export default function Home() {
                     <p>Thời gian hoàn tất trung bình: {responseData?.data?.averageFinishTime}</p>
                   </div>
                   <div className="mt-4">
-                  <p className="mb-2">Biểu đồ Gain:</p>
+                  <p className="mb-2">Biểu đồ Gantt:</p>
                     <SJFNPGanttChart processes={handleSJFNPGanttChart(responseData?.data?.processes)} />
                   </div>
                 </div>
@@ -429,7 +429,7 @@ export default function Home() {
                       <TableBody>
                         {(responseData?.data?.processes || []).map(process => (
                           <TableRow key={process.id} className="border">
-                            <TableCell className="px-3 text-center border">{process.id}</TableCell>
+                            <TableCell className="px-3 text-center border">P{process.id}</TableCell>
                             <TableCell className="px-3 text-center border">{process.arrivalTime}</TableCell>
                             <TableCell className="px-3 text-center border">{process.burstTime}</TableCell>
                             <TableCell className="px-3 text-center border">{process.finishTime}</TableCell>
@@ -445,7 +445,7 @@ export default function Home() {
                     <p>Thời gian hoàn tất trung bình: {responseData?.data?.averageFinishTime}</p>
                   </div>
                   <div className="mt-4">
-                  <p className="mb-2">Biểu đồ Gain:</p>
+                  <p className="mb-2">Biểu đồ Gantt:</p>
                     <RRGanttChart processes={handleRRGanttChart(responseData?.data?.processes, Number(timeQuantum))} />
                   </div>
                 </div>
@@ -506,7 +506,7 @@ export default function Home() {
                       <TableBody>
                         {(responseData?.data?.processes || []).map(process => (
                           <TableRow key={process.id}>
-                            <TableCell className="px-3 text-center border">{process.id}</TableCell>
+                            <TableCell className="px-3 text-center border">P{process.id}</TableCell>
                             <TableCell className="px-3 text-center border">{process.arrivalTime}</TableCell>
                             <TableCell className="px-3 text-center border">{process.burstTime}</TableCell>
                             <TableCell className="px-3 text-center border">{process.finishTime}</TableCell>
@@ -521,7 +521,7 @@ export default function Home() {
                     <p>Thời gian hoàn tất trung bình: {responseData?.data?.averageFinishTime}</p>
                   </div>
                   <div className="mt-4">
-                  <p className="mb-2">Biểu đồ Gain:</p>
+                  <p className="mb-2">Biểu đồ Gantt:</p>
                     <NPPGanttChart processes={
                       handleNPPGanttChart(responseData?.data?.processes, getCharactersWithoutSpaces(priority))
                     } />
@@ -584,7 +584,7 @@ export default function Home() {
                       <TableBody>
                         {(responseData?.data?.processes || []).map(process => (
                           <TableRow key={process.id}>
-                            <TableCell className="px-3 text-center border">{process.id}</TableCell>
+                            <TableCell className="px-3 text-center border">P{process.id}</TableCell>
                             <TableCell className="px-3 text-center border">{process.arrivalTime}</TableCell>
                             <TableCell className="px-3 text-center border">{process.burstTime}</TableCell>
                             <TableCell className="px-3 text-center border">{process.finishTime}</TableCell>
@@ -599,7 +599,7 @@ export default function Home() {
                     <p>Thời gian hoàn tất trung bình: {responseData?.data?.averageFinishTime}</p>
                   </div>
                   <div className="mt-4">
-                  <p className="mb-2">Biểu đồ Gain:</p>
+                  <p className="mb-2">Biểu đồ Gantt:</p>
                     <PPGanttChart processes={
                       handlePPGanttChart(responseData?.data?.processes, getCharactersWithoutSpaces(priority))
                     } />
