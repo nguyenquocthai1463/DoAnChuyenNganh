@@ -17,9 +17,8 @@ const firstComeFirstServeAlgo = (req: ProcessRequest): ResponseData => {
     let TG_HoanTat_TB: number = 0.0;
     let count: number;
     let j: number;
-    let So_TienTrinh: number;
 
-    So_TienTrinh = req.arrPro.length;
+    const So_TienTrinh: number = req.arrPro.length;
     TG_XuLy = req.arrBurstTime;
 
     TG_Cho[0] = 0;
@@ -50,6 +49,7 @@ const firstComeFirstServeAlgo = (req: ProcessRequest): ResponseData => {
                     burstTime: TG_XuLy[index],
                     finishTime: TG_HoanTat[index],
                     waitingTime: TG_Cho[index],
+                    priority: 0
                 };
             }),
             averageFinishTime: TG_HoanTat_TB,
@@ -110,6 +110,7 @@ export default function handler(req: NextApiRequest, res: NextApiResponse<Respon
 
         const response: ResponseData = firstComeFirstServeAlgo(request);
         res.status(StatusCode.OK).json(response);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
         res.status(StatusCode.SERVER_ERROR).json({
             statusCode: StatusCode.SERVER_ERROR,

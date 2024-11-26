@@ -2,10 +2,10 @@ import { ProcessResponse } from "./process";
 
 const handleNPPGanttChart = (processes: ProcessResponse[] | undefined, priorities: number[]) => {
     const n = processes ? processes.length : 0;
-    const timeChart = [];
+    const timeChart = [] as { id: number | undefined; startTime: number; endTime: number }[];
 
     let currentTime = 0;
-    let remainingTime = processes && processes.map(p => p.burstTime);
+    const remainingTime = processes && processes.map(p => p.burstTime);
     let completedProcesses = 0;
     let lastProcess = null;
 
@@ -38,6 +38,7 @@ const handleNPPGanttChart = (processes: ProcessResponse[] | undefined, prioritie
             timeChart.push({
                 id: processes && processes[index].id,
                 startTime: currentTime,
+                endTime: 0
             });
 
             lastProcess = index;

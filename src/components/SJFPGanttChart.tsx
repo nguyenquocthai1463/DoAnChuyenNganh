@@ -1,6 +1,7 @@
 import { ProcessResponse } from "@/types/process";
 import './global.css';
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const SJFPGanttChart = (props: any) => {
 
     const { processes } = props;

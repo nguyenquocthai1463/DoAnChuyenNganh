@@ -1,8 +1,8 @@
 import { ProcessResponse } from "@/types/process";
 import './global.css';
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const FCFSGanttChart = (props: any) => {
-
   const { processes } = props;
 
   const totalDuration = processes[processes.length - 1].finishTime;

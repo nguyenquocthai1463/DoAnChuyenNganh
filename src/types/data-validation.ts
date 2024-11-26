@@ -1,4 +1,5 @@
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const validateTheLengthOfProcesses = (arrArrivalTime: any, arrBurstTime: any) => {
     if (!Array.isArray(arrArrivalTime) || arrArrivalTime.length === 0 ||
         !Array.isArray(arrBurstTime) || arrBurstTime.length === 0)
@@ -6,15 +7,18 @@ const validateTheLengthOfProcesses = (arrArrivalTime: any, arrBurstTime: any) =>
     return true;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const validateArrivalTimeAndBurstTime = (arrArrivalTime: any, arrBurstTime: any) => {
     return (arrArrivalTime.length !== arrBurstTime.length) ? false : true;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const validateArrivalTimeBurstTimeAndPriority = (arrArrivalTime: any, arrBurstTime: any, arrPriority: any) => {
     return (arrArrivalTime.length !== arrPriority.length ||
         arrBurstTime.length !== arrPriority.length) ? false : true;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const validateThatEachElementInTheProcessesIsNumeric = (arrArrivalTime: any, arrBurstTime: any, arrPriority: any): [boolean, string] => {
     if (typeof arrPriority === 'undefined') {
         for (let i = 0; i < arrArrivalTime.length; i++) {
@@ -33,6 +37,7 @@ const validateThatEachElementInTheProcessesIsNumeric = (arrArrivalTime: any, arr
     return [true, ""];
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const validateQuantum = (quantum: any) => {
     return (isNaN(Number(quantum)) || Number(quantum) <= 0) ? false : true;
 }

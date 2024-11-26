@@ -10,7 +10,7 @@ const handlePPGanttChart = (processes: ProcessResponse[] | undefined, priorities
 
     processes?.sort((a, b) => a.arrivalTime - b.arrivalTime);
 
-    let currentTime = 0;
+    let currentTime: number = 0;
     let completedProcesses = 0;
     const isCompleted = Array(n).fill(false);
 
@@ -30,8 +30,8 @@ const handlePPGanttChart = (processes: ProcessResponse[] | undefined, priorities
         });
 
         if (index !== -1) {
-            const startTime = currentTime;
-            const endTime = startTime + (processes ? processes[index].burstTime : 0);
+            const startTime: number = currentTime;
+            const endTime: number = startTime + (processes ? processes[index].burstTime : 0);
 
             timeChart.push({
                 id: processes && processes[index].id,
@@ -44,7 +44,7 @@ const handlePPGanttChart = (processes: ProcessResponse[] | undefined, priorities
             completedProcesses++;
         } else {
             if (processes)
-                currentTime = (processes && processes.find((_p, index) => !isCompleted[index]))?.arrivalTime;
+                currentTime = Number((processes && processes.find((_p, index) => !isCompleted[index]))?.arrivalTime);
         }
     }
 

@@ -10,12 +10,12 @@ import {
 
 
 const shortestJobFirstPreemitiveAlgo = (req: ProcessRequest): ResponseData => {
-  let tam: number, i: number, j: number, soTT: number, vitri: number, tong: number = 0;
-  let tgchotb: number, tghttb: number;
+  let tam: number, i: number, j: number, soTT: number = 0, vitri: number, tong: number = 0;
+  let tgchotb: number = 0, tghttb: number = 0;
   let tgxl = new Array<number>(100).fill(0);
   let tt = new Array<number>(100).fill(0);
-  let tgcho = new Array<number>(100).fill(0);
-  let tght = new Array<number>(100).fill(0);
+  const tgcho = new Array<number>(100).fill(0);
+  const tght = new Array<number>(100).fill(0);
 
   soTT = req.arrPro.length;
   tgxl = req.arrBurstTime;
@@ -64,6 +64,7 @@ const shortestJobFirstPreemitiveAlgo = (req: ProcessRequest): ResponseData => {
           burstTime: tgxl[index],
           finishTime: tght[index],
           waitingTime: tgcho[index],
+          priority: 0
         };
       }),
       averageFinishTime: tghttb,
@@ -124,6 +125,7 @@ export default function handler(req: NextApiRequest, res: NextApiResponse<Respon
 
     const response: ResponseData = shortestJobFirstPreemitiveAlgo(request);
     res.status(StatusCode.OK).json(response);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     res.status(StatusCode.SERVER_ERROR).json({
       statusCode: StatusCode.SERVER_ERROR,

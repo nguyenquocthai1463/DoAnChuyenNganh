@@ -13,17 +13,17 @@ const shortestJobFirstNonPreemitiveAlgo = (req: ProcessRequest): ResponseData =>
     let tgdenRL = new Array<number>(100).fill(0);
     let tgxl = new Array<number>(100).fill(0);
     let tam = new Array<number>(100).fill(0);
-    let tg_cho = new Array<number>(100).fill(0);
-    let tg_ht = new Array<number>(100).fill(0);
+    const tg_cho = new Array<number>(100).fill(0);
+    const tg_ht = new Array<number>(100).fill(0);
     let i: number;
     let nhonhat: number;
     let dem: number = 0;
     let thoigian: number;
-    let soTT: number;
+    let soTT: number = 0;
     let tgcho: number = 0;
     let tght: number = 0;
     let ketthuc: number;
-    let tgchotb: number, tghttb: number;
+    let tgchotb: number = 0, tghttb: number = 0;
 
 
     soTT = req.arrPro.length;
@@ -65,7 +65,8 @@ const shortestJobFirstNonPreemitiveAlgo = (req: ProcessRequest): ResponseData =>
                     arrivalTime: tgdenRL[index],
                     burstTime: req.arrBurstTime[index],
                     finishTime: tg_ht[index],
-                    waitingTime: tg_cho[index]
+                    waitingTime: tg_cho[index],
+                    priority: 0
                 };
             }),
             averageFinishTime: tghttb,
@@ -126,6 +127,7 @@ export default function handler(req: NextApiRequest, res: NextApiResponse<Respon
 
         const response: ResponseData = shortestJobFirstNonPreemitiveAlgo(request);
         res.status(StatusCode.OK).json(response);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
         res.status(StatusCode.SERVER_ERROR).json({
             statusCode: StatusCode.SERVER_ERROR,

@@ -13,13 +13,13 @@ const priorityPreemitiveAlgo = (req: ProcessRequest): ResponseData => {
   let ma_tt = new Array<number>(100).fill(0);
   let tg_denRL = new Array<number>(100).fill(0);
   let tg_xuly = new Array<number>(100).fill(0);
-  let tg_cho = new Array<number>(100).fill(0);
-  let tg_hoantat = new Array<number>(100).fill(0);
+  const tg_cho = new Array<number>(100).fill(0);
+  const tg_hoantat = new Array<number>(100).fill(0);
   let do_uu_tien = new Array<number>(100).fill(0);
-  let i: number, j: number, sotientrinh: number;
+  let i: number, j: number, sotientrinh: number = 0;
   let kiemtra_tg_denRL: number = 0;
   let tg_tra_CPU: number = 0;
-  let TongTG_cho = 0, TongTG_hoantat = 0, tg_cho_tb, tg_hoantat_tb;
+  let TongTG_cho = 0, TongTG_hoantat = 0, tg_cho_tb = 0, tg_hoantat_tb = 0;
 
   sotientrinh = req.arrPro.length;
   ma_tt = req.arrPro;
@@ -118,6 +118,7 @@ const priorityPreemitiveAlgo = (req: ProcessRequest): ResponseData => {
           burstTime: tg_xuly[index],
           finishTime: tg_hoantat[index],
           waitingTime: tg_cho[index],
+          priority: do_uu_tien[index]
         };
       }),
       averageFinishTime: tg_hoantat_tb,
@@ -178,6 +179,7 @@ export default function handler(req: NextApiRequest, res: NextApiResponse<Respon
 
     const response: ResponseData = priorityPreemitiveAlgo(request);
     res.status(StatusCode.OK).json(response);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     res.status(StatusCode.SERVER_ERROR).json({
       statusCode: StatusCode.SERVER_ERROR,

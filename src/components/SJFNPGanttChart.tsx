@@ -1,5 +1,6 @@
 import './global.css';
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const SJFNPGanttChart = (props: any) => {
     const { processes } = props;
 
@@ -7,6 +8,7 @@ const SJFNPGanttChart = (props: any) => {
 
     return (
         <div className="gantt-chart">
+          {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
           {processes.map((process: any) => (
             <div
               key={process.id}

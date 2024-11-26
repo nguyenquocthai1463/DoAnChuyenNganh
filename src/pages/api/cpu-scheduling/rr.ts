@@ -17,11 +17,11 @@ const roundRobinAlgo = (req: ProcessRequest): ResponseData => {
     let tamDen = new Array<number>(100);
     let tgxl = new Array<number>(100);
     let tg_den = new Array<number>(100);
-    let tien_trinh_nghi = new Array<number>(100).fill(0);
+    const tien_trinh_nghi = new Array<number>(100).fill(0);
     let tt = new Array<number>(100);
-    let vtcu = new Array<number>(100);
-    let sl_tt: number;
-    let quantum: number;
+    const vtcu = new Array<number>(100);
+    let sl_tt: number = 0;
+    let quantum: number = 0;
     let sl: number;
 
     const xoa = (vt: number) => {
@@ -129,7 +129,8 @@ const roundRobinAlgo = (req: ProcessRequest): ResponseData => {
                     arrivalTime: tg_den[index],
                     burstTime: tgxl[index],
                     waitingTime: tg_cho[index],
-                    finishTime: tg_hoantat[index]
+                    finishTime: tg_hoantat[index],
+                    priority: 0
                 };
             }),
             averageFinishTime: tg_ht_tb,
@@ -199,6 +200,7 @@ export default function handler(req: NextApiRequest, res: NextApiResponse<Respon
 
         const response: ResponseData = roundRobinAlgo(request);
         res.status(StatusCode.OK).json(response);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
         res.status(StatusCode.SERVER_ERROR).json({
             statusCode: StatusCode.SERVER_ERROR,
