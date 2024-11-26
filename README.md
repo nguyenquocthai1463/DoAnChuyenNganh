@@ -40,3 +40,5 @@ Check push code on remote
 Check branch code dev1 again
 
 ola
+
+DONE JAMSTACK CPU-SCHEDULING WITH NEXTJS 14
