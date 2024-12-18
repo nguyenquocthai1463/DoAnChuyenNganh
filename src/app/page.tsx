@@ -966,6 +966,36 @@ export default function Home() {
         </div>
         <div className="px-4 pb-12 md:h-auto">
           {result}
+          <div className="mt-8 p-6 bg-white shadow-md rounded-lg max-w-3xl mx-auto">
+            <h1 className="text-2xl font-bold text-gray-800 mb-4">Hướng Dẫn Sử Dụng</h1>
+            <h2 className="text-xl font-semibold text-gray-700 mt-4">1. Nhập dữ liệu:</h2>
+            <ul className="list-disc pl-6 text-gray-600">
+              <li className="mt-2">
+                <span className="font-medium">Thời gian đến:</span> Nhập các giá trị cách nhau bằng khoảng trắng với mỗi giá trị là thời gian đến của một tiến trình. (ví dụ: <code className="bg-gray-100 px-1 py-0.5 rounded">0 0 0</code>).
+              </li>
+              <li className="mt-2">
+                <span className="font-medium">Thời gian xử lý:</span> Nhập các giá trị tương tự (ví dụ: <code className="bg-gray-100 px-1 py-0.5 rounded">24 3 3</code>).
+              </li>
+            </ul>
+            <h2 className="text-xl font-semibold text-gray-700 mt-6">2. Xem kết quả:</h2>
+            <ul className="list-disc pl-6 text-gray-600">
+              <li className="mt-2">
+                Nhấn nút &quot;Kết quả&quot;
+              </li>
+              <li className="mt-2">
+                <span className="font-medium">Kết quả hiển thị:</span>
+                <ul className="list-decimal pl-6 mt-2">
+                  <li>Thời gian chờ và thời gian hoàn thành của từng tiến trình.</li>
+                  <li>Thời gian chờ trung bình và thời gian hoàn thành trung bình.</li>
+                  <li>Biểu đồ Gantt của các tiến trình.</li>
+                </ul>
+              </li>
+            </ul>
+            <h2 className="text-xl font-semibold text-gray-700 mt-6">3. Chọn các thuật toán khác (nếu cần)</h2>
+            <ul className="list-disc pl-6 text-gray-600">
+              <li className="mt-2">Chọn một thuật toán từ thanh bên trái để thử nghiệm các giải thuật khác.</li>
+            </ul>
+          </div>
         </div>
       </div>
     </div>
