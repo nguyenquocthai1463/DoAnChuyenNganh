@@ -24,13 +24,10 @@ const shortestJobFirstNonPreemitiveAlgo = (req: ProcessRequest): ResponseData =>
     let tght: number = 0;
     let ketthuc: number;
     let tgchotb: number = 0, tghttb: number = 0;
-
-
     soTT = req.arrPro.length;
     tgdenRL = req.arrArrivalTime;
     tgxl = [...req.arrBurstTime];
     tam = [...tgxl];
-
     tgxl[9] = 60;
     for (thoigian = 0; dem != soTT; thoigian++) {
         nhonhat = 9;
@@ -39,15 +36,12 @@ const shortestJobFirstNonPreemitiveAlgo = (req: ProcessRequest): ResponseData =>
                 nhonhat = i;
             }
         }
-
         tgxl[nhonhat]--;
         if (tgxl[nhonhat] == 0) {
             dem++;
             ketthuc = thoigian + 1;
-
             tg_cho[nhonhat] = ketthuc - tgdenRL[nhonhat] - tam[nhonhat];
             tg_ht[nhonhat] = ketthuc - tgdenRL[nhonhat];
-
             tgcho = tgcho + tg_cho[nhonhat];
             tght = tght + tg_ht[nhonhat];
         }

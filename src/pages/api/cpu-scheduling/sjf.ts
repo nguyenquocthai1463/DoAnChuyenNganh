@@ -2,11 +2,6 @@ import { NextApiRequest, NextApiResponse } from "next";
 import { ProcessRequest } from "@/types/process";
 import { StatusCode } from "@/types/status-code";
 import { ResponseData } from "@/types/api-response";
-import {
-  validateTheLengthOfProcesses,
-  validateArrivalTimeAndBurstTime,
-  validateThatEachElementInTheProcessesIsNumeric
-} from "@/types/data-validation";
 
 
 const shortestJobFirstPreemitiveAlgo = (req: ProcessRequest): ResponseData => {
@@ -16,11 +11,9 @@ const shortestJobFirstPreemitiveAlgo = (req: ProcessRequest): ResponseData => {
   let tt = new Array<number>(100).fill(0);
   const tgcho = new Array<number>(100).fill(0);
   const tght = new Array<number>(100).fill(0);
-
   soTT = req.arrPro.length;
   tgxl = req.arrBurstTime;
   tt = req.arrPro;
-
   for (i = 0; i < soTT; i++) {
     vitri = i;
     for (j = i + 1; j < soTT; j++) {
@@ -35,7 +28,6 @@ const shortestJobFirstPreemitiveAlgo = (req: ProcessRequest): ResponseData => {
     tt[i] = tt[vitri];
     tt[vitri] = tam;
   }
-
   tgcho[0] = 0;
   for (i = 1; i < soTT; i++) {
     tgcho[i] = 0;
@@ -87,34 +79,6 @@ export default function handler(req: NextApiRequest, res: NextApiResponse<Respon
   const { arrPro, arrArrivalTime, arrBurstTime } = req.body;
 
   try {
-    if (!validateTheLengthOfProcesses(arrArrivalTime, arrBurstTime)) {
-      res.status(StatusCode.BAD_REQUEST).json({
-        statusCode: StatusCode.BAD_REQUEST,
-        message: `Please provide an array of processes as well as corresponding arrival and burst times.`,
-        data: undefined,
-      });
-      return;
-    }
-
-    if (!validateArrivalTimeAndBurstTime(arrArrivalTime, arrBurstTime)) {
-      res.status(StatusCode.BAD_REQUEST).json({
-        statusCode: StatusCode.BAD_REQUEST,
-        message: `The length of arrival times and burst times should be the same.`,
-        data: undefined,
-      });
-      return;
-    }
-
-    const ans = validateThatEachElementInTheProcessesIsNumeric(arrArrivalTime, arrBurstTime, undefined);
-    if (!ans[0]) {
-      res.status(StatusCode.BAD_REQUEST).json({
-        statusCode: StatusCode.BAD_REQUEST,
-        message: ans[1],
-        data: undefined,
-      });
-      return;
-    }
-
     const request: ProcessRequest = {
       arrPro: arrPro,
       arrArrivalTime: arrArrivalTime.map(Number),

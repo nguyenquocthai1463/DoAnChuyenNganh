@@ -25,15 +25,12 @@ const priorityNonPreemitiveAlgo = (req: ProcessRequest): ResponseData => {
     let TongTG_hoantat: number = 0;
     let tg_cho_tb: number = 0;
     let tg_hoantat_tb: number = 0;
-
     const sotientrinh: number = req.arrPro.length;
     tg_denRL = req.arrArrivalTime;
     tg_xuly = [...req.arrBurstTime];
     do_uu_tien = req.arrPriority ? req.arrPriority : [];
     tam = [...tg_xuly];
-
     do_uu_tien[9] = 5000;
-
     for (t = 0; dem != sotientrinh; t++) {
         uu_tien_nho = 9;
         for (i = 0; i < sotientrinh; i++) {
@@ -41,9 +38,7 @@ const priorityNonPreemitiveAlgo = (req: ProcessRequest): ResponseData => {
                 uu_tien_nho = i;
             }
         }
-
         tg_xuly[uu_tien_nho] = tg_xuly[uu_tien_nho] - 1;
-
         if (tg_xuly[uu_tien_nho] == 0) {
             dem++;
             tg_cho[uu_tien_nho] = t + 1 - tg_denRL[uu_tien_nho] - tam[uu_tien_nho];

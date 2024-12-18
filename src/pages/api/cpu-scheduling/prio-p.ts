@@ -20,13 +20,11 @@ const priorityPreemitiveAlgo = (req: ProcessRequest): ResponseData => {
   let kiemtra_tg_denRL: number = 0;
   let tg_tra_CPU: number = 0;
   let TongTG_cho = 0, TongTG_hoantat = 0, tg_cho_tb = 0, tg_hoantat_tb = 0;
-
   sotientrinh = req.arrPro.length;
   ma_tt = req.arrPro;
   tg_denRL = req.arrArrivalTime;
   tg_xuly = req.arrBurstTime;
   do_uu_tien = req.arrPriority ? req.arrPriority : [];
-
   for (i = 0; i < sotientrinh; i++) {
     // Kiem tra thoi gian den hang doi cua tien trinh: cung nhau hoac khac nhau 
     if (i == 0)
@@ -35,7 +33,6 @@ const priorityPreemitiveAlgo = (req: ProcessRequest): ResponseData => {
     if (kiemtra_tg_denRL != tg_denRL[i])
       kiemtra_tg_denRL = 1;
   }
-
   // Neu tien trinh den hang doi voi thoi gian khac nhau thi sap xep cac tien trinh dua tren thoi gian den
   if (kiemtra_tg_denRL != 0) {
     for (i = 0; i < sotientrinh; i++) {

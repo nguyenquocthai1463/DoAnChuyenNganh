@@ -23,7 +23,6 @@ const roundRobinAlgo = (req: ProcessRequest): ResponseData => {
     let sl_tt: number = 0;
     let quantum: number = 0;
     let sl: number;
-
     const xoa = (vt: number) => {
         let i = vt;
         while (i < sl) {
@@ -34,7 +33,6 @@ const roundRobinAlgo = (req: ProcessRequest): ResponseData => {
         }
         sl--;
     }
-
     const chen = (vt: number, gt: number, gtden: number, gtvtcu: number) => {
         let i;
         for (i = sl; i > vt; i--) {
@@ -42,7 +40,6 @@ const roundRobinAlgo = (req: ProcessRequest): ResponseData => {
             tamDen[i] = tamDen[i - 1];
             vtcu[i] = vtcu[i - 1];
         }
-
         tamTT[vt] = gt;
         tamDen[vt] = gtden;
         vtcu[vt] = gtvtcu;
